@@ -13,15 +13,25 @@ namespace AbsoluteUnit
             Convert,
             Express,
             Simplify,
-        };
+        }
+
+        public enum Flag
+        {
+            VerboseCalculation,
+            DecimalPlaces,
+            SignificantFigures,
+            StandardForm,
+            Engineering,
+        }
 
         public Command CommandType { get; set; }
+        public List<Flag> Flags { get; set; }
         public bool ValidArgumentCount { get; set; }
-        public string[] Flags { get; set; }
 
         public CommandParser(string[] args)
         {
             CommandType = ParseCommand(args[0]);
+            Flags = GetFlags(args);
             ValidArgumentCount = IsValid(args);
         }
 
@@ -40,5 +50,20 @@ namespace AbsoluteUnit
             Command.Simplify => args.Length == 1,
             _ => false
         };
+
+        private List<Flag> GetFlags(string[] args)
+        {
+            var flags = new List<Flag>();
+
+            // get all of the various flags
+            var onlyFlags = args.Where(a => a[0] == '-');
+            foreach (var flag in onlyFlags)
+            {
+                
+            }
+
+            return flags;
+        }
+
     }
 }
