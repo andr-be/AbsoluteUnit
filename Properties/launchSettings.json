@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AbsoluteUnit": {
+      "commandName": "Project",
+      "commandLineArgs": "--convert \"123.4e5 kg\" \"st\" -dec 3 --verbose"
+    }
+  }
+}
