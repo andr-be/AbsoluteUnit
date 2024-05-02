@@ -21,8 +21,9 @@ namespace AbsoluteUnit
         }
 
         public Command CommandType { get; set; }
+        public string[] CommandArguments { get; set; }
         public List<Flag> Flags { get; set; }
-        public Dictionary<Flag, int> FormatArguments = [];
+        public Dictionary<Flag, int> FlagArguments = [];
 
         private int ExtraArguments = 0;
 
@@ -31,10 +32,13 @@ namespace AbsoluteUnit
             CommandType = ParseCommand(args[0]);
 
             var flagsAndArguments = args.Skip(1).ToArray();
+            var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
+
             Flags = GetFlags(flagsAndArguments);
 
-            var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
-            if (!ValidCount(arguments)) 
+            if (ValidCount(arguments) == arguments.Length)
+                CommandArguments = arguments.Take(arguments.Length - ExtraArguments).ToArray();
+            else
                 throw new ArgumentException($"Invalid argument count: {arguments.Length}");
         }
 
@@ -46,11 +50,11 @@ namespace AbsoluteUnit
             _ => throw new CommandNotRecognised($"Invalid command: {command}")
         };
 
-        private bool ValidCount(string[] args) => CommandType switch
+        private int ValidCount(string[] args) => CommandType switch
         {
-            Command.Convert => args.Length == 2 + ExtraArguments,
-            Command.Express or Command.Simplify => args.Length == 1 + ExtraArguments,
-            _ => false
+            Command.Convert => 2 + ExtraArguments,
+            Command.Express or Command.Simplify => 1 + ExtraArguments,
+            _ => 0
         };
 
         private List<Flag> GetFlags(string[] args)
@@ -67,7 +71,7 @@ namespace AbsoluteUnit
                 Flag newFlag = ParseFlag(arg);
                 if (newFlag.AddsArguments())
                 {
-                    ParseArgument(args[i+1], newFlag);
+                    ParseFlagArgument(args[i+1], newFlag);
                 }
 
                 flags.Add(newFlag);
@@ -76,12 +80,12 @@ namespace AbsoluteUnit
             return flags;
         }
 
-        private void ParseArgument(string arg, Flag newFlag)
+        private void ParseFlagArgument(string arg, Flag newFlag)
         {
             try
             {
-                var formatArgument = int.Parse(arg);
-                FormatArguments.Add(newFlag, formatArgument);
+                var flagArgument = int.Parse(arg);
+                FlagArguments.Add(newFlag, flagArgument);
                 ExtraArguments++;
             }
             catch
