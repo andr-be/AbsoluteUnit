@@ -34,12 +34,14 @@ namespace AbsoluteUnit
             var flagsAndArguments = args.Skip(1).ToArray();
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
 
-            Flags = GetFlags(flagsAndArguments);
+            Flags = GetFlagsAndFlagArgs(flagsAndArguments);
 
-            if (ValidCount(arguments) == arguments.Length)
+            // this is a hacky way of doing things that requires all flag arguments come after command arguments...
+            if (CommandArgumentCount() + ExtraArguments == arguments.Length)
+            {
                 CommandArguments = arguments.Take(arguments.Length - ExtraArguments).ToArray();
-            else
-                throw new ArgumentException($"Invalid argument count: {arguments.Length}");
+            }
+            else throw new ArgumentException($"Invalid argument count: {arguments.Length}");
         }
 
         private static Command ParseCommand(string command) => command.ToLowerInvariant() switch
@@ -50,14 +52,14 @@ namespace AbsoluteUnit
             _ => throw new CommandNotRecognised($"Invalid command: {command}")
         };
 
-        private int ValidCount(string[] args) => CommandType switch
+        private int CommandArgumentCount() => CommandType switch
         {
-            Command.Convert => 2 + ExtraArguments,
-            Command.Express or Command.Simplify => 1 + ExtraArguments,
+            Command.Convert => 2,
+            Command.Express or Command.Simplify => 1,
             _ => 0
         };
 
-        private List<Flag> GetFlags(string[] args)
+        private List<Flag> GetFlagsAndFlagArgs(string[] args)
         {
             var flags = new List<Flag>();
 
