@@ -22,9 +22,9 @@ namespace AbsoluteUnit
 
         public Command CommandType { get; set; }
         public List<Flag> Flags { get; set; }
-        public bool ValidArgumentCount { get; set; }
+        public Dictionary<Flag, int> FormatArguments = [];
 
-        private Dictionary<Flag, int> FormatArguments = [];
+        private bool Valid;
         private int ExtraArguments = 0;
 
         public CommandParser(string[] args)
@@ -35,8 +35,8 @@ namespace AbsoluteUnit
             Flags = GetFlags(flagsAndArguments);
 
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
-            ValidArgumentCount = IsValid(arguments);
-            if (!ValidArgumentCount) throw new ArgumentException($"Invalid argument count: {arguments.Length}");
+            if (!(Valid = ValidCount(arguments))) 
+                throw new ArgumentException($"Invalid argument count: {arguments.Length}");
         }
 
         private static Command ParseCommand(string command) => command.ToLowerInvariant() switch
@@ -47,7 +47,7 @@ namespace AbsoluteUnit
             _ => throw new CommandNotRecognised($"Invalid command: {command}")
         };
 
-        private bool IsValid(string[] args) => CommandType switch
+        private bool ValidCount(string[] args) => CommandType switch
         {
             Command.Convert => args.Length == 2 + ExtraArguments,
             Command.Express or Command.Simplify => args.Length == 1 + ExtraArguments,
@@ -68,22 +68,27 @@ namespace AbsoluteUnit
                 Flag newFlag = ParseFlag(arg);
                 if (newFlag.AddsArguments())
                 {
-                    try
-                    {
-                        var formatArgument = int.Parse(args[i + 1]);
-                        FormatArguments.Add(newFlag, formatArgument);
-                        ExtraArguments++;
-                    }
-                    catch 
-                    {
-                        throw new FlagNotRecognised($"Invalid flag argument provided: {args[i + 1]}");
-                    }
+                    ParseArgument(args[i+1], newFlag);
                 }
 
                 flags.Add(newFlag);
             }
 
             return flags;
+        }
+
+        private void ParseArgument(string arg, Flag newFlag)
+        {
+            try
+            {
+                var formatArgument = int.Parse(arg);
+                FormatArguments.Add(newFlag, formatArgument);
+                ExtraArguments++;
+            }
+            catch
+            {
+                throw new ArgumentException($"Invalid flag argument provided: {arg}");
+            }
         }
 
         private static Flag ParseFlag(string flag) => flag.ToLowerInvariant() switch
