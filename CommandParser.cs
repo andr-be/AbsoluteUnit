@@ -24,7 +24,6 @@ namespace AbsoluteUnit
         public List<Flag> Flags { get; set; }
         public Dictionary<Flag, int> FormatArguments = [];
 
-        private bool Valid;
         private int ExtraArguments = 0;
 
         public CommandParser(string[] args)
@@ -35,7 +34,7 @@ namespace AbsoluteUnit
             Flags = GetFlags(flagsAndArguments);
 
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
-            if (!(Valid = ValidCount(arguments))) 
+            if (!ValidCount(arguments)) 
                 throw new ArgumentException($"Invalid argument count: {arguments.Length}");
         }
 
@@ -105,18 +104,14 @@ namespace AbsoluteUnit
     public class CommandNotRecognised : Exception
     {
         public CommandNotRecognised() { }
-
         public CommandNotRecognised(string message) : base(message) { }
-
         public CommandNotRecognised(string message, Exception inner) : base(message, inner) { }
     }
 
     public class FlagNotRecognised : Exception
     {
         public FlagNotRecognised() { }
-
         public FlagNotRecognised(string message) : base(message) { }
-
         public FlagNotRecognised(string message, Exception inner) : base(message, inner) { }
     }
 }
@@ -132,6 +127,5 @@ namespace EnumExtension
             CommandParser.Flag.SignificantFigures or CommandParser.Flag.DecimalPlaces => true,
             _ => false,
         };
-
     }
 }
