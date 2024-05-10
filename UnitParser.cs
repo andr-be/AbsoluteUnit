@@ -19,7 +19,7 @@ namespace AbsoluteUnit
         public MeasurementParser(string measurementString) 
         {
             Measurement = new(measurementString);
-            foreach (var unit in Measurement.Units)
+ //           foreach (var unit in Measurement.Units)
         }
     }
 
@@ -68,13 +68,19 @@ namespace AbsoluteUnit
         public MeasurementGroup(string measurement)
         {
             Match match = Regex().Match(measurement);
-
             if (match == null || measurement == null) 
-                throw new Exception("Couldn't match anything in measurement.");
+                throw new Exception($"Couldn't match anything in [{measurement}]");
 
-            Quantity = double.Parse(match.Groups[0].Value);
-            Exponent = int.Parse(match.Groups[1].Value);
-            Units = new(match.Groups[2].Value);
+            try
+            {
+                Quantity = double.Parse(match.Groups[0].Value);
+                Exponent = int.Parse(match.Groups[1].Value);
+                Units = new(match.Groups[2].Value);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Unable to correctly parse MeasurementGroup for {measurement}", innerException: e);
+            }
         }
     }
 
