@@ -42,12 +42,15 @@ namespace AbsoluteUnit
 
             foreach (Match match in matches.Cast<Match>())
             {
-                UnitGroup.DivMulti divMulti = (match.Groups[0].Success == true)
-                    ? UnitGroup.GetDivMulti(match.Groups[0].Value.FirstOrDefault())
+                UnitGroup.DivMulti divMulti = (match.Groups[1].Success)
+                    ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
                     : UnitGroup.DivMulti.Multiply;
 
-                string unitSymbol = match.Groups[1].Value;
-                int exponent = int.Parse(match.Groups[2].Value);
+                int exponent = (match.Groups[3].Success)
+                    ? int.Parse(match.Groups[3].Value)
+                    : 1;
+                
+                string unitSymbol = match.Groups[2].Value;
 
                 UnitGroup newGroup = new(divMulti, unitSymbol, exponent);
                 Groups.Add(newGroup);
@@ -73,9 +76,9 @@ namespace AbsoluteUnit
 
             try
             {
-                Quantity = double.Parse(match.Groups[0].Value);
-                Exponent = int.Parse(match.Groups[1].Value);
-                Units = new(match.Groups[2].Value);
+                Quantity = double.Parse(match.Groups[1].Value);
+                Exponent = int.Parse(match.Groups[2].Value);
+                Units = new(match.Groups[3].Value);
             }
             catch (Exception e)
             {
