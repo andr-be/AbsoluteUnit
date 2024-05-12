@@ -42,11 +42,11 @@ namespace AbsoluteUnit
 
             foreach (Match match in matches.Cast<Match>())
             {
-                UnitGroup.DivMulti divMulti = (match.Groups[1].Success)
+                UnitGroup.DivMulti divMulti = match.Groups[1].Success
                     ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
                     : UnitGroup.DivMulti.Multiply;
 
-                int exponent = (match.Groups[3].Success)
+                int exponent = match.Groups[3].Success
                     ? int.Parse(match.Groups[3].Value)
                     : 1;
                 
