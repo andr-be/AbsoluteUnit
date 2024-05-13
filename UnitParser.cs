@@ -33,11 +33,17 @@ namespace AbsoluteUnit
 
         public UnitGroups(string unitString)
         {
-            if (string.IsNullOrEmpty(unitString)) 
+            if (string.IsNullOrEmpty(unitString))
                 throw new Exception("no unitString provided");
-            
+
+            Groups = ParseUnitGroups(unitString);
+        }
+
+        private static List<UnitGroup> ParseUnitGroups(string unitString)
+        {
+            List<UnitGroup> groups = [];
             MatchCollection matches = Regex().Matches(unitString);
-            if (matches.Count == 0 || matches == null)
+            if (matches.Count == 0)
                 throw new Exception($"parsing error: {unitString} produced no matches");
 
             foreach (Match match in matches.Cast<Match>())
@@ -49,12 +55,13 @@ namespace AbsoluteUnit
                 int exponent = match.Groups[3].Success
                     ? int.Parse(match.Groups[3].Value)
                     : 1;
-                
+
                 string unitSymbol = match.Groups[2].Value;
 
                 UnitGroup newGroup = new(divMulti, unitSymbol, exponent);
-                Groups.Add(newGroup);
+                groups.Add(newGroup);
             }
+            return groups;
         }
     }
 
@@ -70,21 +77,25 @@ namespace AbsoluteUnit
 
         public MeasurementGroup(string measurement)
         {
-            Match match = Regex().Match(measurement);
-            if (match == null || measurement == null) 
+            var match = Regex().Match(measurement);
+            if (!match.Success) 
                 throw new Exception($"Couldn't match anything in [{measurement}]");
 
             try
             {
-                Quantity = double.Parse(match.Groups[1].Value);
-                Exponent = int.Parse(match.Groups[2].Value);
-                Units = new(match.Groups[3].Value);
+                Quantity = ParseQuantity(match.Groups[1].Value);
+                Exponent = ParseExponent(match.Groups[2].Value);
+                Units = new UnitGroups(match.Groups[3].Value);
             }
             catch (Exception e)
             {
                 throw new Exception($"Unable to correctly parse MeasurementGroup for {measurement}", innerException: e);
             }
         }
+
+        private static int ParseExponent(string exponentString) => int.Parse(exponentString);
+
+        private static double ParseQuantity(string quantityString) => double.Parse(quantityString);
     }
 
     public record UnitGroup(UnitGroup.DivMulti _DivMulti, string UnitSymbol, int Exponent) 
