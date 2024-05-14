@@ -66,6 +66,39 @@ namespace AbsoluteUnit.Tests
             Assert.AreEqual(testGroup.Exponent, 0);
             Assert.IsTrue(testGroup.Units.Groups.SequenceEqual(unitGroups));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParseError))]
+        public void MeasurementGroup_NoUnitsInput_ThrowsParsingException()
+        {
+            // Arrange
+            string noUnitsInput = "123";
+
+            // Act
+            MeasurementParser _ = new(noUnitsInput);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParseError))]
+        public void MeasurementGroup_OnlyUnitInput_ThrowsParsingException()
+        {
+            // Arrange
+            string onlyUnit = "kg.m/s^2";
+
+            // Act
+            MeasurementParser _ = new(onlyUnit);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParseError))]
+        public void MeasurementGroup_FractionalExponentInput_ThrowsParsingException()
+        {
+            // Arrange
+            string fractionalExponent = "123e4.5 kg.m/s^2";
+
+            // Act
+            MeasurementParser _ = new(fractionalExponent);
+        }
     }
 
     public class UnitGroupBuilder

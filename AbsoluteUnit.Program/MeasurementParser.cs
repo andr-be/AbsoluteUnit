@@ -13,11 +13,19 @@ namespace AbsoluteUnit
         [GeneratedRegex(MeasurementRegexString)]
         private static partial Regex Regex();
 
-        public MeasurementParser(string measurement)
+        public MeasurementParser(string measurementString)
         {
-            var match = Regex().Match(measurement);
+            var match = Regex().Match(measurementString);
             if (!match.Success)
-                throw new Exception($"Couldn't match anything in [{measurement}]");
+            {
+                if (measurementString
+                    .AsEnumerable()
+                    .Any(a => char.IsNumber(a) || a == 'e' || a == 'E')
+                )
+                    throw new ParseError($"invalid measurement string: {measurementString} (no units provided)");
+                else
+                    throw new ParseError($"invalid measurement string: {measurementString} (invalid format)");
+            }
 
             try
             {
@@ -27,7 +35,7 @@ namespace AbsoluteUnit
             }
             catch (Exception e)
             {
-                throw new Exception($"Unable to correctly parse MeasurementGroup for {measurement}", innerException: e);
+                throw new ParseError($"unable to parse {measurementString} as MeasurementGroup", inner: e);
             }
         }
 
@@ -39,7 +47,13 @@ namespace AbsoluteUnit
                 return 0;
         }
 
-        private static double ParseQuantity(string quantityString) => double.Parse(quantityString);
+        private static double ParseQuantity(string quantityString)
+        {
+            if (double.TryParse(quantityString, null, out var quantity))
+                return quantity;
+            else
+                throw new ParseError($"unable to parse quantity: {quantityString}");
+        }
     }
 
     public partial class UnitGroupParser
@@ -52,8 +66,8 @@ namespace AbsoluteUnit
 
         public UnitGroupParser(string unitString)
         {
-            if (string.IsNullOrEmpty(unitString))
-                throw new Exception("no unitString provided");
+            if (string.IsNullOrWhiteSpace(unitString))
+                throw new ArgumentException("no/null unitString provided");
 
             Groups = ParseUnitGroups(unitString);
         }
@@ -63,7 +77,7 @@ namespace AbsoluteUnit
             List<UnitGroup> groups = [];
             MatchCollection matches = Regex().Matches(unitString);
             if (matches.Count == 0)
-                throw new Exception($"parsing error: {unitString} produced no matches");
+                throw new ParseError($"parsing error: {unitString} produced no matches");
 
             foreach (Match match in matches.Cast<Match>())
             {
@@ -89,6 +103,13 @@ namespace AbsoluteUnit
         }
     }
 
+    public class ParseError : Exception
+    {
+        public ParseError() { }
+        public ParseError(string message) : base(message) { }
+        public ParseError(string message, Exception inner) : base(message, inner) { }
+    }
+
 
     public record UnitGroup(UnitGroup.DivMulti _DivMulti, string UnitSymbol, int Exponent) 
     {
@@ -98,7 +119,7 @@ namespace AbsoluteUnit
             {
                 '/' => DivMulti.Divide,
                 '.' => DivMulti.Multiply,
-                _ => throw new Exception("invalid DivMulti symbol")
+                _ => throw new ParseError("invalid DivMulti symbol")
             };
         }
         public enum DivMulti
