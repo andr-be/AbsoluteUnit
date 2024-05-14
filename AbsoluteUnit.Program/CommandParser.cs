@@ -128,7 +128,7 @@ namespace AbsoluteUnit
             }
             catch (Exception e)
             {
-                throw new ArgumentException("invalid flag argument: {flagArgString}", innerException: e);
+                throw new ArgumentException($"invalid flag argument: {flagArgString}", innerException: e);
             }
         }
 
