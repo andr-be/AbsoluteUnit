@@ -154,9 +154,9 @@ namespace AbsoluteUnit.Tests
 
     public class UnitGroupBuilder
     {
-        private UnitGroup.DivMulti _divMulti;
-        private string _symbol;
-        private int _exponent;
+        private UnitGroup.DivMulti _divMulti = UnitGroup.DivMulti.Multiply;
+        private string _symbol = "";
+        private int _exponent = 1;
 
         public UnitGroupBuilder WithDivMulti(UnitGroup.DivMulti divMulti)
         {
@@ -176,9 +176,7 @@ namespace AbsoluteUnit.Tests
             return this;
         }
 
-        public UnitGroup Build()
-        {
-            return new UnitGroup(_divMulti, _symbol, _exponent);
-        }
+        public UnitGroup Build() => new(_divMulti, _symbol, _exponent);
+        
     }
 }
