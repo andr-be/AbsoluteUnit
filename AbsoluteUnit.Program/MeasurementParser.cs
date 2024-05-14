@@ -1,26 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit
 {
-    public partial class UnitParser
-    {
-        public UnitParser() { } 
-    }
 
-    public class MeasurementParser
+    public partial class MeasurementGroup
     {
-        public MeasurementGroup Measurement { get; }
+        public double Quantity { get; }
+        public int Exponent { get; }
+        public UnitGroups Units { get; }
 
-        public MeasurementParser(string measurementString) 
+        private const string MeasurementRegexString = @"^(-?\d+[,\d]*\.?\d*)+(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)+$";
+        [GeneratedRegex(MeasurementRegexString)]
+        private static partial Regex Regex();
+
+        public MeasurementGroup(string measurement)
         {
-            Measurement = new(measurementString);
- //           foreach (var unit in Measurement.Units)
+            var match = Regex().Match(measurement);
+            if (!match.Success)
+                throw new Exception($"Couldn't match anything in [{measurement}]");
+
+            try
+            {
+                Quantity = ParseQuantity(match.Groups[1].Value);
+                Exponent = ParseExponent(match.Groups[2].Value);
+                Units = new UnitGroups(match.Groups[3].Value);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Unable to correctly parse MeasurementGroup for {measurement}", innerException: e);
+            }
         }
+
+        private static int ParseExponent(string exponentString) => int.Parse(exponentString);
+
+        private static double ParseQuantity(string quantityString) => double.Parse(quantityString);
     }
 
     public partial class UnitGroups
@@ -65,38 +78,6 @@ namespace AbsoluteUnit
         }
     }
 
-    public partial class MeasurementGroup
-    {
-        public double Quantity { get; } 
-        public int Exponent { get; }
-        public UnitGroups Units { get; }
-
-        private const string MeasurementRegexString = @"^(-?\d+[,\d]*\.?\d*)+(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)+$";
-        [GeneratedRegex(MeasurementRegexString)]
-        private static partial Regex Regex();
-
-        public MeasurementGroup(string measurement)
-        {
-            var match = Regex().Match(measurement);
-            if (!match.Success) 
-                throw new Exception($"Couldn't match anything in [{measurement}]");
-
-            try
-            {
-                Quantity = ParseQuantity(match.Groups[1].Value);
-                Exponent = ParseExponent(match.Groups[2].Value);
-                Units = new UnitGroups(match.Groups[3].Value);
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Unable to correctly parse MeasurementGroup for {measurement}", innerException: e);
-            }
-        }
-
-        private static int ParseExponent(string exponentString) => int.Parse(exponentString);
-
-        private static double ParseQuantity(string quantityString) => double.Parse(quantityString);
-    }
 
     public record UnitGroup(UnitGroup.DivMulti _DivMulti, string UnitSymbol, int Exponent) 
     {

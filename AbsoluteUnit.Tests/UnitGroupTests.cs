@@ -1,7 +1,7 @@
 namespace AbsoluteUnit.Tests
 {
     [TestClass]
-    public class UnitParserTests
+    public class UnitGroupTests
     {
         [TestMethod]
         public void MeasurementGroup_GivenGoodInput_SuccessfullyParses()
