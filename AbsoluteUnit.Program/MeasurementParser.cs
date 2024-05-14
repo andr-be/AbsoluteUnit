@@ -9,7 +9,9 @@ namespace AbsoluteUnit
         public int Exponent { get; }
         public UnitGroupParser Units { get; }
 
-        private const string MeasurementRegexString = @"^(-?\d+[,\d]*\.?\d*)*(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
+        private const string MeasurementRegexString = 
+            @"^(-?\d+[,\d]*\.?\d*)?(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
+
         [GeneratedRegex(MeasurementRegexString)]
         private static partial Regex Regex();
 
@@ -29,7 +31,6 @@ namespace AbsoluteUnit
             else if (!match.Groups[3].Success || match.Groups[3].Value.Contains('e'))
                 throw new ParseError($"invalid measurementString [{measurementString}]: no units provided");
 
-            
             try
             {
                 Quantity = ParseQuantity(match.Groups[1].Value);
