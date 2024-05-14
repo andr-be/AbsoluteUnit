@@ -17,15 +17,13 @@ namespace AbsoluteUnit
         {
             var match = Regex().Match(measurementString);
             if (!match.Success)
-            {
-                if (measurementString
-                    .AsEnumerable()
-                    .Any(a => char.IsNumber(a) || a == 'e' || a == 'E')
-                )
-                    throw new ParseError($"invalid measurement string: {measurementString} (no units provided)");
-                else
-                    throw new ParseError($"invalid measurement string: {measurementString} (invalid format)");
-            }
+                throw new ParseError($"invalid measurement string: {measurementString} (invalid format)");
+            
+            if (!match.Groups[1].Success)
+                throw new ParseError($"invalid measurement [{measurementString}]: no quantity provided");
+            
+            else if (match.Groups[3].Value.Contains('e') || !match.Groups[3].Success)
+                throw new ParseError($"invalid unitString [{measurementString}]: no units provided");
 
             try
             {
