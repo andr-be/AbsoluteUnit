@@ -1,4 +1,4 @@
-namespace AbsoluteUnit.Tests
+﻿namespace AbsoluteUnit.Tests
 {
     [TestClass]
     public class MeasurementParserTests
@@ -86,6 +86,26 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
+        public void MeasurementParser_CommaSeparatedNumber_SuccessfullyParses()
+        {
+            // Arrange
+            var commaSeparatedMeasurement = "1,000,000 km";
+            double oneMillion = 1000000;
+            UnitGroup kilometer = new UnitGroupBuilder()
+                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithSymbol("km")
+                .WithExponent(1)
+                .Build();
+
+            // Act
+            MeasurementParser measurement = new(commaSeparatedMeasurement);
+
+            // Assert
+            Assert.AreEqual(measurement.Quantity, oneMillion);
+            Assert.AreEqual(measurement.Units.Groups.First(), kilometer);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ParseError))]
         public void MeasurementParser_NoQuantityWithExponent_ThrowsParseError()
         {
@@ -156,11 +176,11 @@ namespace AbsoluteUnit.Tests
         {
             List<string> randomUnicode = new()
             {
-                "??.???? ????/????^??",
-                "?????????????????�?????????????",
-                "??????????????????????????????",
-                "??????????????????????????????",
-                "( ?� ?? ?�)",
+                "𝟙.𝟚𝟛 𝕜𝕘/𝕞𝕤^𝟚",
+                "⹠≽⽗⨣ⱙ⮱⺇⡫ⱠⱿ⋯∟➋⫽⺽⒇ⴝ“⹰⬈⬩⒝⮦⌑╈⥟≖⫔Ⱨ➨⢃",
+                "⁰∨⏹₈∇↏↝Ɱ⻆Ⱇ⍕⛍⫙⬪⦰╅⳰⑟∿⬫⨹⯄⾿⽛⊹≨◕┐⚣⨪",
+                "⓼ⱛ₭⛊↍⛠ⵙ⇲⹲☹⚄⽊☹⋎☐■⛤℃⭸⁂⤄♊⅟⬘⒯▀⭽₲⩕∔",
+                "( ͡° ͜ʖ ͡°)",
             };
 
             foreach (var s in randomUnicode)
