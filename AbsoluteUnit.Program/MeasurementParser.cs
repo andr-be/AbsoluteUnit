@@ -67,7 +67,7 @@ namespace AbsoluteUnit
             var euroString = ToEuroString(quantityString);
             if (double.TryParse(euroString, null, out var euroQuantity))
                 return euroQuantity;
-            // ==================  DON'T TRY THIS A HOME  ================== 
+            // ================== DON'T TRY THIS AT HOME  ================== 
 
             else
                 throw new ParseError($"unable to parse quantity: {quantityString}");
