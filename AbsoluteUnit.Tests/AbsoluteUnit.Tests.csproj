@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AbsoluteUnit\AbsoluteUnit.csproj" />
+    <ProjectReference Include="..\AbsoluteUnit.Program\AbsoluteUnit.Program.csproj" />
   </ItemGroup>
 
   <ItemGroup>

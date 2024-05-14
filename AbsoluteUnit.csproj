@@ -1,12 +1,256 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{03D60F7A-AD91-4B5B-832B-14F8F3856A94}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PublishAot>true</PublishAot>
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ConsoleApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>AbsoluteUnit</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
+    <Content Include=".git\ms-persist.xml" />
+    <Content Include="AbsoluteUnit.Program\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".git\COMMIT_EDITMSG" />
+    <None Include=".git\config" />
+    <None Include=".git\description" />
+    <None Include=".git\FETCH_HEAD" />
+    <None Include=".git\HEAD" />
+    <None Include=".git\hooks\applypatch-msg.sample" />
+    <None Include=".git\hooks\commit-msg.sample" />
+    <None Include=".git\hooks\fsmonitor-watchman.sample" />
+    <None Include=".git\hooks\post-update.sample" />
+    <None Include=".git\hooks\pre-applypatch.sample" />
+    <None Include=".git\hooks\pre-commit.sample" />
+    <None Include=".git\hooks\pre-merge-commit.sample" />
+    <None Include=".git\hooks\pre-push.sample" />
+    <None Include=".git\hooks\pre-rebase.sample" />
+    <None Include=".git\hooks\pre-receive.sample" />
+    <None Include=".git\hooks\prepare-commit-msg.sample" />
+    <None Include=".git\hooks\push-to-checkout.sample" />
+    <None Include=".git\hooks\sendemail-validate.sample" />
+    <None Include=".git\hooks\update.sample" />
+    <None Include=".git\index" />
+    <None Include=".git\info\exclude" />
+    <None Include=".git\logs\HEAD" />
+    <None Include=".git\logs\refs\heads\master" />
+    <None Include=".git\logs\refs\remotes\origin\HEAD" />
+    <None Include=".git\logs\refs\remotes\origin\master" />
+    <None Include=".git\objects\01\6d0556673ffa19b76f4809c36fecfca90c07b8" />
+    <None Include=".git\objects\03\959dd3c1305fee11bba91b12d6c3d1caaa21b1" />
+    <None Include=".git\objects\09\31d046fa058c2e4659d9062eb428e9ed12722c" />
+    <None Include=".git\objects\12\ce3024358ada64b38e15f9595ab1a2bf514254" />
+    <None Include=".git\objects\1b\1948e396790131a4f104507cca76c9c5ac0715" />
+    <None Include=".git\objects\1c\cb02995e43e03f9bc265286fbef809856d6a12" />
+    <None Include=".git\objects\1f\76fe7d42bfc9d84461460cad05b50bd1fb7f5c" />
+    <None Include=".git\objects\28\3dc7593699ff9a414ec1710193aba8e7eb7ae0" />
+    <None Include=".git\objects\2b\0ef14dba08a67574e91a4e6951d3336077441c" />
+    <None Include=".git\objects\30\02f7edcf1a95916a25524c9d77bc8d49c55684" />
+    <None Include=".git\objects\3e\0fc4000d2d229e767117b4edb5518865b805c6" />
+    <None Include=".git\objects\4b\44560d80ec3406336c8b73087767891b990f45" />
+    <None Include=".git\objects\50\d3b7a434126a40197c592f3426c33debc0ef15" />
+    <None Include=".git\objects\55\4df068027b58197846b968f80e18c28322c085" />
+    <None Include=".git\objects\55\a20e2c36474740f9e07e95bbfe9b12d178bb9f" />
+    <None Include=".git\objects\59\d4240d9f77f25cadfbf6642809beed22d1cde6" />
+    <None Include=".git\objects\64\3ad822f7c640c712e296d608dc54727d91a6d8" />
+    <None Include=".git\objects\64\f37a7b70f7bc8e68306675d6563f43005ee162" />
+    <None Include=".git\objects\71\34dd438c06e5b9c8c8be5eec993feb370fbd58" />
+    <None Include=".git\objects\73\559f8681f6ed6b89d1b58245b4b65fdb4b5357" />
+    <None Include=".git\objects\73\88c72d72365c3221077d4b389d280b99d8d006" />
+    <None Include=".git\objects\79\a55d183c6296d4f817d5e83a00272410d287ed" />
+    <None Include=".git\objects\7b\41f251b0cb42b9afd4ef0dccabd4d7f706161c" />
+    <None Include=".git\objects\7e\71c02447df815bb3334537942e48c840a6df0c" />
+    <None Include=".git\objects\7e\b2e5c348d99e7f5a96a59af1b53679223024f5" />
+    <None Include=".git\objects\83\851e2459a07933f3932e8a3d42a81cbb041d15" />
+    <None Include=".git\objects\85\f5654af7bd76ebbcd1967396b397ed02f150f2" />
+    <None Include=".git\objects\87\7aea9fb92550fbc755ab94d28f0d4725898f8a" />
+    <None Include=".git\objects\8a\661216d076c5aa9077ec2208dc3e3e71a1ada0" />
+    <None Include=".git\objects\8d\481d95a7cd3f3fc8e4a26685bd2a2b7241906a" />
+    <None Include=".git\objects\92\c29b9e4190ab511b2f2a6198268c69f7cdb138" />
+    <None Include=".git\objects\96\7589d6229ed40e43885b5a0f6b326922bab2cd" />
+    <None Include=".git\objects\9c\ef542739951b2cf120abab980a628f74c9ac60" />
+    <None Include=".git\objects\a8\7f80ee1dad3a4fcc03149cb04e4181e85ad334" />
+    <None Include=".git\objects\a8\911f34f1d9dc1c99a3bef24eb65ab845c8033a" />
+    <None Include=".git\objects\ad\40c10b6eba0d60d23c69d7454560e8e5f7afbe" />
+    <None Include=".git\objects\b2\e313c354c551dca51e5f563f38861af054703c" />
+    <None Include=".git\objects\b7\2af5840458eea8fadefe5c624fae413d8f821a" />
+    <None Include=".git\objects\c9\818fa53ea6c7549ff84b67e96653250dc7525a" />
+    <None Include=".git\objects\cc\8c37195f74522fbb5d88bcd4b6d818d0198623" />
+    <None Include=".git\objects\cc\a02ce2600afe9fc9a91122aeddd9f283a71603" />
+    <None Include=".git\objects\cd\50cb51997dbd8a4165ce08d5c65fa5c7cf6f45" />
+    <None Include=".git\objects\d9\1977287c9205dbd716aabb2037c0d5613e9ce7" />
+    <None Include=".git\objects\dd\9061f56c7590d17dc05148b653c7e9858cbfb1" />
+    <None Include=".git\objects\e1\07170cbec0558c5151dda9650f5b9af8a325d8" />
+    <None Include=".git\objects\ed\2a960c7d6b37dee17a8fd4ed0c63c1d49879af" />
+    <None Include=".git\objects\ef\154ef949d62b44602df65b0e651b10252e5b46" />
+    <None Include=".git\objects\f1\e6d1db2fdeeb494f9052ae114feef49164cc5e" />
+    <None Include=".git\objects\f6\4709038b06d19601fc3eb7cc0d492598ef89e6" />
+    <None Include=".git\objects\f7\679ba220b19a791195836971c0dd446e0e7ca6" />
+    <None Include=".git\objects\f7\b9f23d1cad07788dde5f53029c94f8d4407613" />
+    <None Include=".git\objects\ff\ffe84d961d541c873305b52967b0f6cf9fd23a" />
+    <None Include=".git\objects\pack\pack-a1f0b811f5f896196ee1005cf3d6d075b041cdd6.idx" />
+    <None Include=".git\objects\pack\pack-a1f0b811f5f896196ee1005cf3d6d075b041cdd6.pack" />
+    <None Include=".git\objects\pack\pack-a1f0b811f5f896196ee1005cf3d6d075b041cdd6.rev" />
+    <None Include=".git\ORIG_HEAD" />
+    <None Include=".git\packed-refs" />
+    <None Include=".git\refs\heads\master" />
+    <None Include=".git\refs\remotes\origin\HEAD" />
+    <None Include=".git\refs\remotes\origin\master" />
+    <None Include=".vs\AbsoluteUnit\DesignTimeBuild\.dtbcache.v2" />
+    <None Include=".vs\AbsoluteUnit\FileContentIndex\3461cadb-0104-45d5-8553-b0314144f6ba.vsidx" />
+    <None Include=".vs\AbsoluteUnit\FileContentIndex\513dfcb7-3ea0-439b-ad3a-f88efcdebdca.vsidx" />
+    <None Include=".vs\AbsoluteUnit\FileContentIndex\849dd1e3-e932-480b-98f5-e5acf44b28d6.vsidx" />
+    <None Include=".vs\AbsoluteUnit\FileContentIndex\c7c69154-d795-47a1-a38f-b377123b8950.vsidx" />
+    <None Include=".vs\AbsoluteUnit\FileContentIndex\e67a0da0-ec15-4909-a5be-16e103fab469.vsidx" />
+    <None Include=".vs\AbsoluteUnit\v17\.futdcache.v2" />
+    <None Include=".vs\AbsoluteUnit\v17\.suo" />
+    <None Include=".vs\AbsoluteUnit\v17\.wsuo" />
+    <None Include=".vs\AbsoluteUnit\v17\DocumentLayout.json" />
+    <None Include=".vs\AbsoluteUnit\v17\TestStore\0\006.testlog" />
+    <None Include=".vs\AbsoluteUnit\v17\TestStore\0\testlog.manifest" />
+    <None Include=".vs\ProjectEvaluation\absoluteunit.metadata.v7.bin" />
+    <None Include=".vs\ProjectEvaluation\absoluteunit.projects.v7.bin" />
+    <None Include=".vs\ProjectSettings.json" />
+    <None Include=".vs\slnx.sqlite" />
+    <None Include=".vs\VSWorkspaceState.json" />
+    <None Include="AbsoluteUnit.code-workspace" />
+    <None Include="AbsoluteUnit.Program\AbsoluteUnit.Program.csproj" />
+    <None Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.Program.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.Program.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.Program.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.Program.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="AbsoluteUnit.Tests\AbsoluteUnit.Tests.csproj" />
+    <None Include="AbsoluteUnit.Tests\bin\Debug\net8.0\CoverletSourceRootsMapping_AbsoluteUnit.Tests" />
+    <None Include="AbsoluteUnit.Tests\bin\Release\net8.0\CoverletSourceRootsMapping_AbsoluteUnit.Tests" />
+    <None Include="AbsoluteUnit.Tests\obj\AbsoluteUnit.Tests.csproj.nuget.dgspec.json" />
+    <None Include="AbsoluteUnit.Tests\obj\AbsoluteUnit.Tests.csproj.nuget.g.props" />
+    <None Include="AbsoluteUnit.Tests\obj\AbsoluteUnit.Tests.csproj.nuget.g.targets" />
+    <None Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.assets.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.csproj.AssemblyReference.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="AbsoluteUnit.Tests\obj\project.assets.json" />
+    <None Include="AbsoluteUnit.Tests\obj\project.nuget.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.AssemblyInfoInputs.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.assets.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.csproj.AssemblyReference.cache" />
+    <None Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.GeneratedMSBuildEditorConfig.editorconfig" />
+    <None Include="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbsoluteUnit.Program\CommandParser.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.Program.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Debug\net8.0\AbsoluteUnit.Program.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Release\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.Program.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Program\obj\Release\net8.0\AbsoluteUnit.Program.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Program\Program.cs" />
+    <Compile Include="AbsoluteUnit.Program\UnitParser.cs" />
+    <Compile Include="AbsoluteUnit.Tests\CommandParserTests.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Debug\net8.0\AbsoluteUnit.Tests.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Release\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.AssemblyInfo.cs" />
+    <Compile Include="AbsoluteUnit.Tests\obj\Release\net8.0\AbsoluteUnit.Tests.GlobalUsings.g.cs" />
+    <Compile Include="AbsoluteUnit.Tests\UnitParserTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".git\objects\info\" />
+    <Folder Include=".git\refs\tags\" />
+    <Folder Include="AbsoluteUnit.Program\bin\Debug\net8.0\" />
+    <Folder Include="AbsoluteUnit.Program\bin\Release\net8.0\" />
+    <Folder Include="AbsoluteUnit.Program\obj\Debug\net8.0\refint\" />
+    <Folder Include="AbsoluteUnit.Program\obj\Debug\net8.0\ref\" />
+    <Folder Include="AbsoluteUnit.Program\obj\Release\net8.0\refint\" />
+    <Folder Include="AbsoluteUnit.Program\obj\Release\net8.0\ref\" />
+    <Folder Include="AbsoluteUnit.Tests\obj\Debug\net8.0\refint\" />
+    <Folder Include="AbsoluteUnit.Tests\obj\Debug\net8.0\ref\" />
+    <Folder Include="AbsoluteUnit.Tests\obj\Release\net8.0\refint\" />
+    <Folder Include="AbsoluteUnit.Tests\obj\Release\net8.0\ref\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T075917\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T075917\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080016\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080016\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080112\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080112\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080134\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080134\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080341\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080341\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080359\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T080359\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081120\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081120\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081153\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081153\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081242\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081242\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081308\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081308\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081815\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T081815\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T082413\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T082413\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T082948\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T082948\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T083813\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T083813\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084146\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084146\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084432\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084432\Out\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084508\In\ARTHR\" />
+    <Folder Include="TestResults\Deploy_Ben 20240502T084508\Out\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
 </Project>
