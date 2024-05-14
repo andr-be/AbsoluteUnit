@@ -106,6 +106,35 @@
         }
 
         [TestMethod]
+        public void MeasurementParser_IndianCommaSeparator_SuccessfullyParses()
+        {
+            // Arrange
+            var indianCommaSeparatedMeasurement = "12,34,56,789 ms";
+            double longNumber = 123456789;
+            UnitGroup microSecond = new UnitGroupBuilder()
+                .WithSymbol("ms")
+                .Build();
+
+            // Act
+            MeasurementParser measurement = new(indianCommaSeparatedMeasurement);
+
+            // Assert
+            Assert.AreEqual(measurement.Quantity, longNumber);
+            Assert.AreEqual(measurement.Units.Groups.First(), microSecond);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParseError))]
+        public void MeasurementParser_EuropeanCommaSeparator_ThrowsParseError()
+        {
+            // Arrange
+            var europeanCommaSeparatedMeasurement = "1.234.567,89 l";
+
+            // Act
+            MeasurementParser _ = new(europeanCommaSeparatedMeasurement);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ParseError))]
         public void MeasurementParser_NoQuantityWithExponent_ThrowsParseError()
         {
