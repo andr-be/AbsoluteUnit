@@ -20,91 +20,119 @@ namespace AbsoluteUnit
             Engineering,
         }
 
-        public Command CommandType { get; set; }
-        public string[] CommandArguments { get; set; }
-        public List<Flag> Flags { get; set; }
-        public Dictionary<Flag, int> FlagArguments = [];
+        public Command CommandType { get; }
+        public List<string> CommandArguments { get; }
+        public Dictionary<Flag, int> Flags { get; } = [];
 
         private int ExtraArguments = 0;
 
         public CommandParser(string[] args)
         {
-            CommandType = ParseCommand(args[0]);
+            CommandType = ParseCommand(args.First());
 
-            var flagsAndArguments = args.Skip(1).ToArray();
-            var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
+            Flags = GetFlags(args.Skip(1).ToArray());
 
-            Flags = GetFlagsAndFlagArgs(flagsAndArguments);
-
-            // this is a hacky way of doing things that requires all flag arguments come after command arguments...
-            if (CommandArgumentCount() + ExtraArguments == arguments.Length)
-            {
-                CommandArguments = arguments.Take(arguments.Length - ExtraArguments).ToArray();
-            }
-            else throw new ArgumentException($"Invalid argument count: {arguments.Length}");
+            CommandArguments = GetCommandArguments(args.Skip(1).ToArray());
         }
 
-        private static Command ParseCommand(string command) => command.ToLowerInvariant() switch
+        /// <summary>
+        /// returns the enum representation of a command, given the correct string
+        /// </summary>
+        /// <param name="commandString"></param>
+        /// <returns>Command enum</returns>
+        /// <exception cref="CommandNotRecognised"></exception>
+        private static Command ParseCommand(string commandString) => commandString.ToLowerInvariant() switch
         {
             "--convert" or "-c" => Command.Convert,
             "--express" or "-e" => Command.Express,
             "--simplify" or "-s" => Command.Simplify,
-            _ => throw new CommandNotRecognised($"Invalid command: {command}")
+            _ => throw new CommandNotRecognised($"Invalid command: {commandString}")
         };
 
-        private int CommandArgumentCount() => CommandType switch
-        {
-            Command.Convert => 2,
-            Command.Express or Command.Simplify => 1,
-            _ => 0
-        };
-
-        private List<Flag> GetFlagsAndFlagArgs(string[] args)
-        {
-            var flags = new List<Flag>();
-
-            // get all of the various flags
-            for (int i = 0; i < args.Length; i++)
-            {
-                string arg;
-                if (args[i][0] == '-') arg = args[i];
-                else continue;
-
-                Flag newFlag = ParseFlag(arg);
-                if (newFlag.AddsArguments())
-                {
-                    ParseFlagArgument(args[i+1], newFlag);
-                }
-
-                flags.Add(newFlag);
-            }
-
-            return flags;
-        }
-
-        private void ParseFlagArgument(string arg, Flag newFlag)
-        {
-            try
-            {
-                var flagArgument = int.Parse(arg);
-                FlagArguments.Add(newFlag, flagArgument);
-                ExtraArguments++;
-            }
-            catch
-            {
-                throw new ArgumentException($"Invalid flag argument provided: {arg}");
-            }
-        }
-
-        private static Flag ParseFlag(string flag) => flag.ToLowerInvariant() switch
+        /// <summary>
+        /// returns the enum representation of a flag given the correct string
+        /// </summary>
+        /// <param name="flagString">the string to be parsed</param>
+        /// <returns>Flag enum</returns>
+        /// <exception cref="FlagNotRecognised"></exception>
+        private static Flag ParseFlag(string flagString) => flagString.ToLowerInvariant() switch
         {
             "-ver" or "--verbose" => Flag.VerboseCalculation,
             "-dec" or "--decimal" => Flag.DecimalPlaces,
             "-sig" or "--significant" => Flag.SignificantFigures,
             "-std" or "--standard" => Flag.StandardForm,
             "-eng" or "--engineering" => Flag.Engineering,
-            _ => throw new FlagNotRecognised($"Invalid flag: {flag}")
+            _ => throw new FlagNotRecognised($"Invalid flag: {flagString}")
         };
+
+        /// <summary>
+        /// contains the number of valid arguments for each command type
+        /// </summary>
+        /// <returns>the number of valid arguments</returns>
+        private int CommandArgumentCount() => CommandType switch
+        {
+            Command.Convert => 2,
+            Command.Express => 1,
+            Command.Simplify => 1,
+            _ => 0
+        };
+
+        /// <summary>
+        /// iterates through the different arguments and creates a dictionary of flags and arguments
+        /// </summary>
+        /// <param name="args">user-provided CLI arguments</param>
+        /// <returns>(Flag, int) dictionary of flags and arguments</returns>
+        private Dictionary<Flag, int> GetFlags(string[] args)
+        {
+            var flags = new Dictionary<Flag, int>();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i][0] != '-') 
+                    continue;
+
+                Flag newFlag = ParseFlag(args[i]);
+                if (!newFlag.AddsArguments())
+                {
+                    flags.Add(newFlag, 0);
+                    continue;
+                }
+
+                var arg = GetFlagArgument(args[i+1]);
+                flags.Add(newFlag, arg);
+                ExtraArguments++;
+            }
+            return flags;
+        }
+
+        /// <summary>
+        /// a hacky way of getting all the command arguments by assuming they're listed first
+        /// </summary>
+        /// <param name="flagsAndArguments">all of the command line arguments except the first</param>
+        /// <returns>a list of only the command arguments</returns>
+        /// <exception cref="ArgumentException">invalid argument count error</exception>
+        private List<string> GetCommandArguments(string[] flagsAndArguments)
+        {
+            var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
+
+            if (CommandArgumentCount() + ExtraArguments == arguments.Length)
+                return arguments.Take(arguments.Length - ExtraArguments).ToList();
+            else
+                throw new ArgumentException($"Invalid argument count: {arguments.Length}");
+        }
+
+        private static int GetFlagArgument(string flagArgString)
+        {
+            try
+            {
+                return int.Parse(flagArgString);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException("invalid flag argument: {flagArgString}", innerException: e);
+            }
+        }
+
+
     }
 
     public class CommandNotRecognised : Exception
@@ -128,9 +156,15 @@ namespace EnumExtension
 
     public static class Extensions
     {
+        /// <summary>
+        /// tells you if a specific flag requires additional arguments
+        /// </summary>
+        /// <param name="flag">the flag to check</param>
+        /// <returns>true if flag needs extra arguments, false if not</returns>
         public static bool AddsArguments(this CommandParser.Flag flag) => flag switch
         {
-            CommandParser.Flag.SignificantFigures or CommandParser.Flag.DecimalPlaces => true,
+            CommandParser.Flag.DecimalPlaces => true,
+            CommandParser.Flag.SignificantFigures => true,
             _ => false,
         };
     }

@@ -1,30 +1,102 @@
+using static AbsoluteUnit.CommandParser;
+
 namespace AbsoluteUnit.Tests
 {
     [TestClass]
     public class CommandParserTests
     {
         [TestMethod]
-        public void ParseCommand_ValidCommand_ReturnsCorrectCommandType()
+        public void ParseCommand_ValidConvertCommand_ReturnsCorrectCommandType()
         {
+            // Arrange
             string[] args = ["--convert", "123.4e5 m", "ft"];
+            var correctComand = Command.Convert;
 
+            // Act
             CommandParser commandParser = new(args);
 
-            Assert.AreEqual(CommandParser.Command.Convert, commandParser.CommandType);
+            // Assert
+            Assert.AreEqual(correctComand, commandParser.CommandType);
+        }
+
+        [TestMethod]
+        public void ParseCommand_ValidExpressCommand_ReturnsCorrectCommandType()
+        {
+            // Arrange
+            string[] args = ["--express", "123.4e5 ft"];
+            var correctComand = Command.Express;
+
+            // Act
+            CommandParser commandParser = new(args);
+
+            // Assert
+            Assert.AreEqual(correctComand, commandParser.CommandType);
+        }
+
+        [TestMethod]
+        public void ParseCommand_ValidSimplifyCommand_ReturnsCorrectCommandType()
+        {
+            // Arrange
+            string[] args = ["--simplify", "123.4e5 ft"];
+            var correctComand = Command.Simplify;
+
+            // Act
+            CommandParser commandParser = new(args);
+
+            // Assert
+            Assert.AreEqual(correctComand, commandParser.CommandType);
         }
 
         [TestMethod]
         public void ParseCommand_ValidCommand_FlagArgumentsReturnValidFlags()
         {
-            string[] args = ["--Convert", "1m", "ft", "-dec", "2", "--verbose"];
-            List<CommandParser.Flag> flags = [CommandParser.Flag.DecimalPlaces, CommandParser.Flag.VerboseCalculation];
+            // Arrange
+            string[] args = 
+            [
+                "--Convert", "1m", "ft", 
+                "-dec", "2", 
+                "--verbose"
+            ];
+            Dictionary<Flag, int> flags = new()
+            {
+                { Flag.DecimalPlaces, 2 },
+                { Flag.VerboseCalculation, 0 }
+            };
 
+            // Act
             CommandParser commandParser = new(args);
 
-            for(int i = 0; i < flags.Count; i++)
+            // Assert
+            Assert.IsTrue(DictionaryEqual(commandParser.Flags, flags));
+        }
+
+        [TestMethod]
+        public void ParseCommand_AllFlags_AllowsAllFlags()
+        {
+            // Arrange
+            string[] args = 
+            [
+                "--convert", "1m", "ft", 
+                "-dec", "2", 
+                "-sig", "3", 
+                "--verbose", 
+                "--standard", 
+                "--engineering"
+            ];
+            Dictionary<Flag, int> flags = new()
             {
-                Assert.AreEqual(commandParser.Flags[i], flags[i]);
-            }
+                {Flag.DecimalPlaces, 2},
+                {Flag.SignificantFigures, 3},
+                {Flag.VerboseCalculation, 0},
+                {Flag.StandardForm, 0 },
+                {Flag.Engineering, 0},
+            };
+
+            // Act
+            CommandParser parser = new(args);
+
+            // Assert
+            Assert.IsTrue(DictionaryEqual(parser.Flags, flags));
         }
 
         [TestMethod]
@@ -62,5 +134,9 @@ namespace AbsoluteUnit.Tests
 
             CommandParser _ = new(args);
         }
+
+        private static bool DictionaryEqual<T>(Dictionary<T, int> d1, Dictionary<T, int> d2) => 
+            d1.Count == d2.Count && 
+            !d1.Except(d2).Any();
     }
 }
