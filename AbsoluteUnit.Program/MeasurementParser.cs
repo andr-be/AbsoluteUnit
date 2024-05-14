@@ -3,17 +3,17 @@
 namespace AbsoluteUnit
 {
 
-    public partial class MeasurementGroup
+    public partial class MeasurementParser
     {
         public double Quantity { get; }
         public int Exponent { get; }
-        public UnitGroups Units { get; }
+        public UnitGroupParser Units { get; }
 
         private const string MeasurementRegexString = @"^(-?\d+[,\d]*\.?\d*)+(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)+$";
         [GeneratedRegex(MeasurementRegexString)]
         private static partial Regex Regex();
 
-        public MeasurementGroup(string measurement)
+        public MeasurementParser(string measurement)
         {
             var match = Regex().Match(measurement);
             if (!match.Success)
@@ -23,7 +23,7 @@ namespace AbsoluteUnit
             {
                 Quantity = ParseQuantity(match.Groups[1].Value);
                 Exponent = ParseExponent(match.Groups[2].Value);
-                Units = new UnitGroups(match.Groups[3].Value);
+                Units = new UnitGroupParser(match.Groups[3].Value);
             }
             catch (Exception e)
             {
@@ -31,12 +31,18 @@ namespace AbsoluteUnit
             }
         }
 
-        private static int ParseExponent(string exponentString) => int.Parse(exponentString);
+        private static int ParseExponent(string exponentString)
+        {
+            if (int.TryParse(exponentString, null, out var exponent))
+                return exponent;
+            else
+                return 0;
+        }
 
         private static double ParseQuantity(string quantityString) => double.Parse(quantityString);
     }
 
-    public partial class UnitGroups
+    public partial class UnitGroupParser
     {
         private const string UnitGroupRegexString = @"([ ./])?([A-Za-zµ°Ω]+)+(?:(?:\^)?|(?:\*\*))?((?:\+|-)?\d+)?";
         [GeneratedRegex(UnitGroupRegexString)]
@@ -44,7 +50,7 @@ namespace AbsoluteUnit
 
         public List<UnitGroup> Groups { get; set; } = [];
 
-        public UnitGroups(string unitString)
+        public UnitGroupParser(string unitString)
         {
             if (string.IsNullOrEmpty(unitString))
                 throw new Exception("no unitString provided");
@@ -61,20 +67,25 @@ namespace AbsoluteUnit
 
             foreach (Match match in matches.Cast<Match>())
             {
-                UnitGroup.DivMulti divMulti = match.Groups[1].Success
-                    ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
-                    : UnitGroup.DivMulti.Multiply;
-
-                int exponent = match.Groups[3].Success
-                    ? int.Parse(match.Groups[3].Value)
-                    : 1;
-
-                string unitSymbol = match.Groups[2].Value;
-
-                UnitGroup newGroup = new(divMulti, unitSymbol, exponent);
-                groups.Add(newGroup);
+                var unitGroup = ParseGroupMatch(match);
+                groups.Add(unitGroup);
             }
             return groups;
+        }
+
+        private static UnitGroup ParseGroupMatch(Match match)
+        {
+            UnitGroup.DivMulti divMulti = match.Groups[1].Success
+                ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
+                : UnitGroup.DivMulti.Multiply;
+
+            int exponent = match.Groups[3].Success
+                ? int.Parse(match.Groups[3].Value)
+                : 1;
+
+            string unitSymbol = match.Groups[2].Value;
+
+            return new(divMulti, unitSymbol, exponent);
         }
     }
 

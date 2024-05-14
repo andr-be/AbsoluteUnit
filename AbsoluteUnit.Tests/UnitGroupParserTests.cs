@@ -1,10 +1,10 @@
 namespace AbsoluteUnit.Tests
 {
     [TestClass]
-    public class UnitGroupTests
+    public class UnitGroupParserTests
     {
         [TestMethod]
-        public void MeasurementGroup_GivenGoodInput_SuccessfullyParses()
+        public void MeasurementGroup_GoodInput_SuccessfullyParsesCompoundUnit_Case1()
         {
             // Arrange
             string goodInput = "123.4e5 kg.m/s^2";
@@ -30,11 +30,40 @@ namespace AbsoluteUnit.Tests
             List<UnitGroup> unitGroups = [ unitKg, unitM, unitS2 ];
 
             // Act
-            MeasurementGroup testGroup = new(goodInput);
+            MeasurementParser testGroup = new(goodInput);
 
             // Assert
             Assert.AreEqual(testGroup.Quantity, 123.4);
             Assert.AreEqual(testGroup.Exponent, 5);
+            Assert.IsTrue(testGroup.Units.Groups.SequenceEqual(unitGroups));
+        }
+
+        [TestMethod]
+        public void MeasurementGroup_GoodInput_SuccessfullyParsesCompoundUnit_Case2()
+        {
+            // Arrange
+            string goodInput = "69 m/s";
+
+            UnitGroup unitM = new UnitGroupBuilder()
+                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithSymbol("m")
+                .WithExponent(1)
+                .Build();
+
+            UnitGroup unitS = new UnitGroupBuilder()
+                .WithDivMulti(UnitGroup.DivMulti.Divide)
+                .WithSymbol("s")
+                .WithExponent(1)
+                .Build();
+
+            List<UnitGroup> unitGroups = [unitM, unitS];
+
+            // Act
+            MeasurementParser testGroup = new(goodInput);
+
+            // Assert
+            Assert.AreEqual(testGroup.Quantity, 69);
+            Assert.AreEqual(testGroup.Exponent, 0);
             Assert.IsTrue(testGroup.Units.Groups.SequenceEqual(unitGroups));
         }
     }
