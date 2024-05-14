@@ -124,14 +124,21 @@
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
         public void MeasurementParser_EuropeanCommaSeparator_ThrowsParseError()
         {
             // Arrange
             var europeanCommaSeparatedMeasurement = "1.234.567,89 l";
+            double euroNumber = 1234567.89;
+            UnitGroup litre = new UnitGroupBuilder()
+                .WithSymbol("l")
+                .Build();
 
             // Act
-            MeasurementParser _ = new(europeanCommaSeparatedMeasurement);
+            MeasurementParser measurement = new(europeanCommaSeparatedMeasurement);
+
+            // Assert
+            Assert.AreEqual(measurement.Quantity, euroNumber);
+            Assert.AreEqual(measurement.Units.Groups.First(), litre);
         }
 
         [TestMethod]

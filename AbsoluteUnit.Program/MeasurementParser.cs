@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit
 {
@@ -9,8 +10,8 @@ namespace AbsoluteUnit
         public int Exponent { get; }
         public UnitGroupParser Units { get; }
 
-        private const string MeasurementRegexString = 
-            @"^(-?\d+[,\d]*\.?\d*)?(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
+        private const string MeasurementRegexString =
+            @"^(-?\d+[.,\d]*(?:\.|,)?\d*)?(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
 
         [GeneratedRegex(MeasurementRegexString)]
         private static partial Regex Regex();
@@ -53,10 +54,21 @@ namespace AbsoluteUnit
             false => 0
         };
 
+        private static string ToEuroString(string s) => s.Replace(',', '#').Replace('.', ',').Replace('#', '.');
+
         private static double ParseQuantity(string quantityString)
         {
+            quantityString = quantityString.Trim();
+
             if (double.TryParse(quantityString, null, out var quantity))
                 return quantity;
+
+            // ================== HERESY CONTAINED WITHIN ==================
+            var euroString = ToEuroString(quantityString);
+            if (double.TryParse(euroString, null, out var euroQuantity))
+                return euroQuantity;
+            // ==================  DON'T TRY THIS A HOME  ================== 
+
             else
                 throw new ParseError($"unable to parse quantity: {quantityString}");
         }
@@ -95,6 +107,13 @@ namespace AbsoluteUnit
 
         private static UnitGroup ParseGroupMatch(Match match)
         {
+            string unitSymbol;
+
+            if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
+                unitSymbol = match.Groups[2].Value;
+            else
+                throw new ParseError("no unit symbol provided");
+
             UnitGroup.DivMulti divMulti = match.Groups[1].Success
                 ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
                 : UnitGroup.DivMulti.Multiply;
@@ -102,8 +121,6 @@ namespace AbsoluteUnit
             int exponent = match.Groups[3].Success
                 ? int.Parse(match.Groups[3].Value)
                 : 1;
-
-            string unitSymbol = match.Groups[2].Value;
 
             return new(divMulti, unitSymbol, exponent);
         }
