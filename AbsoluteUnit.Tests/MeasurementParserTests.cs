@@ -142,13 +142,38 @@ namespace AbsoluteUnit.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void MeasurementParser_BlankString_ThrowsParseError()
+        public void MeasurementParser_BlankString_ThrowsArgumentException()
         {
             // Arrange
             string blankString = "";
 
             // Act
             MeasurementParser _ = new(blankString); 
+        }
+
+        [TestMethod]
+        public void MeasurementParser_RandomUnicode_ThrowsParseError()
+        {
+            List<string> randomUnicode = new()
+            {
+                "??.???? ????/????^??",
+                "?????????????????“?????????????",
+                "??????????????????????????????",
+                "??????????????????????????????",
+                "( ?° ?? ?°)",
+            };
+
+            foreach (var s in randomUnicode)
+            {
+                try
+                {
+                    MeasurementParser test = new(s);
+                }
+                catch (Exception e)
+                {
+                    Assert.IsInstanceOfType(e, typeof(ParseError));
+                }
+            }
         }
     }
 
