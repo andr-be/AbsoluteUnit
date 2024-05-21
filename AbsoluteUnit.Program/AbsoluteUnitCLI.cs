@@ -1,6 +1,6 @@
 ﻿namespace AbsoluteUnit
 {
-    internal class AbsoluteUnit
+    internal class AbsoluteUnitCLI
     {
         static void Main(string[] args)
         {
@@ -52,7 +52,7 @@
             Console.WriteLine($"units:");
             foreach (var unitGroup in parser.Units.Groups)
             {
-                Console.WriteLine($"  div: {unitGroup._DivMulti}");
+                Console.WriteLine($"  div: {unitGroup.Operation}");
                 Console.WriteLine($"  sym: {unitGroup.UnitSymbol}");
                 Console.WriteLine($"  exp: {unitGroup.Exponent}\n");
             }

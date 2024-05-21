@@ -48,11 +48,8 @@ namespace AbsoluteUnit
             }
         }
 
-        private static int ParseExponent(string exponentString) => int.TryParse(exponentString, null, out var exponent) switch
-        {
-            true => exponent,
-            false => 0
-        };
+        private static int ParseExponent(string exponentString) => 
+            int.TryParse(exponentString, null, out var exponent) ? exponent : 0;
 
         private static string ToEuroString(string s) => s.Replace(',', '#').Replace('.', ',').Replace('#', '.');
 
@@ -114,9 +111,9 @@ namespace AbsoluteUnit
             else
                 throw new ParseError("no unit symbol provided");
 
-            UnitGroup.DivMulti divMulti = match.Groups[1].Success
-                ? UnitGroup.GetDivMulti(match.Groups[1].Value.FirstOrDefault())
-                : UnitGroup.DivMulti.Multiply;
+            UnitGroup.UnitOperation divMulti = match.Groups[1].Success
+                ? UnitGroup.GetUnitOperation(match.Groups[1].Value.FirstOrDefault())
+                : UnitGroup.UnitOperation.Multiply;
 
             int exponent = match.Groups[3].Success
                 ? int.Parse(match.Groups[3].Value)
@@ -134,18 +131,16 @@ namespace AbsoluteUnit
     }
 
 
-    public record UnitGroup(UnitGroup.DivMulti _DivMulti, string UnitSymbol, int Exponent) 
+    public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent) 
     {
-        public static DivMulti GetDivMulti(char c)
+        public static UnitOperation GetUnitOperation(char c) => c switch
         {
-            return c switch
-            {
-                '/' => DivMulti.Divide,
-                '.' => DivMulti.Multiply,
-                _ => throw new ParseError("invalid DivMulti symbol")
-            };
-        }
-        public enum DivMulti
+            '/' => UnitOperation.Divide,
+            '.' => UnitOperation.Multiply,
+            _ => throw new ParseError("invalid DivMulti symbol")
+        };
+
+        public enum UnitOperation
         {
             Divide,
             Multiply,

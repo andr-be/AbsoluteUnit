@@ -9,7 +9,7 @@
             // Arrange
             var simpleMeasurement = "1m";
             UnitGroup unitM = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("m")
                 .WithExponent(1)
                 .Build();
@@ -28,19 +28,19 @@
             string goodInput = "123.4e5 kg.m/s^2";
 
             UnitGroup unitKg = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("kg")
                 .WithExponent(1)
                 .Build();
 
             UnitGroup unitM = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("m")
                 .WithExponent(1)
                 .Build();
         
             UnitGroup unitS2 = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Divide)
+                .WithDivMulti(UnitGroup.UnitOperation.Divide)
                 .WithSymbol("s")
                 .WithExponent(2)
                 .Build();
@@ -63,13 +63,13 @@
             string goodInput = "69 m/s";
 
             UnitGroup unitM = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("m")
                 .WithExponent(1)
                 .Build();
 
             UnitGroup unitS = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Divide)
+                .WithDivMulti(UnitGroup.UnitOperation.Divide)
                 .WithSymbol("s")
                 .WithExponent(1)
                 .Build();
@@ -92,7 +92,7 @@
             var commaSeparatedMeasurement = "1,000,000 km";
             double oneMillion = 1000000;
             UnitGroup kilometer = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.DivMulti.Multiply)
+                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("km")
                 .WithExponent(1)
                 .Build();
@@ -235,11 +235,11 @@
 
     public class UnitGroupBuilder
     {
-        private UnitGroup.DivMulti _divMulti = UnitGroup.DivMulti.Multiply;
+        private UnitGroup.UnitOperation _divMulti = UnitGroup.UnitOperation.Multiply;
         private string _symbol = "";
         private int _exponent = 1;
 
-        public UnitGroupBuilder WithDivMulti(UnitGroup.DivMulti divMulti)
+        public UnitGroupBuilder WithDivMulti(UnitGroup.UnitOperation divMulti)
         {
             _divMulti = divMulti;
             return this;
