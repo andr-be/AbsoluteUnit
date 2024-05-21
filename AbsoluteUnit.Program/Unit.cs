@@ -5,6 +5,61 @@
         public AbsUnit Base;
         public AbsPrefix? Prefix;
         public int Exponent;
+
+        public Unit(UnitGroup group)
+        {
+            Base = AbsUnit.ParseUnit(group.UnitSymbol) as AbsUnit ?? null;
+
+            var remaining = group.UnitSymbol.Replace(Base.ToString() ?? null, "");
+
+            Prefix = AbsPrefix.ParsePrefix(remaining) as AbsPrefix ?? null;
+
+            Exponent = group.Exponent;
+        }
+    }
+
+    public class UnitFactory(List<UnitGroup> unitGroups)
+    {
+        public List<UnitGroup> UnitGroups = unitGroups;
+
+        public List<Unit> BuildUnits()
+        {
+            PropagateExponents();
+            ValidateSymbols();
+            EvaluatePrefixes();
+
+            List<Unit> units = [];
+            foreach (var group in UnitGroups)
+                units.Add(new Unit(group));
+
+            return units;
+        }
+        private void PropagateExponents()
+        {
+            GroupLikeSymbols();
+            UnitGroups = UnitGroups.Where(ug => ug.Operation == UnitGroup.UnitOperation.Divide).Count() switch
+            {
+                0 => UnitGroups,
+                1 => SimplePropagation(UnitGroups),
+                _ => ComplexPropagation(UnitGroups),
+            };
+        }
+
+        private void GroupLikeSymbols() { }
+        private void ValidateSymbols() { }
+        private void EvaluatePrefixes() { }
+
+        private List<UnitGroup> SimplePropagation(List<UnitGroup> input)
+        {
+
+            return input;
+        }
+
+        private List<UnitGroup> ComplexPropagation(List<UnitGroup> input)
+        {
+
+            return input;
+        }
     }
 
     public abstract class AbsUnit
@@ -13,12 +68,51 @@
         public abstract double FromBase(double value);
         public double Convert(double value, AbsUnit target) => target.FromBase(ToBase(value));
         protected abstract Dictionary<string, object> UnitStrings { get; }
+        public static object ParseUnit(string unitString)
+        {
+            var derivedTypes = typeof(AbsUnit).Assembly.GetTypes()
+                .Where(type => type.IsSubclassOf(typeof(AbsUnit)));
+
+            foreach (var derivedType in derivedTypes)
+            {
+                var unitStringsProperty = derivedType
+                    .GetProperty("UnitStrings", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                if (unitStringsProperty != null)
+                {
+                    if (unitStringsProperty.GetValue(Activator.CreateInstance(derivedType)) is Dictionary<string, object> unitStrings && 
+                        unitStrings.TryGetValue(unitString, out var enumValue))
+                        return enumValue;
+                }
+            }
+            return null;
+        }
     }
 
     public abstract class AbsPrefix
     {
         public abstract double Factor { get; }
         public double Convert(double value, AbsPrefix target) => value * Factor / target.Factor;
+
+        public static object ParsePrefix(string prefixString)
+        {
+            var derivedTypes = typeof(AbsPrefix).Assembly.GetTypes()
+                .Where(type => type.IsSubclassOf(typeof(AbsPrefix)));
+
+            foreach (var derivedType in derivedTypes)
+            {
+                var prefixStringsProperty = derivedType
+                    .GetProperty("PrefixStrings", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                if (prefixStringsProperty != null)
+                {
+                    if (prefixStringsProperty.GetValue(Activator.CreateInstance(derivedType)) is Dictionary<string, object> prefixStrings &&
+                        prefixStrings.TryGetValue(prefixString, out var enumValue))
+                        return enumValue;
+                }
+            }
+            return null;
+        }
     }
 
     public class SI_Base(SI_Base.Unit baseUnit) : AbsUnit
@@ -64,6 +158,8 @@
 
     public class SI_Derived(SI_Derived.Unit baseUnit) : AbsUnit
     {
+        protected override Dictionary<string, object> UnitStrings => throw new NotImplementedException();
+
         public enum Unit
         {
             Hertz,
@@ -102,6 +198,8 @@
 
     public class USCustomary(USCustomary.Unit baseUnit) : AbsUnit
     {
+        protected override Dictionary<string, object> UnitStrings => throw new NotImplementedException();
+
         public enum Unit
         {
             // Length
@@ -135,6 +233,8 @@
 
     public class MiscUnit : AbsUnit
     {
+        protected override Dictionary<string, object> UnitStrings => throw new NotImplementedException();
+
         public override double FromBase(double value)
         {
             throw new NotImplementedException();
