@@ -3,7 +3,7 @@
 namespace AbsoluteUnit.Tests
 {
     [TestClass]
-    internal class UnitParserTests
+    public class UnitParserTests
     {
         [TestMethod]
         public void UnitConstructor_GivenMetersSquared_ReturnsSIBaseUnit()

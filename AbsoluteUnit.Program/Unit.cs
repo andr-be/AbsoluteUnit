@@ -2,20 +2,27 @@
 {
     public class Unit
     {
-        public AbsUnit Base;
+        public IUnit Base;
         public AbsPrefix? Prefix;
         public int Exponent;
 
         public Unit(UnitGroup group)
         {
-            Base = AbsUnit.ParseUnit(group.UnitSymbol) as AbsUnit ?? null;
+            Base = AbsUnit.ParseUnit(group.UnitSymbol);
 
             var remaining = group.UnitSymbol.Replace(Base.ToString() ?? null, "");
 
-            Prefix = AbsPrefix.ParsePrefix(remaining) as AbsPrefix ?? null;
+            Prefix = AbsPrefix.ParsePrefix(remaining) as AbsPrefix;
 
             Exponent = group.Exponent;
         }
+    }
+
+    public interface IUnit
+    {
+        string Symbol { get; }
+        double ToBase(double value);
+        double FromBase(double value);
     }
 
     public class UnitFactory(List<UnitGroup> unitGroups)
@@ -127,6 +134,8 @@
             Mole,
             Candela
         }
+
+        public SI_Base() : this(Unit.Meter) { }
 
         public override double ToBase(double value) => value; // SI Base units are already in base form
 
