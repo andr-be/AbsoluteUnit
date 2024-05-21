@@ -12,6 +12,7 @@
         public abstract double ToBase(double value);
         public abstract double FromBase(double value);
         public double Convert(double value, AbsUnit target) => target.FromBase(ToBase(value));
+        protected abstract Dictionary<string, object> UnitStrings { get; }
     }
 
     public abstract class AbsPrefix
@@ -37,14 +38,17 @@
 
         public override double FromBase(double value) => value; // SI Base units are already in base form
 
-        public Unit? FromString(string input) => UnitStrings[input];
+        public Unit? FromString(string input) => 
+            (UnitStrings.TryGetValue(input, out var unit) && unit is Unit unitValue)
+                ? unitValue
+                : null;
 
         public override string ToString() => UnitStrings
-            .Where(a => a.Value == baseUnit)
+            .Where(a => a.Value.Equals(baseUnit))
             .FirstOrDefault()
             .Key; 
 
-        private readonly Dictionary<string, Unit> UnitStrings = new()
+        private static readonly Dictionary<string, object> unitStrings = new()
         {
             { "m", Unit.Meter },
             { "g", Unit.Gram },
@@ -54,6 +58,8 @@
             { "mole", Unit.Mole },
             { "cd", Unit.Candela },
         };
+
+        protected override Dictionary<string, object> UnitStrings => unitStrings;
     }
 
     public class SI_Derived(SI_Derived.Unit baseUnit) : AbsUnit
@@ -175,11 +181,9 @@
 
         public Prefix? FromString(string input) => PrefixStrings.TryGetValue(input, out var prefix) ? prefix : null;
 
-        public override string ToString() => PrefixStrings
-            .FirstOrDefault(p => p.Value == prefix)
-            .Key;
+        public override string ToString() => PrefixStrings.FirstOrDefault(p => p.Value == prefix).Key;
 
-        private readonly Dictionary<string, Prefix> PrefixStrings = new()
+        private static readonly Dictionary<string, Prefix> PrefixStrings = new()
         {
             { "Q", Prefix.Quetta },
             { "R", Prefix.Ronna },
