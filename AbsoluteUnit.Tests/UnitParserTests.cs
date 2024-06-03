@@ -28,15 +28,12 @@ namespace AbsoluteUnit.Tests
         {
             // Arrange
             UnitGroup meters = new UnitGroupBuilder()
-                .WithDivMulti(UnitGroup.UnitOperation.Multiply)
                 .WithSymbol("m")
-                .WithExponent(1)
                 .Build();
 
             UnitGroup perSecond = new UnitGroupBuilder()
                 .WithDivMulti(UnitGroup.UnitOperation.Divide)
                 .WithSymbol("s")
-                .WithExponent(1)
                 .Build();
 
             List<UnitGroup> unitGroups = [meters, perSecond, perSecond];
@@ -50,6 +47,20 @@ namespace AbsoluteUnit.Tests
 
             // Assert
             Assert.AreEqual(resultExponent, -2);
+        }
+
+        [TestMethod]
+        public void UnitFactory_CorrectlyParsesVariousUSCustomaryUnits()
+        {
+            UnitGroup oneInch = new UnitGroupBuilder()
+                .WithSymbol("in")
+                .Build();
+
+            var result = new UnitFactory(oneInch)
+                .BuildUnits()
+                .First();
+
+            Assert.AreEqual<USCustomary.Units>((USCustomary.Units)result.Unit.Unit, USCustomary.Units.Inch);
         }
     }
 }

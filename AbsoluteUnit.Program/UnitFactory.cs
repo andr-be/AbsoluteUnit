@@ -2,15 +2,17 @@
 
 public interface IUnit
 {
+    object Unit { get; }
     string Symbol { get; }
     double ToBase(double value);
     double FromBase(double value);
 }
 
-public class AbsUnit(IUnit unit, int exponent)
+public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
 {
     public IUnit Unit { get; set; } = unit;
     public int Exponent { get; set; } = exponent;
+    public SIPrefix Prefix { get; set; } = prefix;
 }
 
 public class UnitFactory
@@ -53,17 +55,17 @@ public class UnitFactory
         };
     }
 
-    private List<UnitGroup> SimplePropagation(List<UnitGroup> input)
+    private static List<UnitGroup> SimplePropagation(List<UnitGroup> input)
     {
-        bool toDenominator = false;
+        bool reachedDivisionSign = false;
 
         return input
             .Select(current =>
             {
                 if (current.Operation == UnitGroup.UnitOperation.Divide)
-                    toDenominator = true;
+                    reachedDivisionSign = true;
 
-                return toDenominator 
+                return reachedDivisionSign 
                     ? current with { Exponent = current.Exponent * -1 } 
                     : current;
             })
@@ -126,19 +128,27 @@ public class UnitFactory
     {
         foreach (var stringDict in ValidSymbols)
         {
+            var prefix = TryGetPrefix(group.UnitSymbol[0]);
             stringDict.TryGetValue(group.UnitSymbol, out var unit);
             if (unit is not null)
-                return new AbsUnit((IUnit)unit, group.Exponent);
+                return new AbsUnit((IUnit)unit, group.Exponent, prefix);
         }
         throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
     }
+
+    private static SIPrefix TryGetPrefix(char firstChar)
+    {
+        SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var parsedPrefix);
+        return parsedPrefix;
+    }
 }
 
-public class SIBase(SIBase.Unit unit) : IUnit
-{
-    private Unit _unit { get; set; } = unit;
 
-    public enum Unit
+public class SIBase(SIBase.Units unit) : IUnit
+{
+    public object Unit { get; } = unit;
+
+    public enum Units
     {
         Meter,
         Gram,
@@ -151,24 +161,24 @@ public class SIBase(SIBase.Unit unit) : IUnit
 
     public static readonly Dictionary<string, object> ValidUnitStrings = new()
     {
-        { "m", new SIBase(Unit.Meter) },
-        { "g", new SIBase(Unit.Gram) },
-        { "s", new SIBase(Unit.Second) },
-        { "A", new SIBase(Unit.Ampere) },
-        { "K", new SIBase(Unit.Kelvin) },
-        { "mole", new SIBase(Unit.Mole) },
-        { "cd", new SIBase(Unit.Candela) },
+        { "m", new SIBase(Units.Meter) },
+        { "g", new SIBase(Units.Gram) },
+        { "s", new SIBase(Units.Second) },
+        { "A", new SIBase(Units.Ampere) },
+        { "K", new SIBase(Units.Kelvin) },
+        { "mole", new SIBase(Units.Mole) },
+        { "cd", new SIBase(Units.Candela) },
     };
 
-    public string Symbol => unit switch
+    public string Symbol => Unit switch
     {
-        Unit.Meter => "m",
-        Unit.Gram => "g",
-        Unit.Second => "s",
-        Unit.Ampere => "A",
-        Unit.Kelvin => "K",
-        Unit.Mole => "mole",
-        Unit.Candela => "cd",
+        Units.Meter => "m",
+        Units.Gram => "g",
+        Units.Second => "s",
+        Units.Ampere => "A",
+        Units.Kelvin => "K",
+        Units.Mole => "mole",
+        Units.Candela => "cd",
         _ => throw new NotImplementedException(),
     };
 
@@ -182,6 +192,8 @@ public class SIDerived : IUnit
 {
     public string Symbol => throw new NotImplementedException();
 
+    public object Unit => throw new NotImplementedException();
+
     public double FromBase(double value)
     {
         throw new NotImplementedException();
@@ -192,7 +204,7 @@ public class SIDerived : IUnit
         throw new NotImplementedException();
     }
 
-    public enum Unit
+    public enum Units
     {
         Hertz,
         Radian,
@@ -221,21 +233,64 @@ public class SIDerived : IUnit
     public static readonly Dictionary<string, object> ValidUnitStrings = [];
 }
 
-public class USCustomary : IUnit
+
+public class USCustomary(USCustomary.Units unit) : IUnit
 {
-    public string Symbol => throw new NotImplementedException();
+    public object Unit { get; } = unit;
 
-    public double FromBase(double value)
+    Dictionary<Units, double> Conversion = new()
     {
-        throw new NotImplementedException();
-    }
+        { Units.Mil, 25.4e-6 },
+        { Units.Inch, 25.4e-3 },
+        { Units.Feet, 0.3048 },
+        { Units.Yards, 0.9144 },
+        { Units.Miles, 1.609344e3 },
 
-    public double ToBase(double value)
+        { Units.Ounce, 28.349523125 },
+        { Units.Pound, 453.59237 },
+        { Units.Ton, 1016.0469088e3 },
+
+        { Units.FluidOunce, 29.5735295625e-3 },
+        { Units.Pint, 0.473176473 },
+        { Units.Gallon, 3.785411784 },
+    };
+
+    double FahrenheitToCelcius(double value) =>
+        (value - 32) * (5.0 / 9.0);
+
+    double CelciusToFahrenheit(double value) =>
+        (value * (9.0 / 5.0)) + 32;
+
+    public string Symbol => Unit switch
     {
-        throw new NotImplementedException();
-    }
+        Units.Mil => "thou",
+        Units.Inch => "in",
+        Units.Feet => "ft",
+        Units.Yards => "yd",
+        Units.Miles => "mi",
+        Units.Ounce => "oz",
+        Units.Pound => "lbs",
+        Units.Ton => "ton",
+        Units.FluidOunce => "floz",
+        Units.Pint => "pt",
+        Units.Gallon => "gal",
+        Units.Fahrenheit => "°F",
+        _ => throw new InvalidDataException($"Invalid Unit: {unit}")
+    };
 
-    public enum Unit
+    public double FromBase(double value) => Unit switch
+    { 
+        Units.Fahrenheit => CelciusToFahrenheit(value),
+        _ => value / Conversion[unit]
+    };
+
+    public double ToBase(double value) => Unit switch 
+    {
+        Units.Fahrenheit => FahrenheitToCelcius(value),
+        _ => value * Conversion[unit],
+    };
+
+    public enum Units
     {
         // Length
         Mil,
@@ -255,12 +310,61 @@ public class USCustomary : IUnit
         Fahrenheit
     }
 
-    public static readonly Dictionary<string, object> ValidUnitStrings = [];
+    public static readonly Dictionary<string, object> ValidUnitStrings = new()
+    {
+        { "mil", new USCustomary(Units.Mil) },
+        { "thou", new USCustomary(Units.Mil) },
+
+        { "inch", new USCustomary(Units.Inch) },
+        { "in", new USCustomary(Units.Inch) },
+        { "\"", new USCustomary(Units.Inch) },
+        { "in.", new USCustomary(Units.Inch) },
+
+        { "ft", new USCustomary(Units.Feet) },
+        { "feet", new USCustomary(Units.Feet) },
+        { "foot", new USCustomary(Units.Feet) },
+        { "\'", new USCustomary(Units.Feet) },
+
+        { "yd", new USCustomary(Units.Yards) },
+        { "yds", new USCustomary(Units.Yards) },
+        { "yards", new USCustomary(Units.Yards) },
+
+        { "mi", new USCustomary(Units.Miles) },
+        { "mile", new USCustomary(Units.Miles) },
+        { "miles", new USCustomary(Units.Miles) },
+
+        { "oz", new USCustomary(Units.Ounce) },
+        { "ounce", new USCustomary(Units.Ounce) },
+
+        { "lb", new USCustomary(Units.Pound) },
+        { "lbs", new USCustomary(Units.Pound) },
+        { "pounds", new USCustomary(Units.Pound) },
+
+        { "ton", new USCustomary(Units.Ton) },
+        { "tons", new USCustomary(Units.Ton) },
+
+        { "floz", new USCustomary(Units.FluidOunce) },
+        { "fl oz", new USCustomary(Units.FluidOunce) },
+
+        { "pt", new USCustomary(Units.Pint) },
+        { "pint", new USCustomary(Units.Pint) },
+
+        { "gal", new USCustomary(Units.Gallon) },
+        { "gallon", new USCustomary(Units.Gallon) },
+        { "gallons", new USCustomary(Units.Gallon) },
+
+        { "F", new USCustomary(Units.Fahrenheit) },
+        { "°F", new USCustomary(Units.Fahrenheit) },
+        { "degF", new USCustomary(Units.Fahrenheit) },
+
+    };
 }
 
 public class Miscellaneous : IUnit
 {
     public string Symbol => throw new NotImplementedException();
+
+    public object Unit => throw new NotImplementedException();
 
     public double FromBase(double value)
     {
@@ -275,9 +379,11 @@ public class Miscellaneous : IUnit
     public static readonly Dictionary<string, object> ValidUnitStrings = [];
 }
 
-public class Prefix
+public class SIPrefix(SIPrefix.Prefix prefix)
 {
-    public enum SI
+    Prefix _prefix = prefix;
+
+    public enum Prefix
     {
         Quetta = 30,
         Ronna = 27,
@@ -306,36 +412,36 @@ public class Prefix
         Quecto = -30
     }
 
-    private static readonly Dictionary<string, SI> PrefixStrings = new()
+    public static readonly Dictionary<string, SIPrefix> ValidPrefixStrings = new()
     {
-        { "Q", SI.Quetta },
-        { "R", SI.Ronna },
-        { "Y", SI.Yotta },
-        { "Z", SI.Zetta },
-        { "E", SI.Exa },
-        { "P", SI.Peta },
-        { "T", SI.Tera },
-        { "G", SI.Giga },
-        { "M", SI.Mega },
-        { "k", SI.Kilo },
-        { "h", SI.Hecto },
-        { "da", SI.Deca },
-        { "d", SI.Deci },
-        { "c", SI.Centi },
-        { "m", SI.Milli },
-        { "µ", SI.Micro },
-        { "n", SI.Nano },
-        { "p", SI.Pico },
-        { "f", SI.Femto },
-        { "a", SI.Atto },
-        { "z", SI.Zepto },
-        { "y", SI.Yocto },
-        { "r", SI.Ronto },
-        { "q", SI.Quecto },
+        { "Q", new SIPrefix(Prefix.Quetta) },
+        { "R", new SIPrefix(Prefix.Ronna) },
+        { "Y", new SIPrefix(Prefix.Yotta) },
+        { "Z", new SIPrefix(Prefix.Zetta) },
+        { "E", new SIPrefix(Prefix.Exa) },
+        { "P", new SIPrefix(Prefix.Peta) },
+        { "T", new SIPrefix(Prefix.Tera) },
+        { "G", new SIPrefix(Prefix.Giga) },
+        { "M", new SIPrefix(Prefix.Mega) },
+        { "k", new SIPrefix(Prefix.Kilo) },
+        { "h", new SIPrefix(Prefix.Hecto) },
+        { "da", new SIPrefix(Prefix.Deca) },
+        { "d", new SIPrefix(Prefix.Deci) },
+        { "c", new SIPrefix(Prefix.Centi) },
+        { "m", new SIPrefix(Prefix.Milli) },
+        { "µ", new SIPrefix(Prefix.Micro) },
+        { "n", new SIPrefix(Prefix.Nano) },
+        { "p", new SIPrefix(Prefix.Pico) },
+        { "f", new SIPrefix(Prefix.Femto) },
+        { "a", new SIPrefix(Prefix.Atto) },
+        { "z", new SIPrefix(Prefix.Zepto) },
+        { "y", new SIPrefix(Prefix.Yocto) },
+        { "r", new SIPrefix(Prefix.Ronto) },
+        { "q", new SIPrefix(Prefix.Quecto) },
     };
 }
 
 public static class PrefixExtensions
 {
-    public static double Factor(this Prefix.SI prefix) => (int)prefix;
+    public static double Factor(this SIPrefix.Prefix prefix) => (int)prefix;
 }
