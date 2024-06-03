@@ -131,7 +131,7 @@ namespace AbsoluteUnit
     }
 
 
-    public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent) 
+    public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent, bool HasPrefix=false) 
     {
         public static UnitOperation GetUnitOperation(char c) => c switch
         {

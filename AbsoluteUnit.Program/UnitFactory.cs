@@ -23,7 +23,7 @@ public class UnitFactory
 
     public UnitFactory(UnitGroup unitGroup) => UnitGroups = [unitGroup];
 
-    private List<Dictionary<string, object>> ValidSymbols = 
+    private readonly List<Dictionary<string, object>> ValidSymbols = 
     [ 
         SIBase.ValidUnitStrings, 
         SIDerived.ValidUnitStrings,
@@ -72,21 +72,17 @@ public class UnitFactory
             .ToList();
     }
 
-    private List<UnitGroup> ComplexPropagation(List<UnitGroup> input)
-    {
-        return input
-            .Select(current =>
-            {
-                return (current.Operation == UnitGroup.UnitOperation.Divide)
-                    ? current = current with { Exponent = current.Exponent * -1 }
-                    : current;
-            })
-            .ToList();
-    }
+    private static List<UnitGroup> ComplexPropagation(List<UnitGroup> input) => 
+        input.Select(current =>
+        {
+            return (current.Operation == UnitGroup.UnitOperation.Divide)
+                ? current = current with { Exponent = current.Exponent * -1 }
+                : current;
+        })
+        .ToList();
 
-    private void GroupLikeSymbols()
-    {
-        var groupedUnits = UnitGroups.GroupBy(ug => ug.UnitSymbol)
+    private void GroupLikeSymbols() => 
+        UnitGroups = UnitGroups.GroupBy(ug => ug.UnitSymbol)
             .Select(group =>
             {
                 var operation = group.First().Operation;
@@ -95,51 +91,59 @@ public class UnitFactory
                 return new UnitGroup(operation, symbol, exponent);
             })
             .ToList();
-        UnitGroups = groupedUnits;
-    }
 
     private void ValidateSymbols()
     {
         foreach (var unit in UnitGroups)
-        {
-            bool valid = false;
-            var current = unit.UnitSymbol;
+            if (!CheckUnitDictionaries(unit.UnitSymbol) && 
+                !CheckUnitDictionaries(unit.UnitSymbol.Remove(0, 1)))
+                    throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
+    }
 
-            foreach (var dict in ValidSymbols)
-            {
-                if (dict.ContainsKey(current))
-                {
-                    valid = true;
-                    break;
-                }
-            }
+    private bool CheckUnitDictionaries(string current)
+    {
+        foreach (var dict in ValidSymbols)
+            if (dict.ContainsKey(current))
+                return true;
 
-            if (!valid) 
-                throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
-        }
+        return false;
     }
 
     private void EvaluatePrefixes()
     {
-        return;
+        for (int i = 0; i < UnitGroups.Count; i++)
+        {
+            var current = UnitGroups[i];
+            if (StartsWithValidPrefix(current))
+                UnitGroups[i] = current with { HasPrefix = true };
+        }
     }
+
+    private static SIPrefix? GetPrefix(char firstChar) => 
+        (SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var value))
+            ? value
+            : null;
+
+    private static bool StartsWithValidPrefix(UnitGroup group) => 
+        (group.UnitSymbol.Length > 1) && GetPrefix(group.UnitSymbol[0]) != null;
 
     private AbsUnit CreateUnit(UnitGroup group)
     {
+        SIPrefix? prefix;
+        if (group.HasPrefix)
+        {
+            prefix = GetPrefix(group.UnitSymbol[0]);
+            group = group with { UnitSymbol = group.UnitSymbol.Remove(0, 1) };
+        }
+        else prefix = new SIPrefix(SIPrefix.Prefixes._None);
+
         foreach (var stringDict in ValidSymbols)
         {
-            var prefix = TryGetPrefix(group.UnitSymbol[0]);
             stringDict.TryGetValue(group.UnitSymbol, out var unit);
             if (unit is not null)
                 return new AbsUnit((IUnit)unit, group.Exponent, prefix);
         }
         throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
-    }
-
-    private static SIPrefix TryGetPrefix(char firstChar)
-    {
-        SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var parsedPrefix);
-        return parsedPrefix;
     }
 }
 
@@ -360,6 +364,7 @@ public class USCustomary(USCustomary.Units unit) : IUnit
     };
 }
 
+
 public class Miscellaneous : IUnit
 {
     public string Symbol => throw new NotImplementedException();
@@ -379,11 +384,12 @@ public class Miscellaneous : IUnit
     public static readonly Dictionary<string, object> ValidUnitStrings = [];
 }
 
-public class SIPrefix(SIPrefix.Prefix prefix)
-{
-    Prefix _prefix = prefix;
 
-    public enum Prefix
+public class SIPrefix(SIPrefix.Prefixes prefix)
+{
+    public readonly Prefixes Prefix = prefix;
+
+    public enum Prefixes
     {
         Quetta = 30,
         Ronna = 27,
@@ -397,7 +403,7 @@ public class SIPrefix(SIPrefix.Prefix prefix)
         Kilo = 3,
         Hecto = 2,
         Deca = 1,
-        // Base case is 0!
+        _None = 0,
         Deci = -1,
         Centi = -2,
         Milli = -3,
@@ -414,34 +420,34 @@ public class SIPrefix(SIPrefix.Prefix prefix)
 
     public static readonly Dictionary<string, SIPrefix> ValidPrefixStrings = new()
     {
-        { "Q", new SIPrefix(Prefix.Quetta) },
-        { "R", new SIPrefix(Prefix.Ronna) },
-        { "Y", new SIPrefix(Prefix.Yotta) },
-        { "Z", new SIPrefix(Prefix.Zetta) },
-        { "E", new SIPrefix(Prefix.Exa) },
-        { "P", new SIPrefix(Prefix.Peta) },
-        { "T", new SIPrefix(Prefix.Tera) },
-        { "G", new SIPrefix(Prefix.Giga) },
-        { "M", new SIPrefix(Prefix.Mega) },
-        { "k", new SIPrefix(Prefix.Kilo) },
-        { "h", new SIPrefix(Prefix.Hecto) },
-        { "da", new SIPrefix(Prefix.Deca) },
-        { "d", new SIPrefix(Prefix.Deci) },
-        { "c", new SIPrefix(Prefix.Centi) },
-        { "m", new SIPrefix(Prefix.Milli) },
-        { "µ", new SIPrefix(Prefix.Micro) },
-        { "n", new SIPrefix(Prefix.Nano) },
-        { "p", new SIPrefix(Prefix.Pico) },
-        { "f", new SIPrefix(Prefix.Femto) },
-        { "a", new SIPrefix(Prefix.Atto) },
-        { "z", new SIPrefix(Prefix.Zepto) },
-        { "y", new SIPrefix(Prefix.Yocto) },
-        { "r", new SIPrefix(Prefix.Ronto) },
-        { "q", new SIPrefix(Prefix.Quecto) },
+        { "Q", new SIPrefix(Prefixes.Quetta) },
+        { "R", new SIPrefix(Prefixes.Ronna) },
+        { "Y", new SIPrefix(Prefixes.Yotta) },
+        { "Z", new SIPrefix(Prefixes.Zetta) },
+        { "E", new SIPrefix(Prefixes.Exa) },
+        { "P", new SIPrefix(Prefixes.Peta) },
+        { "T", new SIPrefix(Prefixes.Tera) },
+        { "G", new SIPrefix(Prefixes.Giga) },
+        { "M", new SIPrefix(Prefixes.Mega) },
+        { "k", new SIPrefix(Prefixes.Kilo) },
+        { "h", new SIPrefix(Prefixes.Hecto) },
+        { "da", new SIPrefix(Prefixes.Deca) },
+        { "d", new SIPrefix(Prefixes.Deci) },
+        { "c", new SIPrefix(Prefixes.Centi) },
+        { "m", new SIPrefix(Prefixes.Milli) },
+        { "µ", new SIPrefix(Prefixes.Micro) },
+        { "n", new SIPrefix(Prefixes.Nano) },
+        { "p", new SIPrefix(Prefixes.Pico) },
+        { "f", new SIPrefix(Prefixes.Femto) },
+        { "a", new SIPrefix(Prefixes.Atto) },
+        { "z", new SIPrefix(Prefixes.Zepto) },
+        { "y", new SIPrefix(Prefixes.Yocto) },
+        { "r", new SIPrefix(Prefixes.Ronto) },
+        { "q", new SIPrefix(Prefixes.Quecto) },
     };
 }
 
 public static class PrefixExtensions
 {
-    public static double Factor(this SIPrefix.Prefix prefix) => (int)prefix;
+    public static double Factor(this SIPrefix.Prefixes prefix) => (int)prefix;
 }

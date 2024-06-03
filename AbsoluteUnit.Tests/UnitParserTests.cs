@@ -60,7 +60,55 @@ namespace AbsoluteUnit.Tests
                 .BuildUnits()
                 .First();
 
-            Assert.AreEqual<USCustomary.Units>((USCustomary.Units)result.Unit.Unit, USCustomary.Units.Inch);
+            Assert.AreEqual(result.Unit.Unit, USCustomary.Units.Inch);
+        }
+
+        [TestMethod]
+        public void UnitFactory_CorrectlyParsesKilometers()
+        {
+            UnitGroup oneKm = new UnitGroupBuilder()
+                .WithSymbol("km")
+                .Build();
+
+            var result = new UnitFactory(oneKm)
+                .BuildUnits()
+                .First();
+
+            Assert.AreEqual(result.Unit.Unit, SIBase.Units.Meter);
+            Assert.AreEqual(result.Prefix.Prefix, SIPrefix.Prefixes.Kilo);
+        }
+
+        [TestMethod]
+        public void UnitFactory_CorrectlyParsesKilometersPerSecondSquared()
+        {
+            // Arrange
+            UnitGroup oneKm = new UnitGroupBuilder()
+                .WithSymbol("km")
+                .Build();
+
+            UnitGroup perSecond = new UnitGroupBuilder()
+                .WithSymbol("s")
+                .WithExponent(1)
+                .WithDivMulti(UnitGroup.UnitOperation.Divide)
+                .Build();
+
+            List<UnitGroup> unitGroups = [oneKm, perSecond, perSecond];
+
+            List<SIBase.Units> correctUnits = [SIBase.Units.Meter, SIBase.Units.Second];
+            List<int> correctExponents = [1, -2];
+            List<SIPrefix.Prefixes> correctPrefixes = [SIPrefix.Prefixes.Kilo, SIPrefix.Prefixes._None];
+
+            // Act
+            var result = new UnitFactory(unitGroups)
+                .BuildUnits();
+
+            // Assert
+            for (int i = 0; i < result.Count; i++)
+            {
+                Assert.AreEqual(result[i].Unit.Unit, correctUnits[i]);
+                Assert.AreEqual(result[i].Exponent, correctExponents[i]);
+                Assert.AreEqual(result[i].Prefix.Prefix, correctPrefixes[i]);
+            }
         }
     }
 }
