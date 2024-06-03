@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit.Program;
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace AbsoluteUnit.Program;
 
 public interface IUnit
 {
@@ -6,6 +8,7 @@ public interface IUnit
     string Symbol { get; }
     double ToBase(double value);
     double FromBase(double value);
+    string ToString();
 }
 
 public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
@@ -13,6 +16,8 @@ public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
     public IUnit Unit { get; set; } = unit;
     public int Exponent { get; set; } = exponent;
     public SIPrefix Prefix { get; set; } = prefix;
+
+    public override string ToString() => $"{Prefix}{Unit.Symbol}{((Exponent != 1)? "^" + Exponent : "")}";
 }
 
 public class UnitFactory
@@ -389,6 +394,38 @@ public class SIPrefix(SIPrefix.Prefixes prefix)
 {
     public readonly Prefixes Prefix = prefix;
 
+    public override string ToString() => Prefix switch
+    {
+        Prefixes.Quetta => "Q",
+        Prefixes.Ronna => "R",
+        Prefixes.Yotta => "Y",
+        Prefixes.Zetta => "Z",
+        Prefixes.Exa => "E",
+        Prefixes.Peta => "P",
+        Prefixes.Tera => "T",
+        Prefixes.Giga => "G",
+        Prefixes.Mega => "M",
+        Prefixes.Kilo => "k",
+        Prefixes.Hecto => "h",
+        Prefixes.Deka => "da",
+
+        Prefixes._None => "",
+        
+        Prefixes.Deci => "d",
+        Prefixes.Centi => "c",
+        Prefixes.Milli => "m",
+        Prefixes.Micro => "μ",
+        Prefixes.Nano => "n",
+        Prefixes.Pico => "p",
+        Prefixes.Femto => "f",
+        Prefixes.Atto => "a",
+        Prefixes.Zepto => "z",
+        Prefixes.Yocto => "y",
+        Prefixes.Ronto => "r",
+        Prefixes.Quecto => "q",
+        _ => throw new NotImplementedException("Prefix enum unrecognised?")
+    };
+
     public enum Prefixes
     {
         Quetta = 30,
@@ -402,8 +439,10 @@ public class SIPrefix(SIPrefix.Prefixes prefix)
         Mega = 6,
         Kilo = 3,
         Hecto = 2,
-        Deca = 1,
+        Deka = 1,
+
         _None = 0,
+        
         Deci = -1,
         Centi = -2,
         Milli = -3,
@@ -431,7 +470,7 @@ public class SIPrefix(SIPrefix.Prefixes prefix)
         { "M", new SIPrefix(Prefixes.Mega) },
         { "k", new SIPrefix(Prefixes.Kilo) },
         { "h", new SIPrefix(Prefixes.Hecto) },
-        { "da", new SIPrefix(Prefixes.Deca) },
+        { "da", new SIPrefix(Prefixes.Deka) },
         { "d", new SIPrefix(Prefixes.Deci) },
         { "c", new SIPrefix(Prefixes.Centi) },
         { "m", new SIPrefix(Prefixes.Milli) },

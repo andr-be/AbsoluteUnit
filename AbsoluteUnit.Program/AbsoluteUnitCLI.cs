@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit
+﻿using AbsoluteUnit.Program;
+
+namespace AbsoluteUnit
 {
     internal class AbsoluteUnitCLI
     {
@@ -27,6 +29,12 @@
                     {
                         MeasurementParser parser = new(arg);
                         DebugPrint(parser);
+                        
+                        var absUnits = new UnitFactory(parser.Units.Groups).BuildUnits();
+
+                        Console.Write($"{parser.Quantity}e{parser.Exponent} ");
+                        foreach (var unit in absUnits) Console.Write($"{unit}");
+                        Console.WriteLine();
                     }
                     catch (Exception e)
                     {
