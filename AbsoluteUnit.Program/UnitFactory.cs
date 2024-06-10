@@ -41,6 +41,13 @@ public class AbsMeasurement
         Quantity = quantity;
         Exponent = exponent;
     }
+
+    public override string ToString()
+    {
+        string measurementString = $"{Quantity}e{Exponent} ";
+        foreach (var unit in Units) measurementString += unit.ToString();
+        return measurementString;
+    }
 }
 
 public class UnitFactory
