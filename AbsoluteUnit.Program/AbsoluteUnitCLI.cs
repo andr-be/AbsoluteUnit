@@ -9,7 +9,9 @@ namespace AbsoluteUnit
             var commandGroup = new CommandParser(args).CommandGroup;
             Console.WriteLine(commandGroup);
 
-            var measurementGroup = new MeasurementParser(commandGroup.CommandArguments[0]).ProcessMeasurement();
+            var measurementGroup = new MeasurementParser(commandGroup.CommandArguments[0])
+                .ProcessMeasurement();
+
             Console.WriteLine(measurementGroup);
 
         }

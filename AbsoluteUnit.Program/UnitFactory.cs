@@ -176,7 +176,7 @@ public class UnitFactory
         {
             stringDict.TryGetValue(group.UnitSymbol, out var unit);
             if (unit is not null)
-                return new AbsUnit((IUnit)unit, group.Exponent, prefix);
+                return new AbsUnit((IUnit)unit, group.Exponent, prefix!);
         }
         throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
     }
