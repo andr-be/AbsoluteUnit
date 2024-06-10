@@ -30,7 +30,7 @@ namespace AbsoluteUnit
                         MeasurementParser parser = new(arg);
                         DebugPrint(parser);
                         
-                        var absUnits = new UnitFactory(parser.Units.Groups).BuildUnits();
+                        var absUnits = new UnitFactory(parser.Units).BuildUnits();
 
                         Console.Write($"{parser.Quantity}e{parser.Exponent} ");
                         foreach (var unit in absUnits) Console.Write($"{unit}");
@@ -58,7 +58,7 @@ namespace AbsoluteUnit
             Console.WriteLine($"qty: {parser.Quantity}");
             Console.WriteLine($"exp: {parser.Exponent}");
             Console.WriteLine($"units:");
-            foreach (var unitGroup in parser.Units.Groups)
+            foreach (var unitGroup in parser.Units)
             {
                 Console.WriteLine($"  div: {unitGroup.Operation}");
                 Console.WriteLine($"  sym: {unitGroup.UnitSymbol}");

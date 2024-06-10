@@ -2,12 +2,38 @@
 
 namespace AbsoluteUnit
 {
+    public record MeasurementGroup(double Quantity, int Exponent, List<UnitGroup> Units)
+    {
+        public override string ToString()
+        {
+            string measurementGroupString = $"{Quantity}{(Exponent != 0 ? Exponent : "")}";
+
+            foreach (var unit in Units.Select(u => u.UnitSymbol).ToArray())
+                measurementGroupString += $"{unit}";
+
+            return measurementGroupString;
+        }
+    }
+
+    public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent, bool HasPrefix = false)
+    {
+        public static UnitOperation GetUnitOperation(char c) => c switch
+        {
+            '/' => UnitOperation.Divide,
+            '.' => UnitOperation.Multiply,
+            _ => throw new ParseError("invalid DivMulti symbol")
+        };
+
+        public enum UnitOperation
+        {
+            Divide,
+            Multiply,
+        }
+    }
 
     public partial class MeasurementParser
     {
-        public double Quantity { get; }
-        public int Exponent { get; }
-        public UnitGroupParser Units { get; }
+        public MeasurementGroup MeasurementGroup { get; }
 
         private const string MeasurementRegexString =
             @"^(-?\d+[.,\d]*(?:\.|,)?\d*)?(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
@@ -33,9 +59,11 @@ namespace AbsoluteUnit
 
             try
             {
-                Quantity = ParseQuantity(match.Groups[1].Value);
-                Exponent = ParseExponent(match.Groups[2].Value);
-                Units = new UnitGroupParser(match.Groups[3].Value);
+                var quantity = ParseQuantity(match.Groups[1].Value);
+                var exponent = ParseExponent(match.Groups[2].Value);
+                var units = new UnitGroupParser(match.Groups[3].Value).ParseUnitGroups();
+
+                MeasurementGroup = new(quantity, exponent, units);
             }
             catch (ParseError e)
             {
@@ -50,7 +78,8 @@ namespace AbsoluteUnit
         private static int ParseExponent(string exponentString) => 
             int.TryParse(exponentString, null, out var exponent) ? exponent : 0;
 
-        private static string ToEuroString(string s) => s.Replace(',', '#').Replace('.', ',').Replace('#', '.');
+        private static string ToEuroString(string s) => 
+            s.Replace(',', '#').Replace('.', ',').Replace('#', '.');
 
         private static double ParseQuantity(string quantityString)
         {
@@ -75,23 +104,22 @@ namespace AbsoluteUnit
         private const string UnitGroupRegexString = @"([ ./])?([A-Za-zµ°Ω]+)+(?:(?:\^)?|(?:\*\*))?((?:\+|-)?\d+)?";
         [GeneratedRegex(UnitGroupRegexString)]
         private static partial Regex Regex();
-
-        public List<UnitGroup> Groups { get; set; } = [];
+        private string UnitString { get; }
 
         public UnitGroupParser(string unitString)
         {
             if (string.IsNullOrWhiteSpace(unitString))
                 throw new ArgumentException("no/null unitString provided");
 
-            Groups = ParseUnitGroups(unitString);
+            UnitString = unitString;
         }
 
-        private static List<UnitGroup> ParseUnitGroups(string unitString)
+        public List<UnitGroup> ParseUnitGroups()
         {
             List<UnitGroup> groups = [];
-            MatchCollection matches = Regex().Matches(unitString);
+            MatchCollection matches = Regex().Matches(UnitString);
             if (matches.Count == 0)
-                throw new ParseError($"unable to parse {unitString} as UnitGroup");
+                throw new ParseError($"unable to parse {UnitString} as UnitGroup");
 
             foreach (Match match in matches.Cast<Match>())
             {
@@ -127,22 +155,5 @@ namespace AbsoluteUnit
         public ParseError() { }
         public ParseError(string message) : base(message) { }
         public ParseError(string message, Exception inner) : base(message, inner) { }
-    }
-
-
-    public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent, bool HasPrefix=false) 
-    {
-        public static UnitOperation GetUnitOperation(char c) => c switch
-        {
-            '/' => UnitOperation.Divide,
-            '.' => UnitOperation.Multiply,
-            _ => throw new ParseError("invalid DivMulti symbol")
-        };
-
-        public enum UnitOperation
-        {
-            Divide,
-            Multiply,
-        }
     }
 }
