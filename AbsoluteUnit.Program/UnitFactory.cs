@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-namespace AbsoluteUnit.Program;
+﻿namespace AbsoluteUnit.Program;
 
 public interface IUnit
 {
@@ -17,7 +15,11 @@ public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
     public int Exponent { get; set; } = exponent;
     public SIPrefix Prefix { get; set; } = prefix;
 
-    public override string ToString() => $"{Prefix}{Unit.Symbol}{((Exponent != 1)? "^" + Exponent : "")}";
+    public override string ToString()
+    {
+        string exponent = (Exponent != 1) ? "^" + Exponent : "";
+        return $"{Prefix}{Unit.Symbol}{exponent}";
+    }
 }
 
 public class UnitFactory
@@ -43,7 +45,7 @@ public class UnitFactory
         EvaluatePrefixes();
 
         return UnitGroups
-            .Select(g => CreateUnit(g))
+            .Select(CreateUnit)
             .ToList();
     }
 
@@ -484,6 +486,8 @@ public class SIPrefix(SIPrefix.Prefixes prefix)
         { "r", new SIPrefix(Prefixes.Ronto) },
         { "q", new SIPrefix(Prefixes.Quecto) },
     };
+
+
 }
 
 public static class PrefixExtensions

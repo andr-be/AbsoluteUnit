@@ -6,10 +6,10 @@ namespace AbsoluteUnit
     {
         public override string ToString()
         {
-            string measurementGroupString = $"{Quantity}{(Exponent != 0 ? Exponent : "")}";
+            string measurementGroupString = $"{Quantity}{(Exponent != 0 ? "e" + Exponent : "")} ";
 
-            foreach (var unit in Units.Select(u => u.UnitSymbol).ToArray())
-                measurementGroupString += $"{unit}";
+            foreach (var unit in Units)
+                measurementGroupString += unit.ToString();
 
             return measurementGroupString;
         }
@@ -28,6 +28,19 @@ namespace AbsoluteUnit
         {
             Divide,
             Multiply,
+        }
+
+        public override string ToString()
+        {
+            string operation = (Operation == UnitOperation.Divide)
+                    ? "-"
+                    : "";
+
+            string exponent = (Exponent is < 0 or > 1)
+                ? $"^{operation}{Exponent}"
+                : "";
+
+            return $"{UnitSymbol}{exponent}";
         }
     }
 
