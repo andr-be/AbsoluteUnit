@@ -101,7 +101,8 @@ namespace AbsoluteUnit
 
     public partial class UnitGroupParser
     {
-        private const string UnitGroupRegexString = @"([ ./])?([A-Za-zµ°Ω]+)+(?:(?:\^)?|(?:\*\*))?((?:\+|-)?\d+)?";
+        private const string UnitGroupRegexString = 
+            @"([ ./])?([A-Za-zµ°Ω]+)+(?:(?:\^)?|(?:\*\*))?((?:\+|-)?\d+)?";
         [GeneratedRegex(UnitGroupRegexString)]
         private static partial Regex Regex();
         private string UnitString { get; }
@@ -116,17 +117,13 @@ namespace AbsoluteUnit
 
         public List<UnitGroup> ParseUnitGroups()
         {
-            List<UnitGroup> groups = [];
             MatchCollection matches = Regex().Matches(UnitString);
             if (matches.Count == 0)
                 throw new ParseError($"unable to parse {UnitString} as UnitGroup");
 
-            foreach (Match match in matches.Cast<Match>())
-            {
-                var unitGroup = ParseGroupMatch(match);
-                groups.Add(unitGroup);
-            }
-            return groups;
+            return matches
+                .Select(ParseGroupMatch)
+                .ToList();
         }
 
         private static UnitGroup ParseGroupMatch(Match match)
