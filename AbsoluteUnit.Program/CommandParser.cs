@@ -1,7 +1,22 @@
-﻿using EnumExtension;
+﻿using System.Data;
+using EnumExtension;
 
 namespace AbsoluteUnit
 {
+    public record CommandGroup(
+        CommandParser.Command CommandType,
+        List<string> CommandArguments,
+        Dictionary<CommandParser.Flag, int> Flags)
+    {
+        public override string ToString()
+        {
+            string s = $"{CommandType}: ";
+            foreach (var arg in CommandArguments) s += $"{arg} ";
+            foreach (var flag in Flags.Keys) s += $"({flag} : {Flags[flag]}) ";
+            return s;
+        }
+    }
+
     public class CommandParser
     {
         public enum Command
@@ -20,19 +35,17 @@ namespace AbsoluteUnit
             Engineering,
         }
 
-        public Command CommandType { get; }
-        public List<string> CommandArguments { get; }
-        public Dictionary<Flag, int> Flags { get; } = [];
+        public CommandGroup CommandGroup { get; set; }
 
         private int ExtraArguments = 0;
 
         public CommandParser(string[] args)
         {
-            CommandType = ParseCommand(args.First());
-
-            Flags = GetFlags(args.Skip(1).ToArray());
-
-            CommandArguments = GetCommandArguments(args.Skip(1).ToArray());
+            var commandType = ParseCommand(args.First());
+            var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
+            var flags = GetFlags(args.Skip(1).ToArray());
+            
+            CommandGroup = new(commandType, commandArgs, flags);
         }
 
         /// <summary>
@@ -69,7 +82,7 @@ namespace AbsoluteUnit
         /// contains the number of valid arguments for each command type
         /// </summary>
         /// <returns>the number of valid arguments</returns>
-        private int CommandArgumentCount() => CommandType switch
+        private int CommandArgumentCount(Command type) => type switch
         {
             Command.Convert => 2,
             Command.Express => 1,
@@ -110,11 +123,11 @@ namespace AbsoluteUnit
         /// <param name="flagsAndArguments">all of the command line arguments except the first</param>
         /// <returns>a list of only the command arguments</returns>
         /// <exception cref="ArgumentException">invalid argument count error</exception>
-        private List<string> GetCommandArguments(string[] flagsAndArguments)
+        private List<string> GetCommandArguments(Command type, string[] flagsAndArguments)
         {
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
 
-            if (CommandArgumentCount() + ExtraArguments == arguments.Length)
+            if (CommandArgumentCount(type) + ExtraArguments == arguments.Length)
                 return arguments.Take(arguments.Length - ExtraArguments).ToList();
             else
                 throw new ArgumentException($"Invalid argument count: {arguments.Length}");
