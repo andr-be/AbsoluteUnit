@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using AbsoluteUnit.Program;
 
 namespace AbsoluteUnit
 {
@@ -109,6 +110,15 @@ namespace AbsoluteUnit
 
             else
                 throw new ParseError($"unable to parse quantity: {quantityString}");
+        }
+
+        public AbsMeasurement ProcessMeasurement()
+        {
+            return new(
+                new UnitFactory(MeasurementGroup.Units).BuildUnits(),
+                MeasurementGroup.Quantity,
+                MeasurementGroup.Exponent
+                );
         }
     }
 
