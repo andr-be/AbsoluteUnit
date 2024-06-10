@@ -16,7 +16,7 @@ namespace AbsoluteUnit.Tests
             CommandParser commandParser = new(args);
 
             // Assert
-            Assert.AreEqual(correctComand, commandParser.CommandType);
+            Assert.AreEqual(correctComand, commandParser.CommandGroup.CommandType);
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace AbsoluteUnit.Tests
             CommandParser commandParser = new(args);
 
             // Assert
-            Assert.AreEqual(correctComand, commandParser.CommandType);
+            Assert.AreEqual(correctComand, commandParser.CommandGroup.CommandType);
         }
 
         [TestMethod]
@@ -38,13 +38,13 @@ namespace AbsoluteUnit.Tests
         {
             // Arrange
             string[] args = ["--simplify", "123.4e5 ft"];
-            var correctComand = Command.Simplify;
+            var correctCommand = Command.Simplify;
 
             // Act
             CommandParser commandParser = new(args);
 
             // Assert
-            Assert.AreEqual(correctComand, commandParser.CommandType);
+            Assert.AreEqual(correctCommand, commandParser.CommandGroup.CommandType);
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace AbsoluteUnit.Tests
             CommandParser commandParser = new(args);
 
             // Assert
-            Assert.IsTrue(DictionaryEqual(commandParser.Flags, flags));
+            Assert.IsTrue(DictionaryEqual(commandParser.CommandGroup.Flags, flags));
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace AbsoluteUnit.Tests
             CommandParser parser = new(args);
 
             // Assert
-            Assert.IsTrue(DictionaryEqual(parser.Flags, flags));
+            Assert.IsTrue(DictionaryEqual(parser.CommandGroup.Flags, flags));
         }
 
         [TestMethod]

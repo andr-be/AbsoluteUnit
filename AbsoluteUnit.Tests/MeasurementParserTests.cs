@@ -18,7 +18,7 @@
             MeasurementParser measurement = new(simpleMeasurement);
 
             // Assert
-            Assert.AreEqual(unitM, measurement.Units.FirstOrDefault());
+            Assert.AreEqual(unitM, measurement.MeasurementGroup.Units.FirstOrDefault());
         }
         
         [TestMethod]
@@ -51,9 +51,9 @@
             MeasurementParser testGroup = new(goodInput);
 
             // Assert
-            Assert.AreEqual(testGroup.Quantity, 123.4);
-            Assert.AreEqual(testGroup.Exponent, 5);
-            Assert.IsTrue(testGroup.Units.SequenceEqual(unitGroups));
+            Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 123.4);
+            Assert.AreEqual(testGroup.MeasurementGroup.Exponent, 5);
+            Assert.IsTrue(testGroup.MeasurementGroup.Units.SequenceEqual(unitGroups));
         }
 
         [TestMethod]
@@ -80,9 +80,9 @@
             MeasurementParser testGroup = new(goodInput);
 
             // Assert
-            Assert.AreEqual(testGroup.Quantity, 69);
-            Assert.AreEqual(testGroup.Exponent, 0);
-            Assert.IsTrue(testGroup.Units.SequenceEqual(unitGroups));
+            Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 69);
+            Assert.AreEqual(testGroup.MeasurementGroup.Exponent, 0);
+            Assert.IsTrue(testGroup.MeasurementGroup.Units.SequenceEqual(unitGroups));
         }
 
         [TestMethod]
@@ -101,8 +101,8 @@
             MeasurementParser measurement = new(commaSeparatedMeasurement);
 
             // Assert
-            Assert.AreEqual(measurement.Quantity, oneMillion);
-            Assert.AreEqual(measurement.Units.First(), kilometer);
+            Assert.AreEqual(measurement.MeasurementGroup.Quantity, oneMillion);
+            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), kilometer);
         }
 
         [TestMethod]
@@ -119,8 +119,8 @@
             MeasurementParser measurement = new(indianCommaSeparatedMeasurement);
 
             // Assert
-            Assert.AreEqual(measurement.Quantity, longNumber);
-            Assert.AreEqual(measurement.Units.First(), microSecond);
+            Assert.AreEqual(measurement.MeasurementGroup.Quantity, longNumber);
+            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), microSecond);
         }
 
         [TestMethod]
@@ -137,8 +137,8 @@
             MeasurementParser measurement = new(europeanCommaSeparatedMeasurement);
 
             // Assert
-            Assert.AreEqual(measurement.Quantity, euroNumber);
-            Assert.AreEqual(measurement.Units.First(), litre);
+            Assert.AreEqual(measurement.MeasurementGroup.Quantity, euroNumber);
+            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), litre);
         }
 
         [TestMethod]
