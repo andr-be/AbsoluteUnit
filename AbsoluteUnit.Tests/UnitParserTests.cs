@@ -110,5 +110,16 @@ namespace AbsoluteUnit.Tests
                 Assert.AreEqual(result[i].Prefix.Prefix, correctPrefixes[i]);
             }
         }
+
+        [TestMethod]
+        public void UnitFactory_CorrectlyParses1mm()
+        {
+            UnitGroup oneMm = new UnitGroupBuilder().WithSymbol("mm").Build();
+
+            var result = new UnitFactory(oneMm).BuildUnits().First();
+
+            Assert.AreEqual(result.Unit.Unit, SIBase.Units.Meter);
+            Assert.AreEqual(result.Prefix.Prefix, SIPrefix.Prefixes.Milli);
+        }
     }
 }
