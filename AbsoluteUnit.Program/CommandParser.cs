@@ -3,38 +3,51 @@ using EnumExtension;
 
 namespace AbsoluteUnit
 {
-    public record CommandGroup(
-        CommandParser.Command CommandType,
-        List<string> CommandArguments,
-        Dictionary<CommandParser.Flag, int> Flags)
+    public enum Command
     {
+        Convert,
+        Express,
+        Simplify,
+    }
+
+    public enum Flag
+    {
+        VerboseCalculation,
+        DecimalPlaces,
+        SignificantFigures,
+        StandardForm,
+        Engineering,
+    }
+
+    public record CommandGroup(
+        Command CommandType,
+        Dictionary<Flag, int> Flags,
+        List<string> CommandArguments
+    ){
         public override string ToString()
         {
-            string s = $"{CommandType}: ";
-            foreach (var arg in CommandArguments) s += $"{arg} ";
-            foreach (var flag in Flags.Keys) s += $"({flag} : {Flags[flag]}) ";
-            return s;
+            string commandString = $"Command:\t{CommandType}";
+
+            if (CommandArguments.Count > 0)
+            {
+                commandString += "\nArguments:\t";
+                for (int argNum = 0; argNum < CommandArguments.Count; argNum++) 
+                    commandString += $"[{argNum}] {CommandArguments[argNum]}, ";
+            }
+
+            if (Flags.Count > 0)
+            {
+                commandString += "\nFlags:\t\t";
+                for (int flagNum = 0; flagNum < Flags.Count; flagNum++) 
+                    commandString += $"[{flagNum}] {Flags.Keys.ElementAt(flagNum)} : {Flags.Values.ElementAt(flagNum)}, ";
+            }
+
+            return commandString;
         }
     }
 
     public class CommandParser
     {
-        public enum Command
-        {
-            Convert,
-            Express,
-            Simplify,
-        }
-
-        public enum Flag
-        {
-            VerboseCalculation,
-            DecimalPlaces,
-            SignificantFigures,
-            StandardForm,
-            Engineering,
-        }
-
         public CommandGroup CommandGroup { get; set; }
 
         private int ExtraArguments = 0;
@@ -42,10 +55,10 @@ namespace AbsoluteUnit
         public CommandParser(string[] args)
         {
             var commandType = ParseCommand(args.First());
-            var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
             var flags = GetFlags(args.Skip(1).ToArray());
+            var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
             
-            CommandGroup = new(commandType, commandArgs, flags);
+            CommandGroup = new(commandType, flags, commandArgs);
         }
 
         /// <summary>
@@ -92,6 +105,7 @@ namespace AbsoluteUnit
 
         /// <summary>
         /// iterates through the different arguments and creates a dictionary of flags and arguments
+        /// currently uses a very basic 'just grab the value after the argument' approach
         /// </summary>
         /// <param name="args">user-provided CLI arguments</param>
         /// <returns>(Flag, int) dictionary of flags and arguments</returns>
@@ -100,19 +114,17 @@ namespace AbsoluteUnit
             var flags = new Dictionary<Flag, int>();
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i][0] != '-') 
+                if (args[i][0] != '-')
                     continue;
 
                 Flag newFlag = ParseFlag(args[i]);
-                if (!newFlag.AddsArguments())
+                if (newFlag.AddsArguments())
                 {
-                    flags.Add(newFlag, 0);
-                    continue;
+                    var arg = GetFlagArgument(args[i+1]);
+                    flags.Add(newFlag, arg);
+                    ExtraArguments++;
                 }
-
-                var arg = GetFlagArgument(args[i+1]);
-                flags.Add(newFlag, arg);
-                ExtraArguments++;
+                else flags.Add(newFlag, 0);
             }
             return flags;
         }
@@ -174,10 +186,10 @@ namespace EnumExtension
         /// </summary>
         /// <param name="flag">the flag to check</param>
         /// <returns>true if flag needs extra arguments, false if not</returns>
-        public static bool AddsArguments(this CommandParser.Flag flag) => flag switch
+        public static bool AddsArguments(this Flag flag) => flag switch
         {
-            CommandParser.Flag.DecimalPlaces => true,
-            CommandParser.Flag.SignificantFigures => true,
+            Flag.DecimalPlaces => true,
+            Flag.SignificantFigures => true,
             _ => false,
         };
     }
