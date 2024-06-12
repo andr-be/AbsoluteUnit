@@ -7,11 +7,23 @@ namespace AbsoluteUnit
         static void Main(string[] args)
         {
             var commandGroup = new CommandParser(args).CommandGroup;
+            var measurementString = commandGroup.CommandArguments[0];
 
-            var measurementGroup = new MeasurementParser(commandGroup.CommandArguments[0]).ProcessMeasurement();
+            var unitGroupParser = ParserFactory.CreateUnitGroupParser();
+            var unitFactory = ParserFactory.CreateUnitFactory();
+            var measurementParser = new MeasurementParser(unitGroupParser, unitFactory, measurementString);
+
+            var measurementGroup = measurementParser.ProcessMeasurement();
             
             Console.WriteLine(commandGroup);
             Console.WriteLine(measurementGroup);
         }
+    }
+
+    public static class ParserFactory
+    {
+        public static IUnitGroupParser CreateUnitGroupParser() => new UnitGroupParser();
+
+        public static IUnitFactory CreateUnitFactory() => new UnitFactory();
     }
 }

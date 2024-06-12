@@ -1,8 +1,20 @@
-﻿namespace AbsoluteUnit.Tests
+﻿using AbsoluteUnit.Program;
+
+namespace AbsoluteUnit.Tests
 {
     [TestClass]
     public class MeasurementParserTests
     {
+        private IUnitGroupParser _unitGroupParser;
+        private IUnitFactory _unitFactory;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _unitGroupParser = new UnitGroupParser();
+            _unitFactory = new UnitFactory();
+        }
+
         [TestMethod]
         public void MeasurementParser_ValidSimpleInput_SuccessfullyParses()
         {
@@ -15,7 +27,7 @@
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(simpleMeasurement);
+            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, simpleMeasurement);
 
             // Assert
             Assert.AreEqual(unitM, measurement.MeasurementGroup.Units.FirstOrDefault());
@@ -48,7 +60,7 @@
             List<UnitGroup> unitGroups = [ unitKg, unitM, unitS2 ];
 
             // Act
-            MeasurementParser testGroup = new(goodInput);
+            MeasurementParser testGroup = new(_unitGroupParser, _unitFactory, goodInput);
 
             // Assert
             Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 123.4);
@@ -77,7 +89,7 @@
             List<UnitGroup> unitGroups = [unitM, unitS];
 
             // Act
-            MeasurementParser testGroup = new(goodInput);
+            MeasurementParser testGroup = new(_unitGroupParser, _unitFactory, goodInput);
 
             // Assert
             Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 69);
@@ -98,7 +110,7 @@
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(commaSeparatedMeasurement);
+            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, commaSeparatedMeasurement);
 
             // Assert
             Assert.AreEqual(measurement.MeasurementGroup.Quantity, oneMillion);
@@ -116,7 +128,7 @@
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(indianCommaSeparatedMeasurement);
+            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, indianCommaSeparatedMeasurement);
 
             // Assert
             Assert.AreEqual(measurement.MeasurementGroup.Quantity, longNumber);
@@ -134,7 +146,7 @@
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(europeanCommaSeparatedMeasurement);
+            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, europeanCommaSeparatedMeasurement);
 
             // Assert
             Assert.AreEqual(measurement.MeasurementGroup.Quantity, euroNumber);
@@ -149,7 +161,7 @@
             string noQuantityWithExponent = "e5 kg";
 
             // Act
-            MeasurementParser _ = new(noQuantityWithExponent);
+            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noQuantityWithExponent);
         }
 
         [TestMethod]
@@ -160,7 +172,7 @@
             string noUnitsExponentInput = "123e4";
 
             // Act
-            MeasurementParser _ = new(noUnitsExponentInput);
+            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noUnitsExponentInput);
         }        
         
         [TestMethod]
@@ -171,7 +183,7 @@
             string noUnitsInput = "123";
 
             // Act
-            MeasurementParser _ = new(noUnitsInput);
+            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noUnitsInput);
         }
 
         [TestMethod]
@@ -182,7 +194,7 @@
             string onlyUnit = "kg.m/s^2";
 
             // Act
-            MeasurementParser _ = new(onlyUnit);
+            MeasurementParser _ = new(_unitGroupParser, _unitFactory, onlyUnit);
         }
 
         [TestMethod]
@@ -193,7 +205,7 @@
             string fractionalExponent = "123e4.5 kg.m/s^2";
 
             // Act
-        MeasurementParser _ = new(fractionalExponent);
+        MeasurementParser _ = new(_unitGroupParser, _unitFactory, fractionalExponent);
         }
 
         [TestMethod]
@@ -204,7 +216,7 @@
             string blankString = "";
 
             // Act
-            MeasurementParser _ = new(blankString); 
+            MeasurementParser _ = new(_unitGroupParser, _unitFactory, blankString); 
         }
 
         [TestMethod]
@@ -223,7 +235,7 @@
             {
                 try
                 {
-                    MeasurementParser test = new(s);
+                    MeasurementParser test = new(_unitGroupParser, _unitFactory, s);
                 }
                 catch (Exception e)
                 {

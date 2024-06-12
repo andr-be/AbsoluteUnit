@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AbsoluteUnit.Program
+﻿namespace AbsoluteUnit.Program
 {
     public interface ICommand
     {
@@ -29,6 +23,12 @@ namespace AbsoluteUnit.Program
     public class Convert(CommandGroup commandGroup) : ICommand
     {
         private CommandGroup CommandGroup { get; } = commandGroup;
+
+        private AbsMeasurement FromUnit;
+        private AbsMeasurement ToUnit;
+        
+        private double ConversionFactor;
+
         public AbsMeasurement Execute()
         {
             throw new NotImplementedException();
