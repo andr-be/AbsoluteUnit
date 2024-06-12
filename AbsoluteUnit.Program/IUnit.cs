@@ -131,7 +131,7 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         Units.Yards => "yd",
         Units.Miles => "mi",
         Units.Ounce => "oz",
-        Units.Pound => "lbs",
+        Units.Pound => "lb",
         Units.Ton => "ton",
         Units.FluidOunce => "floz",
         Units.Pint => "pt",

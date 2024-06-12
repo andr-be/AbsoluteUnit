@@ -27,7 +27,7 @@ public class UnitFactory : IUnitFactory
 
     public List<AbsUnit> BuildUnits(List<UnitGroup>? unitGroups = null)
     {
-        if (unitGroups is not null) UnitGroups = unitGroups;
+        UnitGroups = (unitGroups is null) ? UnitGroups : unitGroups;
 
         PropagateExponents();
         ValidateSymbols();
@@ -123,8 +123,14 @@ public class UnitFactory : IUnitFactory
             ? value
             : null;
 
-    private static bool StartsWithValidPrefix(UnitGroup group) => 
-        (group.UnitSymbol.Length > 1) && GetPrefix(group.UnitSymbol[0]) != null;
+    private bool StartsWithValidPrefix(UnitGroup group)
+    {
+        var unit = group.UnitSymbol;
+
+        return (unit.Length > 1)
+            && !CheckUnitDictionaries(group.UnitSymbol)
+            && (GetPrefix(unit[0]) != null);
+    }
 
     private AbsUnit CreateUnit(UnitGroup group)
     {

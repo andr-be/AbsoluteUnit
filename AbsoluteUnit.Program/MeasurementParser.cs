@@ -3,15 +3,23 @@ using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit
 {
+    public interface IMeasurementParser
+    {
+        AbsMeasurement ProcessMeasurement();
+        AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false);
+        MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false);
+    }
+
     public record MeasurementGroup(double Quantity, int Exponent, List<UnitGroup> Units)
     {
         public override string ToString() =>
-            $"{Quantity}{(Exponent != 0 ? "e" + Exponent : "")} {string.Join("", Units)}";
+            $"{Quantity}{(Exponent != 0 ? "e" + Exponent : "")} {string.Join(".", Units)}";
     }
 
-    public partial class MeasurementParser
+    public partial class MeasurementParser(IUnitGroupParser unitGroupParser, IUnitFactory unitFactory) : IMeasurementParser
     {
-        public MeasurementGroup MeasurementGroup { get; }
+        public MeasurementGroup? MeasurementGroup { get; set; }
+        public string? MeasurementString { get; set; }
 
         private const string MeasurementRegexString =
             @"^(-?\d+[.,\d]*(?:\.|,)?\d*)?(?:e(-?\d+))? *([A-Za-zµ°Ω]+[\w\d.*^\-\/]*)*$";
@@ -19,23 +27,37 @@ namespace AbsoluteUnit
         [GeneratedRegex(MeasurementRegexString)]
         private static partial Regex Regex();
 
-        private string MeasurementString { get; }
-        private IUnitGroupParser UnitGroupParser { get; }
-        private IUnitFactory UnitFactory { get; }
-
-        public MeasurementParser(IUnitGroupParser unitGroupParser, IUnitFactory unitFactory, string measurementString, bool unitOnly = false)
+        public MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false)
         {
             MeasurementString = measurementString;
-            UnitGroupParser = unitGroupParser;
-            UnitFactory = unitFactory;
 
             var match = Regex().Match(MeasurementString);
 
-            if (match.Success) MeasurementGroup = unitOnly
-                ? CreateUnitOnlyGroup(match)
-                : CreateFullGroup(match);
+            if (match.Success)
+            {
+                MeasurementGroup = unitOnly
+                    ? CreateUnitOnlyGroup(match)
+                    : CreateFullGroup(match);
+
+                return MeasurementGroup;
+            }
 
             else throw new ParseError($"invalid measurementString: [{MeasurementString}]: invalid format");
+        }
+
+        public AbsMeasurement ProcessMeasurement()
+        {
+            var units = unitFactory.BuildUnits(MeasurementGroup?.Units ?? []);
+            var quantity = MeasurementGroup?.Quantity ?? 0;
+            var exponent = MeasurementGroup?.Exponent ?? 0;
+            
+            return new(units, quantity, exponent);
+        }
+
+        public AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false)
+        {
+            GenerateMeasurementGroup(measurementString, unitOnly);
+            return ProcessMeasurement();
         }
 
         private MeasurementGroup CreateFullGroup(Match match)
@@ -87,7 +109,7 @@ namespace AbsoluteUnit
         }
 
         private List<UnitGroup> GetUnitGroups(string unitString) => 
-            UnitGroupParser.ParseUnitGroups(unitString);
+            unitGroupParser.ParseUnitGroups(unitString);
         
         private static int ParseExponent(string exponentString) =>
             int.TryParse(exponentString, null, out var exponent) ? exponent : 0;
@@ -110,15 +132,6 @@ namespace AbsoluteUnit
 
             else
                 throw new ParseError($"unable to parse quantity: {quantityString}");
-        }
-
-        public AbsMeasurement ProcessMeasurement()
-        {
-            return new(
-                UnitFactory.BuildUnits(MeasurementGroup.Units),
-                MeasurementGroup.Quantity,
-                MeasurementGroup.Exponent
-                );
         }
     }
 

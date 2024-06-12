@@ -2,7 +2,7 @@
   "profiles": {
     "AbsoluteUnit.Program": {
       "commandName": "Project",
-      "commandLineArgs": "--convert \r\n\"123.4e5 kg.m/s^2\" \"lb.ft/s^2\"\r\n\"-sig\" \"3\" "
+      "commandLineArgs": "--convert \r\n\"1 kg.m/s^2\" \"lb.ft/s^2\"\r\n\"-sig\" \"3\" "
     }
   }
 }
