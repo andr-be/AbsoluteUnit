@@ -33,10 +33,5 @@ public class AbsMeasurement
         Exponent = exponent;
     }
 
-    public override string ToString()
-    {
-        string measurementString = $"{Quantity}e{Exponent} ";
-        foreach (var unit in Units) measurementString += unit.ToString();
-        return measurementString;
-    }
+    public override string ToString() => $"{Quantity}e{Exponent} {string.Join(".", Units)}";
 }
