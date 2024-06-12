@@ -6,13 +6,13 @@ namespace AbsoluteUnit
     {
         static void Main(string[] args)
         {
-            var commandGroup = new CommandParser(args).CommandGroup;
 
             var unitGroupParser = ParserFactory.CreateUnitGroupParser();
             var unitFactory = ParserFactory.CreateUnitFactory();
-
             var measurementParser = new MeasurementParser(unitGroupParser, unitFactory);
-            var commandExecutor = new CommandExecutor(measurementParser, commandGroup);
+
+            var commandGroup = new CommandParser(args).CommandGroup;
+            var commandExecutor = new CommandExecutor(commandGroup, measurementParser);
             
             Console.WriteLine(commandGroup);
             Console.WriteLine(commandExecutor.Command);
