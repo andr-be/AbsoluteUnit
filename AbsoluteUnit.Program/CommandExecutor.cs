@@ -21,9 +21,9 @@
 
         private ICommand GetCommandType(CommandGroup commandGroup) => commandGroup.CommandType switch
         {
-            AbsoluteUnit.Command.Convert => new Convert(MeasurementParser, commandGroup),
-            AbsoluteUnit.Command.Express => new Express(MeasurementParser, commandGroup),
-            AbsoluteUnit.Command.Simplify => new Simplify(MeasurementParser, commandGroup),
+            AbsoluteUnit.Command.Convert => new Convert(commandGroup, MeasurementParser),
+            AbsoluteUnit.Command.Express => new Express(commandGroup, MeasurementParser),
+            AbsoluteUnit.Command.Simplify => new Simplify(commandGroup, MeasurementParser),
             _ => throw new ArgumentException($"Command {commandGroup.CommandType} not recognised!")
         };
     }
@@ -36,7 +36,7 @@
 
         private CommandGroup CommandGroup { get; }
 
-        public Convert(IMeasurementParser measurementParser, CommandGroup commandGroup)
+        public Convert(CommandGroup commandGroup, IMeasurementParser measurementParser)
         {
             CommandGroup = commandGroup;
             FromUnit = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
@@ -62,10 +62,9 @@
 
         public override string ToString() => 
             $"{CommandGroup.CommandType}:\t{FromUnit} -> {string.Join(".", ToUnit.Units)} == {Execute()}";
-
     }
 
-    public class Simplify(IMeasurementParser measurementParser, CommandGroup commandGroup) : ICommand
+    public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
     {
         private CommandGroup CommandGroup { get; } = commandGroup;
 
@@ -75,7 +74,7 @@
         }
     }
 
-    public class Express(IMeasurementParser measurementParser, CommandGroup commandGroup) : ICommand
+    public class Express(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
     {
         private CommandGroup CommandGroup { get; } = commandGroup;
 
