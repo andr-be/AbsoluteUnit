@@ -49,6 +49,16 @@ public class SIBase(SIBase.Units unit) : IUnit
     public double ToBase(double value) => value;
 
     public double FromBase(double value) => value;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is SIBase other)
+        {
+            return Symbol.Equals(other.Symbol)
+                && Unit.Equals(other.Unit);
+        }
+        else return false;
+    }
 }
 
 public class SIDerived : IUnit
@@ -63,6 +73,11 @@ public class SIDerived : IUnit
     }
 
     public double ToBase(double value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<IUnit> ExpressInBase()
     {
         throw new NotImplementedException();
     }
@@ -117,11 +132,11 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         { Units.Gallon, 3.785411784 },
     };
 
-    double FahrenheitToCelcius(double value) =>
-        (value - 32) * (5.0 / 9.0);
+    static double FahrenheitToKelvin(double value) =>
+        (value - 32) * (5.0 / 9.0) + 273.15;
 
-    double CelciusToFahrenheit(double value) =>
-        (value * (9.0 / 5.0)) + 32;
+    static double KelvinToFahrenheit(double value) =>
+        (value - 273.15 * (9.0 / 5.0)) + 32;
 
     public string Symbol => Unit switch
     {
@@ -142,13 +157,13 @@ public class USCustomary(USCustomary.Units unit) : IUnit
 
     public double FromBase(double value) => Unit switch
     {
-        Units.Fahrenheit => CelciusToFahrenheit(value),
+        Units.Fahrenheit => KelvinToFahrenheit(value),
         _ => value / Conversion[unit]
     };
 
     public double ToBase(double value) => Unit switch
     {
-        Units.Fahrenheit => FahrenheitToCelcius(value),
+        Units.Fahrenheit => FahrenheitToKelvin(value),
         _ => value * Conversion[unit],
     };
 
@@ -219,6 +234,16 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         { "°F", new USCustomary(Units.Fahrenheit) },
         { "degF", new USCustomary(Units.Fahrenheit) },
     };
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is USCustomary other)
+        {
+            return Symbol.Equals(other.Symbol)
+                && Unit.Equals(other.Unit);
+        }
+        else return false;
+    }
 }
 
 public class Miscellaneous : IUnit
