@@ -47,11 +47,11 @@
         private double GetConversionFactor()
         {
             var toBase = FromUnit.Units
-                .Select(ConversionToBase)
+                .Select(u => u.ConversionToBase())
                 .Aggregate((x, y) => x * y);
             
             var fromBase = ToUnit.Units
-                .Select(ConversionFromBase)
+                .Select(u => u.ConversionFromBase())
                 .Aggregate((x, y) => x * y);
 
             return toBase * fromBase;
@@ -63,9 +63,6 @@
         public override string ToString() => 
             $"{CommandGroup.CommandType}:\t{FromUnit} -> {string.Join(".", ToUnit.Units)} == {Execute()}";
 
-        private static double ConversionFromBase(AbsUnit unit) => unit.Unit.FromBase(1) * PrefixValue(unit);
-        private static double ConversionToBase(AbsUnit unit) => unit.Unit.ToBase(1) / PrefixValue(unit);
-        private static double PrefixValue(AbsUnit unit) => Math.Pow(10.0, unit.Prefix.Prefix.Factor());
     }
 
     public class Simplify(IMeasurementParser measurementParser, CommandGroup commandGroup) : ICommand

@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit.Program;
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace AbsoluteUnit.Program;
 
 public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
 {
@@ -8,6 +10,12 @@ public class AbsUnit(IUnit unit, int exponent, SIPrefix prefix)
 
     public override string ToString() => 
         $"{Prefix}{Unit.Symbol}{((Exponent != 1) ? "^" + Exponent : "")}";
+
+    public double ConversionFromBase() => Unit.FromBase(1) * PrefixValue();
+
+    public double ConversionToBase() => Unit.ToBase(1) / PrefixValue();
+
+    public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
 }
 
 public class AbsMeasurement(
