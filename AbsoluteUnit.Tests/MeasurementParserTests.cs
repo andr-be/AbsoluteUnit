@@ -7,12 +7,14 @@ namespace AbsoluteUnit.Tests
     {
         private IUnitGroupParser _unitGroupParser;
         private IUnitFactory _unitFactory;
+        private MeasurementParser _measurementParser;
 
         [TestInitialize]
         public void Setup()
         {
             _unitGroupParser = new UnitGroupParser();
             _unitFactory = new UnitFactory();
+            _measurementParser = new MeasurementParser(_unitGroupParser, _unitFactory);
         }
 
         [TestMethod]
@@ -27,10 +29,10 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, simpleMeasurement);
+            MeasurementGroup measurement = _measurementParser.GenerateMeasurementGroup(simpleMeasurement);
 
             // Assert
-            Assert.AreEqual(unitM, measurement.MeasurementGroup.Units.FirstOrDefault());
+            Assert.AreEqual(unitM, measurement.Units.FirstOrDefault());
         }
         
         [TestMethod]
@@ -60,12 +62,12 @@ namespace AbsoluteUnit.Tests
             List<UnitGroup> unitGroups = [ unitKg, unitM, unitS2 ];
 
             // Act
-            MeasurementParser testGroup = new(_unitGroupParser, _unitFactory, goodInput);
+            MeasurementGroup testGroup = _measurementParser.GenerateMeasurementGroup(goodInput);
 
             // Assert
-            Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 123.4);
-            Assert.AreEqual(testGroup.MeasurementGroup.Exponent, 5);
-            Assert.IsTrue(testGroup.MeasurementGroup.Units.SequenceEqual(unitGroups));
+            Assert.AreEqual(testGroup.Quantity, 123.4);
+            Assert.AreEqual(testGroup.Exponent, 5);
+            Assert.IsTrue(testGroup.Units.SequenceEqual(unitGroups));
         }
 
         [TestMethod]
@@ -89,12 +91,12 @@ namespace AbsoluteUnit.Tests
             List<UnitGroup> unitGroups = [unitM, unitS];
 
             // Act
-            MeasurementParser testGroup = new(_unitGroupParser, _unitFactory, goodInput);
+            MeasurementGroup testGroup = _measurementParser.GenerateMeasurementGroup(goodInput);
 
             // Assert
-            Assert.AreEqual(testGroup.MeasurementGroup.Quantity, 69);
-            Assert.AreEqual(testGroup.MeasurementGroup.Exponent, 0);
-            Assert.IsTrue(testGroup.MeasurementGroup.Units.SequenceEqual(unitGroups));
+            Assert.AreEqual(testGroup.Quantity, 69);
+            Assert.AreEqual(testGroup.Exponent, 0);
+            Assert.IsTrue(testGroup.Units.SequenceEqual(unitGroups));
         }
 
         [TestMethod]
@@ -110,11 +112,12 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, commaSeparatedMeasurement);
+            MeasurementGroup testGroup = _measurementParser.GenerateMeasurementGroup(commaSeparatedMeasurement);
+
 
             // Assert
-            Assert.AreEqual(measurement.MeasurementGroup.Quantity, oneMillion);
-            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), kilometer);
+            Assert.AreEqual(testGroup.Quantity, oneMillion);
+            Assert.AreEqual(testGroup.Units.First(), kilometer);
         }
 
         [TestMethod]
@@ -128,11 +131,11 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, indianCommaSeparatedMeasurement);
+            MeasurementGroup testGroup = _measurementParser.GenerateMeasurementGroup(indianCommaSeparatedMeasurement);
 
             // Assert
-            Assert.AreEqual(measurement.MeasurementGroup.Quantity, longNumber);
-            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), microSecond);
+            Assert.AreEqual(testGroup.Quantity, longNumber);
+            Assert.AreEqual(testGroup.Units.First(), microSecond);
         }
 
         [TestMethod]
@@ -146,11 +149,11 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            MeasurementParser measurement = new(_unitGroupParser, _unitFactory, europeanCommaSeparatedMeasurement);
+            MeasurementGroup testGroup = _measurementParser.GenerateMeasurementGroup(europeanCommaSeparatedMeasurement);
 
             // Assert
-            Assert.AreEqual(measurement.MeasurementGroup.Quantity, euroNumber);
-            Assert.AreEqual(measurement.MeasurementGroup.Units.First(), litre);
+            Assert.AreEqual(testGroup.Quantity, euroNumber);
+            Assert.AreEqual(testGroup.Units.First(), litre);
         }
 
         [TestMethod]
@@ -161,7 +164,7 @@ namespace AbsoluteUnit.Tests
             string noQuantityWithExponent = "e5 kg";
 
             // Act
-            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noQuantityWithExponent);
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(noQuantityWithExponent);
         }
 
         [TestMethod]
@@ -172,7 +175,7 @@ namespace AbsoluteUnit.Tests
             string noUnitsExponentInput = "123e4";
 
             // Act
-            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noUnitsExponentInput);
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(noUnitsExponentInput);
         }        
         
         [TestMethod]
@@ -183,7 +186,7 @@ namespace AbsoluteUnit.Tests
             string noUnitsInput = "123";
 
             // Act
-            MeasurementParser _ = new(_unitGroupParser, _unitFactory, noUnitsInput);
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(noUnitsInput);
         }
 
         [TestMethod]
@@ -194,7 +197,7 @@ namespace AbsoluteUnit.Tests
             string onlyUnit = "kg.m/s^2";
 
             // Act
-            MeasurementParser _ = new(_unitGroupParser, _unitFactory, onlyUnit);
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(onlyUnit);
         }
 
         [TestMethod]
@@ -205,7 +208,7 @@ namespace AbsoluteUnit.Tests
             string fractionalExponent = "123e4.5 kg.m/s^2";
 
             // Act
-        MeasurementParser _ = new(_unitGroupParser, _unitFactory, fractionalExponent);
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(fractionalExponent);
         }
 
         [TestMethod]
@@ -216,26 +219,26 @@ namespace AbsoluteUnit.Tests
             string blankString = "";
 
             // Act
-            MeasurementParser _ = new(_unitGroupParser, _unitFactory, blankString); 
+            MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(blankString); 
         }
 
         [TestMethod]
         public void MeasurementParser_RandomUnicode_ThrowsParseError()
         {
-            List<string> randomUnicode = new()
-            {
+            List<string> randomUnicode =
+            [
                 "𝟙.𝟚𝟛 𝕜𝕘/𝕞𝕤^𝟚",
                 "⹠≽⽗⨣ⱙ⮱⺇⡫ⱠⱿ⋯∟➋⫽⺽⒇ⴝ“⹰⬈⬩⒝⮦⌑╈⥟≖⫔Ⱨ➨⢃",
                 "⁰∨⏹₈∇↏↝Ɱ⻆Ⱇ⍕⛍⫙⬪⦰╅⳰⑟∿⬫⨹⯄⾿⽛⊹≨◕┐⚣⨪",
                 "⓼ⱛ₭⛊↍⛠ⵙ⇲⹲☹⚄⽊☹⋎☐■⛤℃⭸⁂⤄♊⅟⬘⒯▀⭽₲⩕∔",
                 "( ͡° ͜ʖ ͡°)",
-            };
+            ];
 
             foreach (var s in randomUnicode)
             {
                 try
                 {
-                    MeasurementParser test = new(_unitGroupParser, _unitFactory, s);
+                    MeasurementGroup _ = _measurementParser.GenerateMeasurementGroup(s);
                 }
                 catch (Exception e)
                 {
