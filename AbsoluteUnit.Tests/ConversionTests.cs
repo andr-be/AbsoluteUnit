@@ -1,6 +1,4 @@
 ﻿using AbsoluteUnit.Program;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace AbsoluteUnit.Tests
 {
@@ -17,7 +15,33 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        public void Convert_Converts1fToMeters_Correctly()
+        public void Convert_ValidConversionIsConsideredValid()
+        {
+            List<AbsUnit> metersPerSecond =
+            [
+                new AbsUnit(new SIBase(SIBase.Units.Meter)),
+                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+            ];
+
+            List<AbsUnit> inchesPerMicrosecond =
+            [
+                new AbsUnit(new USCustomary(USCustomary.Units.Inch)),
+                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+            ];
+
+            AbsMeasurement metersPerSecondMeasurement = new(metersPerSecond);
+            AbsMeasurement inchesPerMicrosecondMeasurement = new(inchesPerMicrosecond);
+
+            // Act
+            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecondMeasurement);
+            var inmsToBase = MeasurementConverter.ToBaseMeasurement(inchesPerMicrosecondMeasurement);
+
+            // Assert
+            Assert.IsTrue(MeasurementConverter.ValidConversion(msToBase, inmsToBase));
+        }
+
+        [TestMethod]
+        public void Convert_ConvertsOneFootToMeters_Correctly()
         {
             // Arrange
             var foot = new AbsUnit(new USCustomary(USCustomary.Units.Feet));
