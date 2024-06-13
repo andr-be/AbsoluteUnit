@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-
-namespace AbsoluteUnit.Program;
+﻿namespace AbsoluteUnit.Program;
 
 public class AbsUnit(
     IUnit unit, 
