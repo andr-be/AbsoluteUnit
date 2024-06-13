@@ -15,7 +15,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        public void Convert_ValidConversionIsConsideredValid()
+        public void Convert_ValidConversion_IsConsideredValid()
         {
             List<AbsUnit> metersPerSecond =
             [
@@ -38,6 +38,32 @@ namespace AbsoluteUnit.Tests
 
             // Assert
             Assert.IsTrue(MeasurementConverter.ValidConversion(msToBase, inmsToBase));
+        }
+
+        [TestMethod]
+        public void Convert_InvalidConversion_IsNotConsideredValid()
+        {
+            List<AbsUnit> metersPerSecond =
+            [
+                new AbsUnit(new SIBase(SIBase.Units.Meter)),
+                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+            ];
+
+            List<AbsUnit> poundsPerSecondSquared =
+            [
+                new AbsUnit(new USCustomary(USCustomary.Units.Pound)),
+                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -2)
+            ];
+
+            AbsMeasurement metersPerSecondMeasurement = new(metersPerSecond);
+            AbsMeasurement poundsPerSecondSquaredMeasurement = new(poundsPerSecondSquared);
+
+            // Act
+            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecondMeasurement);
+            var lbs2ToBase = MeasurementConverter.ToBaseMeasurement(poundsPerSecondSquaredMeasurement);
+
+            // Assert
+            Assert.IsFalse(MeasurementConverter.ValidConversion(msToBase, lbs2ToBase));
         }
 
         [TestMethod]
