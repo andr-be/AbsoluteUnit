@@ -15,52 +15,47 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        public void Convert_ValidConversion_IsConsideredValid()
+        public void Convert_MetersPerSecondToInchesPerMicrosecond_IsValidConversion()
         {
-            List<AbsUnit> metersPerSecond =
-            [
+            var metersPerSecond = CreateMeasurement
+            (
                 new AbsUnit(new SIBase(SIBase.Units.Meter)),
                 new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
-            ];
+            );
 
-            List<AbsUnit> inchesPerMicrosecond =
-            [
+            var inchesPerMicroSecond = CreateMeasurement
+            (
                 new AbsUnit(new USCustomary(USCustomary.Units.Inch)),
                 new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
-            ];
-
-            AbsMeasurement metersPerSecondMeasurement = new(metersPerSecond);
-            AbsMeasurement inchesPerMicrosecondMeasurement = new(inchesPerMicrosecond);
+            );
 
             // Act
-            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecondMeasurement);
-            var inmsToBase = MeasurementConverter.ToBaseMeasurement(inchesPerMicrosecondMeasurement);
+            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecond);
+            var inµsToBase = MeasurementConverter.ToBaseMeasurement(inchesPerMicroSecond);
 
             // Assert
-            Assert.IsTrue(MeasurementConverter.ValidConversion(msToBase, inmsToBase));
+            Assert.IsTrue(MeasurementConverter.ValidConversion(msToBase, inµsToBase));
         }
 
         [TestMethod]
-        public void Convert_InvalidConversion_IsNotConsideredValid()
+        public void Convert_MetersPerSecondToPoundsPerSecondSquared_IsNotValidConversion()
         {
-            List<AbsUnit> metersPerSecond =
-            [
+            // Arrange
+            var metersPerSecond = CreateMeasurement
+            (
                 new AbsUnit(new SIBase(SIBase.Units.Meter)),
                 new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
-            ];
+            );
 
-            List<AbsUnit> poundsPerSecondSquared =
-            [
+            var poundsPerSecondSquared = CreateMeasurement
+            (
                 new AbsUnit(new USCustomary(USCustomary.Units.Pound)),
                 new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -2)
-            ];
-
-            AbsMeasurement metersPerSecondMeasurement = new(metersPerSecond);
-            AbsMeasurement poundsPerSecondSquaredMeasurement = new(poundsPerSecondSquared);
+            );
 
             // Act
-            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecondMeasurement);
-            var lbs2ToBase = MeasurementConverter.ToBaseMeasurement(poundsPerSecondSquaredMeasurement);
+            var msToBase = MeasurementConverter.ToBaseMeasurement(metersPerSecond);
+            var lbs2ToBase = MeasurementConverter.ToBaseMeasurement(poundsPerSecondSquared);
 
             // Assert
             Assert.IsFalse(MeasurementConverter.ValidConversion(msToBase, lbs2ToBase));
@@ -82,5 +77,7 @@ namespace AbsoluteUnit.Tests
             // Assert
             Assert.AreEqual(expectedResult, convertedFoot);
         }
+
+        private static AbsMeasurement CreateMeasurement(params AbsUnit[] units) => new([.. units]);
     }
 }
