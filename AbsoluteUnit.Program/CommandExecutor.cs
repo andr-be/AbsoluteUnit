@@ -28,41 +28,7 @@
         };
     }
 
-    public class Convert : ICommand
-    {
-        public AbsMeasurement FromUnit { get; }
-        public AbsMeasurement ToUnit { get; }
-        public double ConversionFactor { get; }
-
-        private CommandGroup CommandGroup { get; }
-
-        public Convert(CommandGroup commandGroup, IMeasurementParser measurementParser)
-        {
-            CommandGroup = commandGroup;
-            FromUnit = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
-            ToUnit = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[1], unitOnly: true);
-            ConversionFactor = GetConversionFactor();
-        }
-
-        private double GetConversionFactor()
-        {
-            var toBase = FromUnit.Units
-                .Select(u => u.ConversionToBase())
-                .Aggregate((x, y) => x * y);
-            
-            var fromBase = ToUnit.Units
-                .Select(u => u.ConversionFromBase())
-                .Aggregate((x, y) => x * y);
-
-            return toBase * fromBase;
-        }
-
-        public AbsMeasurement Execute() => 
-            new(ToUnit.Units, FromUnit.Quantity * ConversionFactor, FromUnit.Exponent);
-
-        public override string ToString() => 
-            $"{CommandGroup.CommandType}:\t{FromUnit} -> {string.Join(".", ToUnit.Units)} == {Execute()}";
-    }
+    
 
     public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
     {

@@ -1,6 +1,6 @@
 ﻿namespace AbsoluteUnit.Program;
 
-public class SIPrefix(SIPrefix.Prefixes prefix)
+public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
 {
     public readonly Prefixes Prefix = prefix;
 
@@ -94,6 +94,14 @@ public class SIPrefix(SIPrefix.Prefixes prefix)
         { "r", new SIPrefix(Prefixes.Ronto) },
         { "q", new SIPrefix(Prefixes.Quecto) },
     };
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is SIPrefix other)
+            return Prefix.Equals(other.Prefix);
+        else 
+            return false;
+    }
 }
 
 public static class PrefixExtensions
