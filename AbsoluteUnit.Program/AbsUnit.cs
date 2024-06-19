@@ -46,10 +46,7 @@ public class AbsUnit(
 
     public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
 
-    public List<AbsUnit> ExpressInBaseUnits()
-    {
-        return [];
-    }
+    public List<AbsUnit> ExpressInBaseUnits() => MeasurementConverter.BaseConversion(this);
 
     public override bool Equals(object? obj)
     {
