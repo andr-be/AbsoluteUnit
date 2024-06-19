@@ -8,10 +8,8 @@ public interface IUnit
     double FromBase(double value);
 }
 
-public class SIBase(SIBase.Units unit) : IUnit
+public class SIBase : IUnit
 {
-    public object Unit { get; } = unit;
-
     public enum Units
     {
         Meter,
@@ -22,6 +20,18 @@ public class SIBase(SIBase.Units unit) : IUnit
         Mole,
         Candela
     }
+    
+    public object Unit { get; }
+
+    public SIBase(Units unit)
+    {
+        Unit = unit;
+    }
+
+    public SIBase(string unitString)
+    {
+        Unit = ((SIBase)ValidUnitStrings[unitString]).Unit;
+    }
 
     public static readonly Dictionary<string, object> ValidUnitStrings = new()
     {
@@ -30,7 +40,7 @@ public class SIBase(SIBase.Units unit) : IUnit
         { "s", new SIBase(Units.Second) },
         { "A", new SIBase(Units.Ampere) },
         { "K", new SIBase(Units.Kelvin) },
-        { "mole", new SIBase(Units.Mole) },
+        { "mol", new SIBase(Units.Mole) },
         { "cd", new SIBase(Units.Candela) },
     };
 
@@ -41,10 +51,9 @@ public class SIBase(SIBase.Units unit) : IUnit
         Units.Second => "s",
         Units.Ampere => "A",
         Units.Kelvin => "K",
-        Units.Mole => "mole",
+        Units.Mole => "mol",
         Units.Candela => "cd",
-        _ => throw new NotImplementedException(),
-    };
+    }; 
 
     public double ToBase(double value) => value;
 
@@ -54,8 +63,7 @@ public class SIBase(SIBase.Units unit) : IUnit
     {
         if (obj is SIBase other)
         {
-            return Symbol.Equals(other.Symbol)
-                && Unit.Equals(other.Unit);
+            return Unit.Equals(other.Unit);
         }
         else return false;
     }
