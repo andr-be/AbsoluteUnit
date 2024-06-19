@@ -8,8 +8,8 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Equals_OneMeterEqualsOneMeter()
         {
-            var a = new AbsUnit(new SIBase(SIBase.Units.Meter));
-            var b = new AbsUnit(new SIBase(SIBase.Units.Meter));
+            var a = new AbsUnit(new SIBase("m"));
+            var b = new AbsUnit(new SIBase("m"));
 
             Assert.AreEqual(a, b);
         }
@@ -19,14 +19,14 @@ namespace AbsoluteUnit.Tests
         {
             var metersPerSecond = CreateMeasurement
             (
-                new AbsUnit(new SIBase(SIBase.Units.Meter)),
-                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+                new AbsUnit(new SIBase("m")),
+                new AbsUnit(new SIBase("s"), exponent: -1)
             );
 
             var inchesPerMicroSecond = CreateMeasurement
             (
                 new AbsUnit(new USCustomary(USCustomary.Units.Inch)),
-                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+                new AbsUnit(new SIBase("s"), exponent: -1)
             );
 
             // Act
@@ -43,14 +43,14 @@ namespace AbsoluteUnit.Tests
             // Arrange
             var metersPerSecond = CreateMeasurement
             (
-                new AbsUnit(new SIBase(SIBase.Units.Meter)),
-                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -1)
+                new AbsUnit(new SIBase("m")),
+                new AbsUnit(new SIBase("s"), exponent: -1)
             );
 
             var poundsPerSecondSquared = CreateMeasurement
             (
                 new AbsUnit(new USCustomary(USCustomary.Units.Pound)),
-                new AbsUnit(new SIBase(SIBase.Units.Second), exponent: -2)
+                new AbsUnit(new SIBase("s"), exponent: -2)
             );
 
             // Act
@@ -68,7 +68,7 @@ namespace AbsoluteUnit.Tests
             var foot = new AbsUnit(new USCustomary(USCustomary.Units.Feet));
             var oneFoot = new AbsMeasurement(foot, 1);
 
-            var meter = new AbsUnit(new SIBase(SIBase.Units.Meter));
+            var meter = new AbsUnit(new SIBase("m"));
             var expectedResult = new AbsMeasurement(meter, 0.3048);
 
             // Act
