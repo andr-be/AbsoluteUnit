@@ -1,9 +1,37 @@
 ﻿namespace AbsoluteUnit.Program;
 
+public class AbsUnitBuilder
+{
+    private SIPrefix Prefix = new(SIPrefix.Prefixes._None);
+    private IUnit Unit = new SIBase(SIBase.Units.Meter);
+    private int Exponent = 1;
+
+    public AbsUnit Build() => new(Unit, Exponent, Prefix);
+
+    public AbsUnitBuilder WithPrefix(SIPrefix prefix)
+    {
+        Prefix = prefix;
+        return this;
+    }
+
+    public AbsUnitBuilder WithUnit(IUnit unit)
+    {
+        Unit = unit;
+        return this;
+    }
+
+    public AbsUnitBuilder WithExponent(int exponent)
+    {
+        Exponent = exponent;
+        return this;
+    }
+}
+
 public class AbsUnit(
     IUnit unit, 
     int exponent = 1, 
-    SIPrefix? prefix = null)
+    SIPrefix? prefix = null
+    )
 {
     public IUnit Unit { get; set; } = unit;
     public int Exponent { get; set; } = exponent;
@@ -17,6 +45,11 @@ public class AbsUnit(
     public double ConversionToBase() => Unit.ToBase(1) / PrefixValue();
 
     public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
+
+    public List<AbsUnit> ExpressInBaseUnits()
+    {
+        return [];
+    }
 
     public override bool Equals(object? obj)
     {
@@ -55,6 +88,6 @@ public class AbsMeasurement(
                 && Quantity.Equals(other.Quantity)
                 && Exponent.Equals(other.Exponent);
         }
-        return false;
+        else return false;
     }
 }
