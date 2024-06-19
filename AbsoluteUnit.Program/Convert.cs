@@ -88,11 +88,13 @@ public static class MeasurementConverter
     {
         if (unit is AbsUnit validUnit)
         {
+            var prefix = validUnit.Prefix;
+
             if (validUnit.Unit is SIBase baseUnit)
-                return ConvertSIBase(baseUnit);
+                return ConvertSIBase(baseUnit, prefix);
             
             if (validUnit.Unit is USCustomary customaryUnit)
-                return ConvertUSCustomary(customaryUnit);
+                return ConvertUSCustomary(customaryUnit, prefix);
             
             if (validUnit.Unit is SIDerived derivedUnit)
                 throw new NotImplementedException($"No BaseConversion implemented for {derivedUnit} (Derived units not implemented 19/06/24)");
@@ -105,7 +107,7 @@ public static class MeasurementConverter
         else throw new ArgumentException($"{unit} is not a supported AbsUnit!");
     }
 
-    private static List<AbsUnit> ConvertUSCustomary(USCustomary customaryUnit)
+    private static List<AbsUnit> ConvertUSCustomary(USCustomary customaryUnit, SIPrefix prefix)
     {
         return customaryUnit.Unit switch
         {
@@ -113,26 +115,31 @@ public static class MeasurementConverter
             USCustomary.Units.Mil => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Inch => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Feet => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Yards => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Miles => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
 
@@ -140,16 +147,19 @@ public static class MeasurementConverter
             USCustomary.Units.Ounce => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("g"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Pound => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("g"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Ton => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("g"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
 
@@ -158,18 +168,21 @@ public static class MeasurementConverter
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
                     .WithExponent(3)
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Pint => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
                     .WithExponent(3)
+                    .WithPrefix(prefix)
                     .Build()
             ],
             USCustomary.Units.Gallon => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
                     .WithExponent(3)
+                    .WithPrefix(prefix)
                     .Build()
             ],
 
@@ -177,12 +190,13 @@ public static class MeasurementConverter
             USCustomary.Units.Fahrenheit => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("k"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
         };
     }
 
-    private static List<AbsUnit> ConvertSIBase(SIBase baseUnit)
+    private static List<AbsUnit> ConvertSIBase(SIBase baseUnit, SIPrefix prefix)
     {
         return baseUnit.Unit switch
         {
@@ -190,36 +204,43 @@ public static class MeasurementConverter
             SIBase.Units.Meter => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("m"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Gram => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("g"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Second => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("s"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Ampere => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("A"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Kelvin => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("K"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Mole => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("mol"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
             SIBase.Units.Candela => [
                 new AbsUnitBuilder()
                     .WithUnit(new SIBase("cd"))
+                    .WithPrefix(prefix)
                     .Build()
             ],
         };
