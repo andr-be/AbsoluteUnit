@@ -21,19 +21,13 @@ public class SIBase : IUnit
         Candela
     }
     
+
+    public SIBase(Units unit) => Unit = unit;
+    public SIBase(string unitString) => Unit = ((SIBase)ValidUnitStrings[unitString]).Unit;
+
     public object Unit { get; }
 
-    public SIBase(Units unit)
-    {
-        Unit = unit;
-    }
-
-    public SIBase(string unitString)
-    {
-        Unit = ((SIBase)ValidUnitStrings[unitString]).Unit;
-    }
-
-    public static readonly Dictionary<string, object> ValidUnitStrings = new()
+    public static Dictionary<string, object> ValidUnitStrings { get; } = new()
     {
         { "m", new SIBase(Units.Meter) },
         { "g", new SIBase(Units.Gram) },
@@ -53,43 +47,21 @@ public class SIBase : IUnit
         Units.Kelvin => "K",
         Units.Mole => "mol",
         Units.Candela => "cd",
+        _ => throw new NotImplementedException($"Invalid SI Base Unit: {Unit}")
     }; 
 
     public double ToBase(double value) => value;
 
     public double FromBase(double value) => value;
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is SIBase other)
-        {
-            return Unit.Equals(other.Unit);
-        }
-        else return false;
-    }
+    public override bool Equals(object? obj) => 
+        (obj is SIBase other) && 
+        Unit.Equals(other.Unit);
+
 }
 
 public class SIDerived : IUnit
 {
-    public string Symbol => throw new NotImplementedException();
-
-    public object Unit => throw new NotImplementedException();
-
-    public double FromBase(double value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public double ToBase(double value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<IUnit> ExpressInBase()
-    {
-        throw new NotImplementedException();
-    }
-
     public enum Units
     {
         Hertz,
@@ -116,7 +88,25 @@ public class SIDerived : IUnit
         Katal,
     }
 
+    public string Symbol => throw new NotImplementedException();
+
+    public object Unit => throw new NotImplementedException();
+
+    public double ToBase(double value) => 
+        (Units)Unit == Units.Celsius 
+            ? value + 273.15 
+            : value;
+
+    public double FromBase(double value) => 
+        (Units)Unit == Units.Celsius 
+            ? value - 273.15 
+            : value;
+
     public static readonly Dictionary<string, object> ValidUnitStrings = [];
+
+    public override bool Equals(object? obj) =>
+        obj is SIDerived other &&
+        Unit.Equals(other.Unit);
 }
 
 public class USCustomary(USCustomary.Units unit) : IUnit
@@ -243,15 +233,9 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         { "degF", new USCustomary(Units.Fahrenheit) },
     };
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is USCustomary other)
-        {
-            return Symbol.Equals(other.Symbol)
-                && Unit.Equals(other.Unit);
-        }
-        else return false;
-    }
+    public override bool Equals(object? obj) => 
+        obj is USCustomary other && 
+        Unit.Equals(other.Unit);
 }
 
 public class Miscellaneous : IUnit
