@@ -13,9 +13,12 @@ namespace AbsoluteUnit
 
             var commandGroup = new CommandParser(args).CommandGroup;
             var commandExecutor = new CommandExecutor(commandGroup, measurementParser);
-            
+
+            var result = commandExecutor.Execute();
+
             Console.WriteLine(commandGroup);
             Console.WriteLine(commandExecutor.Command);
+            Console.WriteLine(result);
 
             //var convertedResult = commandExecutor.Execute();
         }
