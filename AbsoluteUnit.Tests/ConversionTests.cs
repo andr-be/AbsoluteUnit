@@ -11,8 +11,8 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Equals_OneMeterEqualsOneMeter()
         {
-            var a = new AbsUnit(new SIBase("m"));
-            var b = new AbsUnit(new SIBase("m"));
+            var a = AbsUnitBuilder.Meter();
+            var b = AbsUnitBuilder.Meter();
 
             Assert.AreEqual(a, b);
         }
@@ -24,8 +24,8 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 5918.2,
                 units: [
-                    new AbsUnit(new SIBase("m")),
-                    new AbsUnit(new SIBase("s"), exponent: -1)
+                    AbsUnitBuilder.Meter(),
+                    AbsUnitBuilder.Second(-1)
                 ]
             );
 
@@ -33,8 +33,15 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 0.2330,
                 units: [
-                    new AbsUnit(new USCustomary(USCustomary.Units.Inch)),
-                    new AbsUnit(new SIBase("s"), exponent: -1)
+                    new AbsUnitBuilder()
+                        .WithUnit(new USCustomary(USCustomary.Units.Inch))
+                        .Build(),
+                    
+                    new AbsUnitBuilder()
+                        .WithUnit(new SIBase(SIBase.Units.Second))
+                        .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
+                        .WithExponent(-1)
+                        .Build(),
                 ]
             );
 
@@ -51,16 +58,23 @@ namespace AbsoluteUnit.Tests
         {
             // Arrange
             var metersPerSecond = CreateMeasurement
-            ([
-                new AbsUnit(new SIBase("m")),
-                new AbsUnit(new SIBase("s"), exponent: -1)
-            ]);
+            (
+                [
+                    AbsUnitBuilder.Meter(),
+                    AbsUnitBuilder.Second(-1)
+                ]
+            );
 
             var poundsPerSecondSquared = CreateMeasurement
-            ([
-                new AbsUnit(new USCustomary(USCustomary.Units.Pound)),
-                new AbsUnit(new SIBase("s"), exponent: -2)
-            ]);
+            (
+                [
+                    new AbsUnitBuilder()
+                        .WithUnit(new USCustomary(USCustomary.Units.Pound))
+                        .Build(),
+
+                    AbsUnitBuilder.Second(-2)
+                ]
+            );
 
             // Act
             var isValid = MeasurementConverter.IsValidConversion(metersPerSecond, poundsPerSecondSquared);
@@ -73,11 +87,17 @@ namespace AbsoluteUnit.Tests
         public void Convert_ConvertsOneFootToMeters_Correctly()
         {
             // Arrange
-            var foot = new AbsUnit(new USCustomary(USCustomary.Units.Feet));
-            var oneFoot = new AbsMeasurement(foot, 1);
+            var oneFoot = CreateMeasurement
+            (
+                quantity: 1,
+                units: [
+                    new AbsUnitBuilder()
+                        .WithUnit(new USCustomary(USCustomary.Units.Feet))
+                        .Build()
+                ]
+            );
 
-            var meter = new AbsUnit(new SIBase("m"));
-            var expectedResult = new AbsMeasurement(meter, 0.3048);
+            var expectedResult = CreateMeasurement([AbsUnitBuilder.Meter()], 0.3048);
 
             // Act
             var convertedFoot = MeasurementConverter.ExpressInBaseUnits(oneFoot);
@@ -92,7 +112,8 @@ namespace AbsoluteUnit.Tests
             // Arrange
             var _02330InchesPerMicroSecond = CreateMeasurement
             (
-                [
+                quantity: 0.2330,
+                units: [
                     new AbsUnitBuilder()
                         .WithUnit(new USCustomary(USCustomary.Units.Inch))
                         .Build(),
@@ -102,19 +123,17 @@ namespace AbsoluteUnit.Tests
                         .WithExponent(-1)
                         .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
                         .Build()
-                ],
+                ]
                     
-                quantity: 0.2330
             );
 
-            var _5918MetersPerSecond = CreateMeasurement
+            var expected = CreateMeasurement
             (
-                [
-                    new AbsUnit(new SIBase("m")),
-                    new AbsUnit(new SIBase("s"), 
-                                exponent: -1)
-                ], 
-                quantity: 5918.2
+                quantity: 5918.2,
+                units: [
+                    AbsUnitBuilder.Meter(),
+                    AbsUnitBuilder.Second(-1)
+                ]
             );
 
             // Act
@@ -123,11 +142,54 @@ namespace AbsoluteUnit.Tests
             // Assert
             Assert.AreEqual
             (
-                expected:   _5918MetersPerSecond.Quantity, 
+                expected:   expected.Quantity, 
                 actual:     convertedUnit.Quantity, 
                 delta:      1e-12, 
-                $"actual: {convertedUnit} .. expected: {_5918MetersPerSecond} .. (delta {_5918MetersPerSecond.Quantity - convertedUnit.Quantity})"
+                $"actual: {convertedUnit} .. expected: {expected} .. (delta {expected.Quantity - convertedUnit.Quantity})"
             );
+        }
+
+        [TestMethod]
+        public void Convert_OneTonIntoKilograms_Correctly()
+        {
+            var expected = CreateMeasurement([AbsUnitBuilder.Kilogram()], 907.18474);
+
+            var oneTon = CreateMeasurement
+            (
+                [
+                    new AbsUnitBuilder()
+                        .WithUnit(new USCustomary(USCustomary.Units.Ton))
+                        .Build()
+                ]
+            );
+
+            // Act
+            var actual = MeasurementConverter.ConvertMeasurement(oneTon, expected);
+
+            // Assert
+            AssertWithConfidence(expected, actual);
+        }
+
+        [TestMethod]
+        public void Convert_OneKilogramInto2pt2Pounds_Correctly()
+        {
+            var kilogram = new AbsMeasurement(AbsUnitBuilder.Kilogram(), 1);
+
+            var expectedValue = CreateMeasurement
+            (
+                quantity: 2.20462262,
+                units: [
+                    new AbsUnitBuilder()
+                        .WithUnit(new USCustomary(USCustomary.Units.Pound))
+                        .Build()
+                ]
+            );
+
+            // At
+            var actualValue = MeasurementConverter.ConvertMeasurement(kilogram, expectedValue);
+
+            // Assert
+            AssertWithConfidence(expectedValue, actualValue);
         }
 
         private static AbsMeasurement CreateMeasurement(
@@ -136,5 +198,13 @@ namespace AbsoluteUnit.Tests
             int exponent = 1
             ) => 
                 new(units, quantity, exponent);
+
+        private void AssertWithConfidence(AbsMeasurement expected, AbsMeasurement actual) => Assert.AreEqual
+        (
+            expected: expected.Quantity,
+            actual: actual.Quantity,
+            delta: 1e-12,
+            $"actual: {actual} .. expected: {expected} .. (delta {expected.Quantity - actual.Quantity})"
+        );
     }
 }
