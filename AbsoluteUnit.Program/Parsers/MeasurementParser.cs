@@ -1,20 +1,10 @@
 ﻿using AbsoluteUnit.Program;
+using AbsoluteUnit.Program.Interfaces;
+using AbsoluteUnit.Program.Structures;
 using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit
 {
-    public interface IMeasurementParser
-    {
-        AbsMeasurement ProcessMeasurement();
-        AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false);
-        MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false);
-    }
-
-    public record MeasurementGroup(double Quantity, int Exponent, List<UnitGroup> Units)
-    {
-        public override string ToString() =>
-            $"{Quantity}{(Exponent != 0 ? "e" + Exponent : "")} {string.Join(".", Units)}";
-    }
 
     public partial class MeasurementParser(IUnitGroupParser unitGroupParser, IUnitFactory unitFactory) : IMeasurementParser
     {

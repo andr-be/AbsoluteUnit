@@ -1,4 +1,5 @@
-using static AbsoluteUnit.CommandParser;
+using AbsoluteUnit.Program.Parsers;
+using AbsoluteUnit.Program;
 
 namespace AbsoluteUnit.Tests
 {

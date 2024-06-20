@@ -1,40 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+using AbsoluteUnit.Program.Interfaces;
+using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program;
-
-public interface IUnitGroupParser
-{
-    List<UnitGroup> ParseUnitGroups(string unitString);
-}
-
-public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent, bool HasPrefix = false)
-{
-    public static UnitOperation GetUnitOperation(char c) => c switch
-    {
-        '/' => UnitOperation.Divide,
-        '.' => UnitOperation.Multiply,
-        _ => throw new ParseError("invalid DivMulti symbol")
-    };
-
-    public enum UnitOperation
-    {
-        Divide,
-        Multiply,
-    }
-
-    public override string ToString()
-    {
-        string operation = (Operation == UnitOperation.Divide)
-                ? "-"
-                : "";
-
-        string exponent = (Exponent is < 0 or > 1)
-            ? $"^{operation}{Exponent}"
-            : "";
-
-        return $"{UnitSymbol}{exponent}";
-    }
-}
 
 public partial class UnitGroupParser : IUnitGroupParser
 {

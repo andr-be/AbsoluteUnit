@@ -1,11 +1,8 @@
-﻿namespace AbsoluteUnit.Program;
+﻿using AbsoluteUnit.Program.Interfaces;
+using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.Units;
 
-
-
-public interface IUnitFactory
-{
-    List<AbsUnit> BuildUnits(List<UnitGroup>? unitGroups = null);
-}
+namespace AbsoluteUnit.Program.Factories;
 
 public class UnitFactory : IUnitFactory
 {
@@ -17,17 +14,17 @@ public class UnitFactory : IUnitFactory
 
     public UnitFactory(List<UnitGroup> unitGroups) => UnitGroups = unitGroups;
 
-    private readonly List<Dictionary<string, object>> ValidSymbols = 
-    [ 
-        SIBase.ValidUnitStrings, 
+    private readonly List<Dictionary<string, object>> ValidSymbols =
+    [
+        SIBase.ValidUnitStrings,
         SIDerived.ValidUnitStrings,
-        USCustomary.ValidUnitStrings, 
+        USCustomary.ValidUnitStrings,
         Miscellaneous.ValidUnitStrings,
     ];
 
     public List<AbsUnit> BuildUnits(List<UnitGroup>? unitGroups = null)
     {
-        UnitGroups = (unitGroups is null) ? UnitGroups : unitGroups;
+        UnitGroups = unitGroups is null ? UnitGroups : unitGroups;
 
         PropagateExponents();
         ValidateSymbols();
@@ -44,11 +41,11 @@ public class UnitFactory : IUnitFactory
         UnitGroups = UnitGroups
             .Where(ug => ug.Operation == UnitGroup.UnitOperation.Divide)
             .Count() switch
-            {
-                0 => UnitGroups,
-                1 => SimplePropagation(UnitGroups),
-                _ => ComplexPropagation(UnitGroups),
-            };
+        {
+            0 => UnitGroups,
+            1 => SimplePropagation(UnitGroups),
+            _ => ComplexPropagation(UnitGroups),
+        };
     }
 
     private static List<UnitGroup> SimplePropagation(List<UnitGroup> input)
@@ -61,23 +58,23 @@ public class UnitFactory : IUnitFactory
                 if (current.Operation == UnitGroup.UnitOperation.Divide)
                     reachedDivisionSign = true;
 
-                return reachedDivisionSign 
-                    ? current with { Exponent = current.Exponent * -1 } 
+                return reachedDivisionSign
+                    ? current with { Exponent = current.Exponent * -1 }
                     : current;
             })
             .ToList();
     }
 
-    private static List<UnitGroup> ComplexPropagation(List<UnitGroup> input) => 
+    private static List<UnitGroup> ComplexPropagation(List<UnitGroup> input) =>
         input.Select(current =>
         {
-            return (current.Operation == UnitGroup.UnitOperation.Divide)
+            return current.Operation == UnitGroup.UnitOperation.Divide
                 ? current = current with { Exponent = current.Exponent * -1 }
                 : current;
         })
         .ToList();
 
-    private void GroupLikeSymbols() => 
+    private void GroupLikeSymbols() =>
         UnitGroups = UnitGroups
             .GroupBy(ug => ug.UnitSymbol)
             .Select(group =>
@@ -92,18 +89,18 @@ public class UnitFactory : IUnitFactory
     private void ValidateSymbols()
     {
         foreach (var unit in UnitGroups)
-            if (!IsInUnitDictionaries(unit)) 
+            if (!IsInUnitDictionaries(unit))
                 throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
     }
 
-    private bool IsInUnitDictionaries(UnitGroup? unit) => 
+    private bool IsInUnitDictionaries(UnitGroup? unit) =>
         CheckUnitDictionaries(unit?.UnitSymbol) || CheckUnitDictionaries(unit?.UnitSymbol.Remove(0, 1));
 
     private bool CheckUnitDictionaries(string? current)
     {
-        if (string.IsNullOrEmpty(current)) 
+        if (string.IsNullOrEmpty(current))
             return false;
-        
+
         foreach (var dict in ValidSymbols)
             if (dict.ContainsKey(current))
                 return true;
@@ -118,8 +115,8 @@ public class UnitFactory : IUnitFactory
                 UnitGroups[i] = UnitGroups[i] with { HasPrefix = true };
     }
 
-    private static SIPrefix? GetPrefix(char firstChar) => 
-        (SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var value))
+    private static SIPrefix? GetPrefix(char firstChar) =>
+        SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var value)
             ? value
             : null;
 
@@ -127,9 +124,9 @@ public class UnitFactory : IUnitFactory
     {
         var unit = group.UnitSymbol;
 
-        return (unit.Length > 1)
+        return unit.Length > 1
             && !CheckUnitDictionaries(group.UnitSymbol)
-            && (GetPrefix(unit[0]) != null);
+            && GetPrefix(unit[0]) != null;
     }
 
     private AbsUnit CreateUnit(UnitGroup group)

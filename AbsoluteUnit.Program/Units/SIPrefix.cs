@@ -1,4 +1,4 @@
-﻿namespace AbsoluteUnit.Program;
+﻿namespace AbsoluteUnit.Program.Units;
 
 public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
 {
@@ -95,13 +95,9 @@ public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
         { "q", new SIPrefix(Prefixes.Quecto) },
     };
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is SIPrefix other)
-            return Prefix.Equals(other.Prefix);
-        else 
-            return false;
-    }
+    public override bool Equals(object? obj) =>
+        obj is SIPrefix other &&
+        Prefix.Equals(other.Prefix);
 }
 
 public static class PrefixExtensions

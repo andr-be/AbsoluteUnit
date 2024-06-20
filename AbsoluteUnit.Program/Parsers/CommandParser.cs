@@ -1,7 +1,8 @@
 ﻿using System.Data;
+using AbsoluteUnit.Program.Structures;
 using EnumExtension;
 
-namespace AbsoluteUnit
+namespace AbsoluteUnit.Program
 {
     public enum Command
     {
@@ -9,7 +10,6 @@ namespace AbsoluteUnit
         Express,
         Simplify,
     }
-
     public enum Flag
     {
         VerboseCalculation,
@@ -18,33 +18,10 @@ namespace AbsoluteUnit
         StandardForm,
         Engineering,
     }
+}
 
-    public record CommandGroup(
-        Command CommandType,
-        Dictionary<Flag, int> Flags,
-        List<string> CommandArguments
-    ){
-        public override string ToString()
-        {
-            string commandString = $"Command:\t{CommandType}";
-
-            if (CommandArguments.Count > 0)
-            {
-                commandString += "\nArguments:\t";
-                for (int argNum = 0; argNum < CommandArguments.Count; argNum++) 
-                    commandString += $"[{argNum}] {CommandArguments[argNum]}, ";
-            }
-
-            if (Flags.Count > 0)
-            {
-                commandString += "\nFlags:\t\t";
-                for (int flagNum = 0; flagNum < Flags.Count; flagNum++) 
-                    commandString += $"[{flagNum}] {Flags.Keys.ElementAt(flagNum)} : {Flags.Values.ElementAt(flagNum)}, ";
-            }
-
-            return commandString;
-        }
-    }
+namespace AbsoluteUnit.Program.Parsers
+{
 
     public class CommandParser
     {
@@ -57,7 +34,7 @@ namespace AbsoluteUnit
             var commandType = ParseCommand(args.First());
             var flags = GetFlags(args.Skip(1).ToArray());
             var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
-            
+
             CommandGroup = new(commandType, flags, commandArgs);
         }
 
@@ -120,7 +97,7 @@ namespace AbsoluteUnit
                 Flag newFlag = ParseFlag(args[i]);
                 if (newFlag.AddsArguments())
                 {
-                    var arg = GetFlagArgument(args[i+1]);
+                    var arg = GetFlagArgument(args[i + 1]);
                     flags.Add(newFlag, arg);
                     ExtraArguments++;
                 }
@@ -177,7 +154,7 @@ namespace AbsoluteUnit
 
 namespace EnumExtension
 {
-    using AbsoluteUnit;
+    using AbsoluteUnit.Program;
 
     public static class Extensions
     {

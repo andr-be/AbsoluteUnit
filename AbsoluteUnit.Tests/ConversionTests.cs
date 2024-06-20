@@ -1,4 +1,7 @@
 ﻿using AbsoluteUnit.Program;
+using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.Factories;
+using AbsoluteUnit.Program.Commands;
 
 namespace AbsoluteUnit.Tests
 {
