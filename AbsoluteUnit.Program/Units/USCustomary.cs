@@ -121,12 +121,12 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         { Units.Yards, 0.9144 },
         { Units.Miles, 1.609344e3 },
 
-        { Units.Ounce, 28.349523125 },
-        { Units.Pound, 453.59237 },
-        { Units.Ton, 1016.0469088e3 },
+        { Units.Ounce, 35.273962e3 },
+        { Units.Pound, 2.20462262e3 },
+        { Units.Ton, 907.18474e3 },
 
-        { Units.FluidOunce, 29.5735295625e-3 },
-        { Units.Pint, 0.473176473 },
-        { Units.Gallon, 3.785411784 },
+        { Units.FluidOunce, 2.957e-5 },
+        { Units.Pint, 4.7318e-4 },
+        { Units.Gallon, 3.78541e-3 },
     };
 }

@@ -173,37 +173,27 @@ public static class UnitConverter
     public static List<AbsUnit> ConvertSIDerived(SIDerived derivedUnit) => derivedUnit.Unit switch
     {
         SIDerived.Units.Hertz => [Second(-1)],
+        SIDerived.Units.Becquerel => [Second(-1)],
 
         SIDerived.Units.Newton => [Kilogram(), Meter(), Second(-2)],
-
         SIDerived.Units.Pascal => [Kilogram(), Meter(-1), Second(-2)],
-
         SIDerived.Units.Joule => [Kilogram(), Meter(2), Second(-2)],
-
         SIDerived.Units.Watt => [Kilogram(), Meter(2), Second(-3)],
 
         SIDerived.Units.Coulomb => [Second(), Ampere()],
-
         SIDerived.Units.Volt => [Kilogram(), Meter(-2), Second(-3), Ampere(-1)],
-
         SIDerived.Units.Farad => [Kilogram(-1), Meter(-2), Second(4), Ampere(2),],
-
         SIDerived.Units.Ohm => [Kilogram(), Meter(2), Second(-3), Ampere(-2)],
 
         SIDerived.Units.Siemens => [Kilogram(-1), Meter(-2), Second(3), Ampere(2)],
-
         SIDerived.Units.Weber => [Kilogram(), Meter(2), Second(-2), Ampere(-1)],
-
         SIDerived.Units.Tesla => [Kilogram(), Second(-2), Ampere(-1)],
-
         SIDerived.Units.Henry => [Kilogram(), Meter(2), Second(-2), Ampere(-2)],
 
         SIDerived.Units.Celsius => [Kelvin()],
 
         SIDerived.Units.Lumen or
         SIDerived.Units.Lux => [Candela(), Meter(-2)],
-
-        SIDerived.Units.Becquerel => [Second(-1)],
 
         SIDerived.Units.Gray or
         SIDerived.Units.Sievert => [Meter(2), Second(-2)],
