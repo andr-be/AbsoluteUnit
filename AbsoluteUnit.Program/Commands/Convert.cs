@@ -2,8 +2,6 @@
 
 namespace AbsoluteUnit.Program.Commands;
 
-using AbsoluteUnit.Program;
-
 using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Structures;
 using AbsoluteUnit.Program.Units;

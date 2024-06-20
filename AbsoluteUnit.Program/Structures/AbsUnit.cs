@@ -2,11 +2,11 @@
 using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Units;
 
-namespace AbsoluteUnit.Program;
+namespace AbsoluteUnit.Program.Structures;
 
 public class AbsUnit(
-    IUnit unit, 
-    int exponent = 1, 
+    IUnit unit,
+    int exponent = 1,
     SIPrefix? prefix = null
     )
 {
@@ -14,8 +14,8 @@ public class AbsUnit(
     public int Exponent { get; set; } = exponent;
     public SIPrefix Prefix { get; set; } = prefix ?? new(SIPrefix.Prefixes._None);
 
-    public override string ToString() => 
-        $"{Prefix}{Unit.Symbol}{((Exponent != 1) ? "^" + Exponent : "")}";
+    public override string ToString() =>
+        $"{Prefix}{Unit.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
 
     public double ConversionFromBase() => Unit.FromBase(1) * PrefixValue();
 

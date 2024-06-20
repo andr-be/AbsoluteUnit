@@ -1,8 +1,8 @@
-﻿namespace AbsoluteUnit.Program;
+﻿namespace AbsoluteUnit.Program.Structures;
 
 public class AbsMeasurement(
-    List<AbsUnit>? units = null, 
-    double quantity = 0.0, 
+    List<AbsUnit>? units = null,
+    double quantity = 0.0,
     int exponent = 1)
 {
     public List<AbsUnit> Units { get; set; } = units ?? [];
@@ -14,8 +14,8 @@ public class AbsMeasurement(
     {
     }
 
-    public override string ToString() => 
-        $"{Quantity}{((Exponent != 0) ? $"e{Exponent}" : "")} {string.Join(".", Units)}";
+    public override string ToString() =>
+        $"{Quantity}{(Exponent != 0 ? $"e{Exponent}" : "")} {string.Join(".", Units)}";
 
     public override bool Equals(object? obj)
     {

@@ -2,6 +2,7 @@
 using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Parsers;
 using AbsoluteUnit.Program.Factories;
+using AbsoluteUnit.Program.Commands;
 
 namespace AbsoluteUnit
 {
