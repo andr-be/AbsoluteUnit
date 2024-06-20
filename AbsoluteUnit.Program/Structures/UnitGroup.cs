@@ -18,10 +18,10 @@ public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, in
     public override string ToString()
     {
         string operation = Operation == UnitOperation.Divide
-                ? "-"
-                : "";
+            ? "-"
+            : "";
 
-        string exponent = Exponent is < 0 or > 1
+        string exponent = Exponent != 1
             ? $"^{operation}{Exponent}"
             : "";
 

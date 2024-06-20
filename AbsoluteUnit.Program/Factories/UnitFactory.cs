@@ -41,11 +41,11 @@ public class UnitFactory : IUnitFactory
         UnitGroups = UnitGroups
             .Where(ug => ug.Operation == UnitGroup.UnitOperation.Divide)
             .Count() switch
-        {
-            0 => UnitGroups,
-            1 => SimplePropagation(UnitGroups),
-            _ => ComplexPropagation(UnitGroups),
-        };
+            {
+                0 => UnitGroups,
+                1 => SimplePropagation(UnitGroups),
+                _ => ComplexPropagation(UnitGroups),
+            };
     }
 
     private static List<UnitGroup> SimplePropagation(List<UnitGroup> input)
@@ -76,7 +76,7 @@ public class UnitFactory : IUnitFactory
 
     private void GroupLikeSymbols() =>
         UnitGroups = UnitGroups
-            .GroupBy(ug => ug.UnitSymbol)
+            .GroupBy(unitGroup => unitGroup.UnitSymbol)
             .Select(group =>
             {
                 var operation = group.First().Operation;

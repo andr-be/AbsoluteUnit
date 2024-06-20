@@ -6,5 +6,4 @@ namespace AbsoluteUnit.Program.Interfaces
     {
         public abstract AbsMeasurement Execute();
     }
-
 }

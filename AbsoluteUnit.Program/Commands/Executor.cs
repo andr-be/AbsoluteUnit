@@ -3,13 +3,13 @@ using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class CommandExecutor
+    public class Executor
     {
         public ICommand Command { get; set; }
 
         private readonly IMeasurementParser MeasurementParser;
 
-        public CommandExecutor(CommandGroup commandGroup, IMeasurementParser measurementParser)
+        public Executor(CommandGroup commandGroup, IMeasurementParser measurementParser)
         {
             MeasurementParser = measurementParser;
             Command = GetCommandType(commandGroup);

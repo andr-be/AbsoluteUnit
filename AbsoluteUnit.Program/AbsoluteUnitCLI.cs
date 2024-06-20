@@ -16,7 +16,7 @@ namespace AbsoluteUnit
             var measurementParser = new MeasurementParser(unitGroupParser, unitFactory);
 
             var commandGroup = new CommandParser(args).CommandGroup;
-            var commandExecutor = new CommandExecutor(commandGroup, measurementParser);
+            var commandExecutor = new Executor(commandGroup, measurementParser);
 
             var result = commandExecutor.Execute();
 
