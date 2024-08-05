@@ -144,6 +144,6 @@ public class UnitFactory : IUnitFactory
             if (unitType is not null)
                 return new Unit((IUnitType)unitType, group.Exponent, prefix!);
         }
-        throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
+        throw new KeyNotFoundException($"{group.UnitSymbol} not found in unit database...");
     }
 }
