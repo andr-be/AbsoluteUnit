@@ -10,9 +10,9 @@ namespace AbsoluteUnit
         static void Main(string[] args)
         {
             var command = new CommandFactory(args);
-            var commandGroup = command.CommandGroup;
+            var commandGroup = command.ParseArguments();
 
-            var commandExecutor = new Runner(
+            var commandRunner = new Runner(
                     commandGroup, 
                     new MeasurementParser(
                         ParserFactory.CreateUnitGroupParser(), 
@@ -20,10 +20,10 @@ namespace AbsoluteUnit
                         )
                     );
 
-            var result = commandExecutor.Execute();
+            var result = commandRunner.Execute();
 
             Console.WriteLine(commandGroup);
-            Console.WriteLine(commandExecutor.Command);
+            Console.WriteLine(commandRunner.Command);
             Console.WriteLine(result);
 
             //var convertedResult = commandExecutor.Execute();

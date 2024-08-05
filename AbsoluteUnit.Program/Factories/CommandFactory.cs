@@ -25,7 +25,7 @@ namespace AbsoluteUnit.Program.Factories
 {
     public class CommandFactory(string[] args)
     {
-        public CommandGroup? CommandGroup { get; set; }
+        public CommandGroup? CommandGroup { get; private set; }
         public string[] Arguments { get; init; } = args;
 
         private int ExtraArguments = 0;
