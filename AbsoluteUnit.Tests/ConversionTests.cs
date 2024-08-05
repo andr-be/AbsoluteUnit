@@ -34,12 +34,12 @@ namespace AbsoluteUnit.Tests
                 quantity: 0.2330,
                 units: [
                     new AbsUnitFactory()
-                        .WithUnit(new USCustomary(USCustomary.Units.Inch))
+                        .WithUnit(USCustomary.Inch())
                         .Build(),
                     
                     new AbsUnitFactory()
                         .WithUnit(new SIBase(SIBase.Units.Second))
-                        .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
+                        .WithPrefix(SIPrefix.Prefixes.Micro)
                         .WithExponent(-1)
                         .Build(),
                 ]
@@ -92,7 +92,7 @@ namespace AbsoluteUnit.Tests
                 quantity: 1,
                 units: [
                     new AbsUnitFactory()
-                        .WithUnit(new USCustomary(USCustomary.Units.Feet))
+                        .WithUnit(USCustomary.Feet())
                         .Build()
                 ]
             );
@@ -115,13 +115,13 @@ namespace AbsoluteUnit.Tests
                 quantity: 0.2330,
                 units: [
                     new AbsUnitFactory()
-                        .WithUnit(new USCustomary(USCustomary.Units.Inch))
+                        .WithUnit(USCustomary.Inch())
                         .Build(),
 
                     new AbsUnitFactory()
                         .WithUnit(new SIBase("s"))
                         .WithExponent(-1)
-                        .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
+                        .WithPrefix(SIPrefix.Prefixes.Micro)
                         .Build()
                 ]
                     
@@ -180,7 +180,7 @@ namespace AbsoluteUnit.Tests
                 quantity: 2.20462262,
                 units: [
                     new AbsUnitFactory()
-                        .WithUnit(new USCustomary(USCustomary.Units.Pound))
+                        .WithUnit(USCustomary.Pound())
                         .Build()
                 ]
             );
@@ -199,7 +199,7 @@ namespace AbsoluteUnit.Tests
             ) => 
                 new(units, quantity, exponent);
 
-        private void AssertWithConfidence(AbsMeasurement expected, AbsMeasurement actual) => Assert.AreEqual
+        private static void AssertWithConfidence(AbsMeasurement expected, AbsMeasurement actual) => Assert.AreEqual
         (
             expected: expected.Quantity,
             actual: actual.Quantity,

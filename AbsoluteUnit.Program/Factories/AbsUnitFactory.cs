@@ -11,9 +11,9 @@ public class AbsUnitFactory
 
     public AbsUnit Build() => new(Unit, Exponent, Prefix);
 
-    public AbsUnitFactory WithPrefix(SIPrefix prefix)
+    public AbsUnitFactory WithPrefix(SIPrefix.Prefixes prefix)
     {
-        Prefix = prefix;
+        Prefix = new(prefix);
         return this;
     }
 
@@ -36,7 +36,7 @@ public class AbsUnitFactory
         ) => new AbsUnitFactory()
             .WithUnit(new SIBase(symbol))
             .WithExponent(exponent)
-            .WithPrefix(new SIPrefix(prefix))
+            .WithPrefix(prefix)
             .Build();
 
     public static AbsUnit Kilogram(int exponent = 1) => CreateSIUnit("g", SIPrefix.Prefixes.Kilo, exponent);
