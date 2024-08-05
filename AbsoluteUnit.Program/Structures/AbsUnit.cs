@@ -1,5 +1,4 @@
 ﻿using AbsoluteUnit.Program.Commands;
-using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Structures;

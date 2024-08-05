@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program;

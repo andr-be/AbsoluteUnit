@@ -9,21 +9,18 @@ namespace AbsoluteUnit
     {
         static void Main(string[] args)
         {
-            var command = new CommandFactory(args);
-            var commandGroup = command.ParseArguments();
+            var commandFactory = new CommandFactory(args);
+            var commandGroup = commandFactory.ParseArguments();
 
             var commandRunner = new Runner(commandGroup); 
-
             // intentionally left long to remind you to fix this mess
             commandRunner.ParseCommands(new MeasurementParser(ParserFactory.CreateUnitGroupParser(), ParserFactory.CreateUnitFactory()));
-
+            
             var result = commandRunner.Run();
 
             Console.WriteLine(commandGroup);
             Console.WriteLine(commandRunner.Command);
             Console.WriteLine(result);
-
-            //var convertedResult = commandExecutor.Execute();
         }
     }
 

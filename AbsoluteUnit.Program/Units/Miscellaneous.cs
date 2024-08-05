@@ -1,6 +1,4 @@
-﻿using AbsoluteUnit.Program.Interfaces;
-
-namespace AbsoluteUnit.Program.Units;
+﻿namespace AbsoluteUnit.Program.Units;
 
 public class Miscellaneous : IUnit
 {

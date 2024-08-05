@@ -1,5 +1,5 @@
-﻿using AbsoluteUnit.Program.Interfaces;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program;
 using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit

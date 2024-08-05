@@ -1,10 +1,9 @@
 ﻿
 using AbsoluteUnit.Program.Factories;
-namespace AbsoluteUnit.Program.Commands;
-
-using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Structures;
 using AbsoluteUnit.Program.Units;
+
+namespace AbsoluteUnit.Program.Commands;
 using static AbsUnitFactory;
 
 public class Convert : ICommand
@@ -70,22 +69,14 @@ public static class MeasurementConverter
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    public static List<AbsUnit> BaseConversion(AbsUnit unit)
+    public static List<AbsUnit> BaseConversion(AbsUnit unit) => unit.Unit switch
     {
-        if (unit.Unit is SIBase baseUnit)
-            return UnitConverter.ConvertSIBase(baseUnit);
-
-        if (unit.Unit is USCustomary customaryUnit)
-            return UnitConverter.ConvertUSCustomary(customaryUnit);
-
-        if (unit.Unit is SIDerived derivedUnit)
-            return UnitConverter.ConvertSIDerived(derivedUnit);
-
-        if (unit.Unit is Miscellaneous miscUnit)
-            return UnitConverter.ConvertMiscellaneous(miscUnit);
-
-        else throw new ArgumentException($"{unit} is not a supported AbsUnit!");
-    }
+        SIBase baseUnit => UnitConverter.ConvertSIBase(baseUnit),
+        USCustomary customaryUnit => UnitConverter.ConvertUSCustomary(customaryUnit),
+        SIDerived derivedUnit => UnitConverter.ConvertSIDerived(derivedUnit),
+        Miscellaneous miscUnit => UnitConverter.ConvertMiscellaneous(miscUnit),
+        _ => throw new ArgumentException($"{unit} is not a supported AbsUnit!")
+    };
 
     /// <summary>
     /// Given a valid from and to unit, will give you the amount you have to multiply by to generate the converted quantity
