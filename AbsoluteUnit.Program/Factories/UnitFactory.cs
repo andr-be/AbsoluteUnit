@@ -5,14 +5,6 @@ namespace AbsoluteUnit.Program.Factories;
 
 public class UnitFactory : IUnitFactory
 {
-    public List<UnitGroup> UnitGroups { get; set; }
-
-    public UnitFactory() => UnitGroups = [];
-
-    public UnitFactory(UnitGroup unitGroup) => UnitGroups = [unitGroup];
-
-    public UnitFactory(List<UnitGroup> unitGroups) => UnitGroups = unitGroups;
-
     private readonly List<Dictionary<string, object>> ValidSymbols =
     [
         SIBase.ValidUnitStrings,
@@ -23,127 +15,119 @@ public class UnitFactory : IUnitFactory
 
     public List<Unit> BuildUnits(List<UnitGroup>? unitGroups = null)
     {
-        UnitGroups = unitGroups is null ? UnitGroups : unitGroups;
+        if (unitGroups is null || unitGroups.Count == 0)
+        {
+            return [];
+        }
 
-        PropagateExponents();
-        ValidateSymbols();
-        EvaluatePrefixes();
-
-        return UnitGroups
-            .Select(CreateUnit)
-            .ToList();
+        var processedGroups = ProcessUnitGroups(unitGroups);
+        return processedGroups.Select(CreateUnit).ToList();
     }
 
-    private void PropagateExponents()
+    public static Unit BuildUnit(IUnitType unitType, int exponent = 1, SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
     {
-        GroupLikeSymbols();
-        UnitGroups = UnitGroups
-            .Where(ug => ug.Operation == UnitGroup.UnitOperation.Divide)
-            .Count() switch
-            {
-                0 => UnitGroups,
-                1 => SimplePropagation(UnitGroups),
-                _ => ComplexPropagation(UnitGroups),
-            };
+        return new Unit(unitType, exponent, new SIPrefix(prefix));
     }
+
+    private List<UnitGroup> ProcessUnitGroups(List<UnitGroup> unitGroups)
+    {
+        var processed = PropagateExponents(unitGroups);
+        ValidateSymbols(processed);
+        return EvaluatePrefixes(processed);
+    }
+
+    private static List<UnitGroup> PropagateExponents(List<UnitGroup> groups)
+    {
+        var groupedSymbols = GroupLikeSymbols(groups);
+        return groupedSymbols.Where(ug => ug.Operation == UnitGroup.UnitOperation.Divide).Count() switch
+        {
+            0 => groupedSymbols,
+            1 => SimplePropagation(groupedSymbols),
+            _ => ComplexPropagation(groupedSymbols),
+        };
+    }
+
+    private static List<UnitGroup> GroupLikeSymbols(List<UnitGroup> groups) =>
+        groups
+            .GroupBy(unitGroup => unitGroup.UnitSymbol)
+            .Select(group => new UnitGroup(
+                group.First().Operation,
+                group.Key,
+                group.Sum(ug => ug.Exponent)))
+            .ToList();
 
     private static List<UnitGroup> SimplePropagation(List<UnitGroup> input)
     {
         bool reachedDivisionSign = false;
-
-        return input
-            .Select(current =>
-            {
-                if (current.Operation == UnitGroup.UnitOperation.Divide)
-                    reachedDivisionSign = true;
-
-                return reachedDivisionSign
-                    ? current with { Exponent = current.Exponent * -1 }
-                    : current;
-            })
-            .ToList();
+        return input.Select(current =>
+        {
+            if (current.Operation == UnitGroup.UnitOperation.Divide)
+                reachedDivisionSign = true;
+            return reachedDivisionSign
+                ? current with { Exponent = current.Exponent * -1 }
+                : current;
+        }).ToList();
     }
 
     private static List<UnitGroup> ComplexPropagation(List<UnitGroup> input) =>
-        input.Select(current =>
-        {
-            return current.Operation == UnitGroup.UnitOperation.Divide
-                ? current = current with { Exponent = current.Exponent * -1 }
-                : current;
-        })
-        .ToList();
+        input.Select(current => current.Operation == UnitGroup.UnitOperation.Divide
+            ? current with { Exponent = current.Exponent * -1 }
+            : current).ToList();
 
-    private void GroupLikeSymbols() =>
-        UnitGroups = UnitGroups
-            .GroupBy(unitGroup => unitGroup.UnitSymbol)
-            .Select(group =>
-            {
-                var operation = group.First().Operation;
-                var symbol = group.Key;
-                var exponent = group.Sum(ug => ug.Exponent);
-                return new UnitGroup(operation, symbol, exponent);
-            })
-            .ToList();
-
-    private void ValidateSymbols()
+    private void ValidateSymbols(List<UnitGroup> groups)
     {
-        foreach (var unit in UnitGroups)
+        foreach (var unit in groups)
+        {
             if (!IsInUnitDictionaries(unit))
                 throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
+        }
     }
 
     private bool IsInUnitDictionaries(UnitGroup? unit) =>
-        CheckUnitDictionaries(unit?.UnitSymbol) || CheckUnitDictionaries(unit?.UnitSymbol.Remove(0, 1));
+        CheckUnitDictionaries(unit?.UnitSymbol) ||
+        (unit?.UnitSymbol.Length > 1 && CheckUnitDictionaries(unit.UnitSymbol[1..]));
 
-    private bool CheckUnitDictionaries(string? current)
-    {
-        if (string.IsNullOrEmpty(current))
-            return false;
+    private bool CheckUnitDictionaries(string? symbol) =>
+        !string.IsNullOrEmpty(symbol) && ValidSymbols.Any(dict => dict.ContainsKey(symbol));
 
-        foreach (var dict in ValidSymbols)
-            if (dict.ContainsKey(current))
-                return true;
+    private List<UnitGroup> EvaluatePrefixes(List<UnitGroup> groups) =>
+        groups.Select(group => StartsWithValidPrefix(group)
+            ? group with { HasPrefix = true }
+            : group).ToList();
 
-        return false;
-    }
-
-    private void EvaluatePrefixes()
-    {
-        for (int i = 0; i < UnitGroups.Count; i++)
-            if (StartsWithValidPrefix(UnitGroups[i]))
-                UnitGroups[i] = UnitGroups[i] with { HasPrefix = true };
-    }
-
-    private static SIPrefix? GetPrefix(char firstChar) =>
-        SIPrefix.ValidPrefixStrings.TryGetValue($"{firstChar}", out var value)
-            ? value
-            : null;
-
-    private bool StartsWithValidPrefix(UnitGroup group)
-    {
-        var unit = group.UnitSymbol;
-
-        return unit.Length > 1
-            && !CheckUnitDictionaries(group.UnitSymbol)
-            && GetPrefix(unit[0]) != null;
-    }
+    private bool StartsWithValidPrefix(UnitGroup group) =>
+        group.UnitSymbol.Length > 1 &&
+        !CheckUnitDictionaries(group.UnitSymbol) &&
+        SIPrefix.ValidPrefixStrings.ContainsKey(group.UnitSymbol[0].ToString());
 
     private Unit CreateUnit(UnitGroup group)
     {
-        SIPrefix? prefix;
+        SIPrefix prefix = new(SIPrefix.Prefixes._None);
+        string symbol = group.UnitSymbol;
+
         if (group.HasPrefix)
         {
-            prefix = GetPrefix(group.UnitSymbol[0]);
-            group = group with { UnitSymbol = group.UnitSymbol.Remove(0, 1) };
+            prefix = SIPrefix.ValidPrefixStrings[symbol[0].ToString()];
+            symbol = symbol[1..];
         }
-        else prefix = new SIPrefix(SIPrefix.Prefixes._None);
 
-        foreach (var stringDict in ValidSymbols)
+        foreach (var dict in ValidSymbols)
         {
-            stringDict.TryGetValue(group.UnitSymbol, out var unitType);
-            if (unitType is not null)
-                return new Unit((IUnitType)unitType, group.Exponent, prefix!);
+            if (dict.TryGetValue(symbol, out var unitType))
+            {
+                return new Unit((IUnitType)unitType, group.Exponent, prefix);
+            }
         }
-        throw new KeyNotFoundException($"{group.UnitSymbol} not found in unit database...");
+
+        throw new KeyNotFoundException($"{symbol} not found in unit database.");
     }
+
+    // Static methods for common units
+    public static Unit Kilogram(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("g"), exponent, SIPrefix.Prefixes.Kilo);
+    public static Unit Meter(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("m"), exponent);
+    public static Unit Second(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("s"), exponent);
+    public static Unit Ampere(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("A"), exponent);
+    public static Unit Kelvin(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("K"), exponent);
+    public static Unit Candela(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("cd"), exponent);
+    public static Unit Mole(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("mol"), exponent);
 }

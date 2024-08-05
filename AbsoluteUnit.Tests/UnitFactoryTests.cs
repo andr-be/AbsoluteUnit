@@ -18,7 +18,7 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            var parsedm2 = new UnitFactory(metersSquared).BuildUnits().First();
+            var parsedm2 = new UnitFactory().BuildUnits([metersSquared]).First();
 
             // Assert
             Assert.AreEqual<object>(parsedm2.UnitType.Symbol, "m");
@@ -50,7 +50,7 @@ namespace AbsoluteUnit.Tests
             var seconds = new SIBase(SIBase.Units.Second);
 
             // Act
-            var result = new UnitFactory(unitgroups).BuildUnits();
+            var result = new UnitFactory().BuildUnits(unitgroups);
 
             // Assert
             Assert.AreEqual(result[0].UnitType.Unit, grams.Unit, "kg should parse as Kilo && Gram");
@@ -79,8 +79,8 @@ namespace AbsoluteUnit.Tests
             List<UnitGroup> unitGroups = [meters, perSecond, perSecond];
 
             // Act
-            var resultExponent = new UnitFactory(unitGroups)
-                .BuildUnits()
+            var resultExponent = new UnitFactory()
+                .BuildUnits(unitGroups)
                 .Where(g => (SIBase.Units)g.UnitType.Unit == SIBase.Units.Second)
                 .First()
                 .Exponent;
@@ -96,8 +96,8 @@ namespace AbsoluteUnit.Tests
                 .WithSymbol("in")
                 .Build();
 
-            var result = new UnitFactory(oneInch)
-                .BuildUnits()
+            var result = new UnitFactory()
+                .BuildUnits([oneInch])
                 .First();
 
             Assert.AreEqual(result.UnitType.Unit, USCustomary.Units.Inch, "in should pase as Inch");
@@ -110,8 +110,8 @@ namespace AbsoluteUnit.Tests
                 .WithSymbol("km")
                 .Build();
 
-            var result = new UnitFactory(oneKm)
-                .BuildUnits()
+            var result = new UnitFactory()
+                .BuildUnits([oneKm])
                 .First();
 
             Assert.AreEqual(result.UnitType.Unit, SIBase.Units.Meter, "km should parse as Kilo && Meter");
@@ -139,8 +139,8 @@ namespace AbsoluteUnit.Tests
             List<SIPrefix.Prefixes> correctPrefixes = [SIPrefix.Prefixes.Kilo, SIPrefix.Prefixes._None];
 
             // Act
-            var result = new UnitFactory(unitGroups)
-                .BuildUnits();
+            var result = new UnitFactory()
+                .BuildUnits(unitGroups);
 
             // Assert
             for (int i = 0; i < result.Count; i++)
@@ -161,7 +161,7 @@ namespace AbsoluteUnit.Tests
         {
             UnitGroup oneMm = new UnitGroupBuilder().WithSymbol("mm").Build();
 
-            var result = new UnitFactory(oneMm).BuildUnits().First();
+            var result = new UnitFactory().BuildUnits([oneMm]).First();
 
             Assert.AreEqual(result.UnitType.Unit, SIBase.Units.Meter);
             Assert.AreEqual(result.Prefix.Prefix, SIPrefix.Prefixes.Milli);
