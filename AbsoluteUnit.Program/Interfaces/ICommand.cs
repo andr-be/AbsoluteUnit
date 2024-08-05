@@ -4,6 +4,6 @@ namespace AbsoluteUnit.Program.Interfaces
 {
     public interface ICommand
     {
-        public abstract AbsMeasurement Execute();
+        public abstract AbsMeasurement Run();
     }
 }

@@ -12,15 +12,12 @@ namespace AbsoluteUnit
             var command = new CommandFactory(args);
             var commandGroup = command.ParseArguments();
 
-            var commandRunner = new Runner(
-                    commandGroup, 
-                    new MeasurementParser(
-                        ParserFactory.CreateUnitGroupParser(), 
-                        ParserFactory.CreateUnitFactory()
-                        )
-                    );
+            var commandRunner = new Runner(commandGroup); 
 
-            var result = commandRunner.Execute();
+            // intentionally left long to remind you to fix this mess
+            commandRunner.ParseCommands(new MeasurementParser(ParserFactory.CreateUnitGroupParser(), ParserFactory.CreateUnitFactory()));
+
+            var result = commandRunner.Run();
 
             Console.WriteLine(commandGroup);
             Console.WriteLine(commandRunner.Command);

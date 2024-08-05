@@ -3,19 +3,20 @@ using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class Runner
+    public class Runner(CommandGroup commandGroup)
     {
-        public ICommand Command { get; set; }
+        public ICommand? Command { get; set; }
+        public CommandGroup CommandGroup { get; init; } = commandGroup;
 
-        private readonly IMeasurementParser MeasurementParser;
+        private IMeasurementParser? MeasurementParser;
 
-        public Runner(CommandGroup commandGroup, IMeasurementParser measurementParser)
+        public void ParseCommands(IMeasurementParser measurementParser)
         {
             MeasurementParser = measurementParser;
-            Command = GetCommandType(commandGroup);
+            Command = GetCommandType(CommandGroup);
         }
 
-        public AbsMeasurement Execute() => Command.Execute();
+        public AbsMeasurement Run() => Command?.Run() ?? new();
 
         private ICommand GetCommandType(CommandGroup commandGroup) => commandGroup.CommandType switch
         {

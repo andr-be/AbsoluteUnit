@@ -29,7 +29,7 @@ public class Convert : ICommand
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
 
-    public AbsMeasurement Execute() =>
+    public AbsMeasurement Run() =>
         MeasurementConverter.ConvertMeasurement(FromUnit, ToUnit);
     //new(ToUnit.Units, FromUnit.Quantity * ConversionFactor, FromUnit.Exponent);
 
