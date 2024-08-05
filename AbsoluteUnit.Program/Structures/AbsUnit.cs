@@ -3,37 +3,26 @@ using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Structures;
 
-public class AbsUnit(
-    IUnit unit,
-    int exponent = 1,
-    SIPrefix? prefix = null
+public record AbsUnit(
+    IUnit Unit,
+    int Exponent = 1,
+    SIPrefix? Prefix = null
     )
 {
-    public IUnit Unit { get; set; } = unit;
-    public int Exponent { get; set; } = exponent;
-    public SIPrefix Prefix { get; set; } = prefix ?? new(SIPrefix.Prefixes._None);
+    public IUnit Unit { get; init; } = Unit;
+    public int Exponent { get; init; } = Exponent;
+    public SIPrefix Prefix { get; init; } = Prefix ?? new(SIPrefix.Prefixes._None);
 
     public override string ToString() =>
         $"{Prefix}{Unit.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
 
-    public double ConversionFromBase() => Unit.FromBase(1) * PrefixValue();
+    public double ConversionFromBase() => Unit.FromBase() * PrefixValue();
 
-    public double ConversionToBase() => Unit.ToBase(1) / PrefixValue();
+    public double ConversionToBase() => Unit.ToBase() / PrefixValue();
 
     public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
 
     public List<AbsUnit> ExpressInBaseUnits() => MeasurementConverter.BaseConversion(this);
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is AbsUnit other)
-        {
-            return other.Unit.Equals(Unit)
-                && other.Exponent.Equals(Exponent)
-                && other.Prefix.Equals(Prefix);
-        }
-        return false;
-    }
 
     public override int GetHashCode()
     {
