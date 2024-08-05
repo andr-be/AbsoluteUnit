@@ -1,6 +1,6 @@
 ﻿namespace AbsoluteUnit.Program.Units;
 
-public class Miscellaneous : IUnit
+public class Miscellaneous : IUnitType
 {
     public string Symbol => throw new NotImplementedException();
 

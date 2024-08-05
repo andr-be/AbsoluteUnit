@@ -1,7 +1,7 @@
 ﻿
 namespace AbsoluteUnit.Program.Units;
 
-public class USCustomary(USCustomary.Units unit) : IUnit
+public class USCustomary(USCustomary.Units unit) : IUnitType
 {
     public static USCustomary Pound() => new(USCustomary.Units.Pound);
     public static USCustomary Inch() => new(USCustomary.Units.Inch);

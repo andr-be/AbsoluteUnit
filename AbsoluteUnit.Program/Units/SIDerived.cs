@@ -1,6 +1,6 @@
 ﻿namespace AbsoluteUnit.Program.Units;
 
-public class SIDerived : IUnit
+public class SIDerived : IUnitType
 {
     public enum Units
     {

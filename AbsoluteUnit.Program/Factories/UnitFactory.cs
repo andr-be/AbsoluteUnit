@@ -140,9 +140,9 @@ public class UnitFactory : IUnitFactory
 
         foreach (var stringDict in ValidSymbols)
         {
-            stringDict.TryGetValue(group.UnitSymbol, out var unit);
-            if (unit is not null)
-                return new Unit((IUnit)unit, group.Exponent, prefix!);
+            stringDict.TryGetValue(group.UnitSymbol, out var unitType);
+            if (unitType is not null)
+                return new Unit((IUnitType)unitType, group.Exponent, prefix!);
         }
         throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
     }

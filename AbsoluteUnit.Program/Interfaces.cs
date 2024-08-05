@@ -18,7 +18,7 @@ namespace AbsoluteUnit.Program
         Measurement ProcessMeasurement(string measurementString, bool unitOnly = false);
         MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false);
     }
-    public interface IUnit
+    public interface IUnitType
     {
         object Unit { get; }
         string Symbol { get; }

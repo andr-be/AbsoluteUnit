@@ -1,6 +1,6 @@
 ﻿namespace AbsoluteUnit.Program.Units;
 
-public class SIBase : IUnit
+public class SIBase : IUnitType
 {
     public enum Units
     {

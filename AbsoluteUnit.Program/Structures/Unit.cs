@@ -3,9 +3,9 @@ using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Structures;
 
-public record Unit(IUnit UnitType, int Exponent = 1, SIPrefix? Prefix = null)
+public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
 {
-    public IUnit UnitType { get; init; } = UnitType;
+    public IUnitType UnitType { get; init; } = UnitType;
     public int Exponent { get; init; } = Exponent;
     public SIPrefix Prefix { get; init; } = Prefix ?? new();
 

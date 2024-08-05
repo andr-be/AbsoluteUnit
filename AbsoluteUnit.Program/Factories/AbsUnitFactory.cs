@@ -6,10 +6,10 @@ namespace AbsoluteUnit.Program.Factories;
 public class AbsUnitFactory
 {
     private SIPrefix Prefix = new(SIPrefix.Prefixes._None);
-    private IUnit Unit = new SIBase(SIBase.Units.Meter);
+    private IUnitType UnitType = new SIBase(SIBase.Units.Meter);
     private int Exponent = 1;
 
-    public Unit Build() => new(Unit, Exponent, Prefix);
+    public Unit Build() => new(UnitType, Exponent, Prefix);
 
     public AbsUnitFactory WithPrefix(SIPrefix.Prefixes prefix)
     {
@@ -17,9 +17,9 @@ public class AbsUnitFactory
         return this;
     }
 
-    public AbsUnitFactory WithUnit(IUnit unit)
+    public AbsUnitFactory WithUnit(IUnitType unit)
     {
-        Unit = unit;
+        UnitType = unit;
         return this;
     }
 
