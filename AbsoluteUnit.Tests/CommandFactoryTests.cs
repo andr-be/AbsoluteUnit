@@ -3,7 +3,7 @@ using AbsoluteUnit.Program.Factories;
 namespace AbsoluteUnit.Tests
 {
     [TestClass]
-    public class CommandParserTests
+    public class CommandFactoryTests
     {
         [TestMethod]
         public void ParseCommand_ValidConvertCommand_ReturnsCorrectCommandType()
@@ -13,10 +13,10 @@ namespace AbsoluteUnit.Tests
             var correctCommand = Command.Convert;
 
             // Act
-            CommandFactory commandParser = new(args);
+            CommandFactory commandFactory = new(args);
 
             // Assert
-            Assert.AreEqual(correctCommand, commandParser.ParseArguments().CommandType);
+            Assert.AreEqual(correctCommand, commandFactory.ParseArguments().CommandType);
         }
 
         [TestMethod]
@@ -27,10 +27,10 @@ namespace AbsoluteUnit.Tests
             var correctCommand = Command.Express;
 
             // Act
-            CommandFactory commandParser = new(args);
+            CommandFactory commandFactory = new(args);
 
             // Assert
-            Assert.AreEqual(correctCommand, commandParser.ParseArguments().CommandType);
+            Assert.AreEqual(correctCommand, commandFactory.ParseArguments().CommandType);
         }
 
         [TestMethod]
@@ -41,10 +41,10 @@ namespace AbsoluteUnit.Tests
             var correctCommand = Command.Simplify;
 
             // Act
-            CommandFactory commandParser = new(args);
+            CommandFactory commandFactory = new(args);
 
             // Assert
-            Assert.AreEqual(correctCommand, commandParser.ParseArguments().CommandType);
+            Assert.AreEqual(correctCommand, commandFactory.ParseArguments().CommandType);
         }
 
         [TestMethod]
@@ -64,10 +64,10 @@ namespace AbsoluteUnit.Tests
             };
 
             // Act
-            CommandFactory commandParser = new(args);
+            CommandFactory commandFactory = new(args);
 
             // Assert
-            Assert.IsTrue(DictionaryEqual(commandParser.ParseArguments().Flags, flags));
+            Assert.IsTrue(DictionaryEqual(commandFactory.ParseArguments().Flags, flags));
         }
 
         [TestMethod]
@@ -93,10 +93,10 @@ namespace AbsoluteUnit.Tests
             };
 
             // Act
-            CommandFactory parser = new(args);
+            CommandFactory commandFactory = new(args);
 
             // Assert
-            Assert.IsTrue(DictionaryEqual(parser.ParseArguments().Flags, flags));
+            Assert.IsTrue(DictionaryEqual(commandFactory.ParseArguments().Flags, flags));
         }
 
         [TestMethod]
@@ -105,8 +105,8 @@ namespace AbsoluteUnit.Tests
         {
             string[] args = ["--dinosaur", "1m", "ft"];
 
-            CommandFactory _ = new(args);
-            _.ParseArguments();
+            CommandFactory commandFactory = new(args);
+            commandFactory.ParseArguments();
         }
 
         [TestMethod]
@@ -115,8 +115,8 @@ namespace AbsoluteUnit.Tests
         {
             string[] args = ["--convert", "1m", "ft", "-flag"];
 
-            CommandFactory _ = new(args);
-            _.ParseArguments();
+            CommandFactory commandFactory = new(args);
+            commandFactory.ParseArguments();
         }
 
         [TestMethod]
@@ -125,8 +125,8 @@ namespace AbsoluteUnit.Tests
         {
             string[] args = ["--convert", "1m", "ft", "badarg"];
 
-            CommandFactory _ = new(args);
-            _.ParseArguments();
+            CommandFactory commandFactory = new(args);
+            commandFactory.ParseArguments();
         }
 
         [TestMethod]
@@ -135,8 +135,8 @@ namespace AbsoluteUnit.Tests
         {
             string[] args = ["--convert", "1m", "ft", "-dec", "phat"];
 
-            CommandFactory _ = new(args);
-            _.ParseArguments();
+            CommandFactory commandFactory = new(args);
+            commandFactory.ParseArguments();
         }
 
         private static bool DictionaryEqual<T>(Dictionary<T, int> d1, Dictionary<T, int> d2) => 

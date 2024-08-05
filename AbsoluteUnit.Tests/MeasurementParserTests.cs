@@ -34,6 +34,7 @@ namespace AbsoluteUnit.Tests
             MeasurementGroup measurement = _measurementParser!.GenerateMeasurementGroup(simpleMeasurement);
 
             // Assert
+            Assert.IsTrue(measurement.Units.Count == 1);
             Assert.AreEqual(unitM, measurement.Units.FirstOrDefault());
         }
         
@@ -159,8 +160,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
-        public void MeasurementParser_NoQuantityWithExponent_ThrowsParseError()
+        [ExpectedException(typeof(ArgumentException))]
+        public void MeasurementParser_NoQuantityWithExponent_ThrowsArgumentException()
         {
             // Arrange
             string noQuantityWithExponent = "e5 kg";
@@ -170,8 +171,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
-        public void MeasurementParser_NoUnitsWithExponent_ThrowsParseError()
+        [ExpectedException(typeof(ArgumentException))]
+        public void MeasurementParser_NoUnitsWithExponent_ThrowsArgumentException()
         {
             // Arrange
             string noUnitsExponentInput = "123e4";
@@ -181,8 +182,8 @@ namespace AbsoluteUnit.Tests
         }        
         
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
-        public void MeasurementParser_NoUnitsWithoutExponent_ThrowsParseError()
+        [ExpectedException(typeof(ArgumentException))]
+        public void MeasurementParser_NoUnitsWithoutExponent_ThrowsArgumentException()
         {
             // Arrange
             string noUnitsInput = "123";
@@ -192,8 +193,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
-        public void MeasurementParser_OnlyUnitInput_ThrowsParseError()
+        [ExpectedException(typeof(ArgumentException))]
+        public void MeasurementParser_OnlyUnitInput_ThrowsArgumentException()
         {
             // Arrange
             string onlyUnit = "kg.m/s^2";
@@ -203,7 +204,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseError))]
+        [ExpectedException(typeof(ParseErrorException))]
         public void MeasurementParser_FractionalExponentInput_ThrowsParseError()
         {
             // Arrange
@@ -214,8 +215,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void MeasurementParser_BlankString_ThrowsArgumentException()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void MeasurementParser_BlankString_ThrowsArgumentNullException()
         {
             // Arrange
             string blankString = "";
@@ -244,37 +245,9 @@ namespace AbsoluteUnit.Tests
                 }
                 catch (Exception e)
                 {
-                    Assert.IsInstanceOfType(e, typeof(ParseError));
+                    Assert.IsInstanceOfType(e, typeof(ParseErrorException));
                 }
             }
         }
-    }
-
-    public class UnitGroupBuilder
-    {
-        private UnitGroup.UnitOperation _divMulti = UnitGroup.UnitOperation.Multiply;
-        private string _symbol = "";
-        private int _exponent = 1;
-
-        public UnitGroupBuilder WithDivMulti(UnitGroup.UnitOperation divMulti)
-        {
-            _divMulti = divMulti;
-            return this;
-        }
-
-        public UnitGroupBuilder WithSymbol(string symbol)
-        {
-            _symbol = symbol;
-            return this;
-        }
-
-        public UnitGroupBuilder WithExponent(int exponent)
-        {
-            _exponent = exponent;
-            return this;
-        }
-
-        public UnitGroup Build() => new(_divMulti, _symbol, _exponent);
-        
     }
 }
