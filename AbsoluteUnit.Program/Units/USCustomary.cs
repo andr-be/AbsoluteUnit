@@ -3,6 +3,12 @@ namespace AbsoluteUnit.Program.Units;
 
 public class USCustomary(USCustomary.Units unit) : IUnit
 {
+    public static USCustomary Pound() => new(USCustomary.Units.Pound);
+    public static USCustomary Inch() => new(USCustomary.Units.Inch);
+    public static USCustomary Feet() => new(USCustomary.Units.Feet);
+    public static USCustomary Mile() => new(USCustomary.Units.Miles);
+    public static USCustomary Fahrenheit() => new(USCustomary.Units.Fahrenheit);
+
     public enum Units
     {
         // Length
