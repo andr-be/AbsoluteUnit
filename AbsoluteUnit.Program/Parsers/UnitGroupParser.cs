@@ -20,7 +20,7 @@ public partial class UnitGroupParser : IUnitGroupParser
 
         MatchCollection matches = Regex().Matches(unitString);
         if (matches.Count == 0)
-            throw new ParseError($"unable to parse {unitString} as UnitGroup");
+            throw new ParseErrorException($"unable to parse {unitString} as UnitGroup");
 
         return matches
             .Select(ParseGroupMatch)
@@ -32,7 +32,7 @@ public partial class UnitGroupParser : IUnitGroupParser
         string unitSymbol;
 
         if (string.IsNullOrWhiteSpace(match.Groups[2].Value))
-            throw new ParseError("no unit symbol provided");
+            throw new ParseErrorException("no unit symbol provided");
         else
             unitSymbol = match.Groups[2].Value;
 
