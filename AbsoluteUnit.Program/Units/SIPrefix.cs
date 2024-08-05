@@ -98,6 +98,11 @@ public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
     public override bool Equals(object? obj) =>
         obj is SIPrefix other &&
         Prefix.Equals(other.Prefix);
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Prefix);
+    }
 }
 
 public static class PrefixExtensions

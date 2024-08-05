@@ -34,4 +34,9 @@ public class AbsUnit(
         }
         return false;
     }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Exponent, Prefix);
+    }
 }

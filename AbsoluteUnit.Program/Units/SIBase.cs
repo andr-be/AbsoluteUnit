@@ -49,4 +49,8 @@ public class SIBase : IUnit
         obj is SIBase other &&
         Unit.Equals(other.Unit);
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Symbol);
+    }
 }

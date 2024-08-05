@@ -1,4 +1,5 @@
-﻿namespace AbsoluteUnit.Program.Units;
+﻿
+namespace AbsoluteUnit.Program.Units;
 
 public class USCustomary(USCustomary.Units unit) : IUnit
 {
@@ -110,6 +111,11 @@ public class USCustomary(USCustomary.Units unit) : IUnit
 
     static double KelvinToFahrenheit(double value) =>
         value - 273.15 * (9.0 / 5.0) + 32;
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Symbol);
+    }
 
     static readonly Dictionary<Units, double> Conversion = new()
     {

@@ -47,4 +47,9 @@ public class SIDerived : IUnit
     public override bool Equals(object? obj) =>
         obj is SIDerived other &&
         Unit.Equals(other.Unit);
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Symbol, Unit);
+    }
 }

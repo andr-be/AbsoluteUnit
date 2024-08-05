@@ -1,4 +1,5 @@
-﻿namespace AbsoluteUnit.Program.Structures;
+﻿
+namespace AbsoluteUnit.Program.Structures;
 
 public class AbsMeasurement(
     List<AbsUnit>? units = null,
@@ -26,5 +27,10 @@ public class AbsMeasurement(
                 && Exponent.Equals(other.Exponent);
         }
         else return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Units, Quantity, Exponent);
     }
 }
