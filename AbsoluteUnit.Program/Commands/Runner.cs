@@ -17,7 +17,7 @@ namespace AbsoluteUnit.Program.Commands
             return this;
         }
 
-        public AbsMeasurement Run() => Command?.Run() ?? new();
+        public Measurement Run() => Command?.Run() ?? new();
 
         private ICommand GetCommandType(CommandGroup commandGroup) => commandGroup.CommandType switch
         {

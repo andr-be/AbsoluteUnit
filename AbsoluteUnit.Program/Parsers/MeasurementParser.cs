@@ -34,7 +34,7 @@ namespace AbsoluteUnit
             else throw new ParseErrorException($"invalid measurementString: [{MeasurementString}]: invalid format");
         }
 
-        public AbsMeasurement ProcessMeasurement()
+        public Measurement ProcessMeasurement()
         {
             var units = unitFactory.BuildUnits(MeasurementGroup?.Units ?? []);
             var quantity = MeasurementGroup?.Quantity ?? 0;
@@ -43,7 +43,7 @@ namespace AbsoluteUnit
             return new(units, quantity, exponent);
         }
 
-        public AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false)
+        public Measurement ProcessMeasurement(string measurementString, bool unitOnly = false)
         {
             GenerateMeasurementGroup(measurementString, unitOnly);
             return ProcessMeasurement();

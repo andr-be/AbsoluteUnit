@@ -6,7 +6,7 @@ namespace AbsoluteUnit.Program.Commands
     {
         private CommandGroup CommandGroup { get; } = commandGroup;
 
-        public AbsMeasurement Run()
+        public Measurement Run()
         {
             throw new NotImplementedException();
         }

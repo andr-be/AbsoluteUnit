@@ -1,7 +1,7 @@
 ﻿
 namespace AbsoluteUnit.Program.Structures;
 
-public class AbsMeasurement(
+public class Measurement(
     List<AbsUnit>? units = null,
     double quantity = 0.0,
     int exponent = 1)
@@ -10,7 +10,7 @@ public class AbsMeasurement(
     public double Quantity { get; set; } = quantity;
     public int Exponent { get; set; } = exponent;
 
-    public AbsMeasurement(AbsUnit unit, double quantity = 0.0, int exponent = 1)
+    public Measurement(AbsUnit unit, double quantity = 0.0, int exponent = 1)
         : this([unit], quantity, exponent)
     {
     }
@@ -20,7 +20,7 @@ public class AbsMeasurement(
 
     public override bool Equals(object? obj)
     {
-        if (obj is AbsMeasurement other)
+        if (obj is Measurement other)
         {
             return Units.SequenceEqual(other.Units)
                 && Quantity.Equals(other.Quantity)

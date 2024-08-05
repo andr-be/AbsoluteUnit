@@ -173,7 +173,7 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Convert_OneKilogramInto2pt2Pounds_Correctly()
         {
-            var kilogram = new AbsMeasurement(AbsUnitFactory.Kilogram(), 1);
+            var kilogram = new Measurement(AbsUnitFactory.Kilogram(), 1);
 
             var expectedValue = CreateMeasurement
             (
@@ -192,14 +192,14 @@ namespace AbsoluteUnit.Tests
             AssertWithConfidence(expectedValue, actualValue);
         }
 
-        private static AbsMeasurement CreateMeasurement(
+        private static Measurement CreateMeasurement(
             List<AbsUnit> units,
             double quantity = 1.0,
             int exponent = 1
             ) => 
                 new(units, quantity, exponent);
 
-        private static void AssertWithConfidence(AbsMeasurement expected, AbsMeasurement actual) => Assert.AreEqual
+        private static void AssertWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
         (
             expected: expected.Quantity,
             actual: actual.Quantity,

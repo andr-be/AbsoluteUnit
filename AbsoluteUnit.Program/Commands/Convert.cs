@@ -8,8 +8,8 @@ using static AbsUnitFactory;
 
 public class Convert : ICommand
 {
-    public AbsMeasurement FromUnit { get; }
-    public AbsMeasurement ToUnit { get; }
+    public Measurement FromUnit { get; }
+    public Measurement ToUnit { get; }
     public double ConversionFactor { get; }
 
     private CommandGroup CommandGroup { get; }
@@ -28,7 +28,7 @@ public class Convert : ICommand
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
 
-    public AbsMeasurement Run() =>
+    public Measurement Run() =>
         MeasurementConverter.ConvertMeasurement(FromUnit, ToUnit);
     //new(ToUnit.Units, FromUnit.Quantity * ConversionFactor, FromUnit.Exponent);
 
@@ -47,7 +47,7 @@ public static class MeasurementConverter
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <returns>a new AbsMeasurement in `to`'s units, with a converted quantity</returns>
-    public static AbsMeasurement ConvertMeasurement(AbsMeasurement from, AbsMeasurement to) =>
+    public static Measurement ConvertMeasurement(Measurement from, Measurement to) =>
         new(to.Units, from.Quantity * QuantityConversionFactor(from, to), from.Exponent);
 
     /// <summary>
@@ -55,7 +55,7 @@ public static class MeasurementConverter
     /// </summary>
     /// <param name="from"></param>
     /// <returns></returns>
-    public static AbsMeasurement ExpressInBaseUnits(AbsMeasurement from) => new
+    public static Measurement ExpressInBaseUnits(Measurement from) => new
     (
         from.Units.SelectMany(BaseConversion).ToList(),
         from.Quantity * BaseConversionFactor(from.Units),
@@ -84,7 +84,7 @@ public static class MeasurementConverter
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <returns>factor to multiply `from`'s quantity by to represent it in `to`'s units</returns>
-    public static double QuantityConversionFactor(AbsMeasurement from, AbsMeasurement to) =>
+    public static double QuantityConversionFactor(Measurement from, Measurement to) =>
         BaseConversionFactor(to.Units) * BaseConversionFactor(from.Units);
 
     /// <summary>
@@ -101,10 +101,10 @@ public static class MeasurementConverter
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <returns></returns>
-    public static bool IsValidConversion(AbsMeasurement from, AbsMeasurement to)
+    public static bool IsValidConversion(Measurement from, Measurement to)
     {
-        var fromUnitsAsBase = ExpressInBaseUnits(new AbsMeasurement(from.Units));
-        var toUnitsAsBase = ExpressInBaseUnits(new AbsMeasurement(to.Units));
+        var fromUnitsAsBase = ExpressInBaseUnits(new Measurement(from.Units));
+        var toUnitsAsBase = ExpressInBaseUnits(new Measurement(to.Units));
 
         return fromUnitsAsBase.Equals(toUnitsAsBase);
     }

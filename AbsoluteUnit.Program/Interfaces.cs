@@ -9,13 +9,13 @@ namespace AbsoluteUnit.Program
 {
     public interface ICommand
     {
-        public abstract AbsMeasurement Run();
+        public abstract Measurement Run();
     }
 
     public interface IMeasurementParser
     {
-        AbsMeasurement ProcessMeasurement();
-        AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false);
+        Measurement ProcessMeasurement();
+        Measurement ProcessMeasurement(string measurementString, bool unitOnly = false);
         MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false);
     }
     public interface IUnit
