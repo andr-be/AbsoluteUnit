@@ -3,15 +3,11 @@ using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Structures;
 
-public record AbsUnit(
-    IUnit Unit,
-    int Exponent = 1,
-    SIPrefix? Prefix = null
-    )
+public record AbsUnit(IUnit Unit, int Exponent = 1, SIPrefix? Prefix = null)
 {
     public IUnit Unit { get; init; } = Unit;
     public int Exponent { get; init; } = Exponent;
-    public SIPrefix Prefix { get; init; } = Prefix ?? new(SIPrefix.Prefixes._None);
+    public SIPrefix Prefix { get; init; } = Prefix ?? new();
 
     public override string ToString() =>
         $"{Prefix}{Unit.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
