@@ -32,13 +32,21 @@ namespace AbsoluteUnit.Program.Factories
 
         public CommandGroup ParseArguments()
         {
-            var commandType = ParseCommand(Arguments.First());
-            var flags = GetFlags(Arguments.Skip(1).ToArray());
-            var commandArgs = GetCommandArguments(commandType, Arguments.Skip(1).ToArray());
+            try
+            {
+                var commandType = ParseCommandType(Arguments.First());
+                var flags = ParseFlags(Arguments.Skip(1).ToArray());
+                var commandArgs = ParseCommandArguments(commandType, Arguments.Skip(1).ToArray());
 
-            CommandGroup = new(commandType, flags, commandArgs);
+                CommandGroup = new(commandType, flags, commandArgs);
 
-            return CommandGroup;
+                return CommandGroup;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -47,7 +55,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="commandString"></param>
         /// <returns>Command enum</returns>
         /// <exception cref="CommandNotRecognised"></exception>
-        private static Command ParseCommand(string commandString) => commandString.ToLowerInvariant() switch
+        private static Command ParseCommandType(string commandString) => commandString.ToLowerInvariant() switch
         {
             "--convert" or "-c" => Command.Convert,
             "--express" or "-e" => Command.Express,
@@ -89,7 +97,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="args">user-provided CLI arguments</param>
         /// <returns>(Flag, int) dictionary of flags and arguments</returns>
-        private Dictionary<Flag, int> GetFlags(string[] args)
+        private Dictionary<Flag, int> ParseFlags(string[] args)
         {
             var flags = new Dictionary<Flag, int>();
             for (int i = 0; i < args.Length; i++)
@@ -115,7 +123,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="flagsAndArguments">all of the command line arguments except the first</param>
         /// <returns>a list of only the command arguments</returns>
         /// <exception cref="ArgumentException">invalid argument count error</exception>
-        private List<string> GetCommandArguments(Command type, string[] flagsAndArguments)
+        private List<string> ParseCommandArguments(Command type, string[] flagsAndArguments)
         {
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
 
