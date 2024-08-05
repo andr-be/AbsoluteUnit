@@ -126,14 +126,14 @@ namespace AbsoluteUnit.Tests
         public void MeasurementParser_IndianCommaSeparator_SuccessfullyParses()
         {
             // Arrange
-            var indianCommaSeparatedMeasurement = "12,34,56,789 ms";
+            var IndianCommaSeparatedMeasurement = "12,34,56,789 ms";
             double longNumber = 123456789;
             UnitGroup microSecond = new UnitGroupBuilder()
                 .WithSymbol("ms")
                 .Build();
 
             // Act
-            MeasurementGroup testGroup = _measurementParser!.GenerateMeasurementGroup(indianCommaSeparatedMeasurement);
+            MeasurementGroup testGroup = _measurementParser!.GenerateMeasurementGroup(IndianCommaSeparatedMeasurement);
 
             // Assert
             Assert.AreEqual(testGroup.Quantity, longNumber);
@@ -144,14 +144,14 @@ namespace AbsoluteUnit.Tests
         public void MeasurementParser_EuropeanCommaSeparator_ThrowsParseError()
         {
             // Arrange
-            var europeanCommaSeparatedMeasurement = "1.234.567,89 l";
+            var EuropeanCommaSeparatedMeasurement = "1.234.567,89 l";
             double euroNumber = 1234567.89;
             UnitGroup litre = new UnitGroupBuilder()
                 .WithSymbol("l")
                 .Build();
 
             // Act
-            MeasurementGroup testGroup = _measurementParser!.GenerateMeasurementGroup(europeanCommaSeparatedMeasurement);
+            MeasurementGroup testGroup = _measurementParser!.GenerateMeasurementGroup(EuropeanCommaSeparatedMeasurement);
 
             // Assert
             Assert.AreEqual(testGroup.Quantity, euroNumber);

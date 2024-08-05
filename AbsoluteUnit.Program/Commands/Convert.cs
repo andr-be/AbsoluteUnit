@@ -46,7 +46,7 @@ public static class MeasurementConverter
     /// </summary>
     /// <param name="from"></param>
     /// <param name="to"></param>
-    /// <returns>a new AbsMeasurement in to's units, with a converted quantity</returns>
+    /// <returns>a new AbsMeasurement in `to`'s units, with a converted quantity</returns>
     public static AbsMeasurement ConvertMeasurement(AbsMeasurement from, AbsMeasurement to) =>
         new(to.Units, from.Quantity * QuantityConversionFactor(from, to), from.Exponent);
 
@@ -83,7 +83,7 @@ public static class MeasurementConverter
     /// </summary>
     /// <param name="from"></param>
     /// <param name="to"></param>
-    /// <returns>factor to multiply from's quantity by to represent it in to's units</returns>
+    /// <returns>factor to multiply `from`'s quantity by to represent it in `to`'s units</returns>
     public static double QuantityConversionFactor(AbsMeasurement from, AbsMeasurement to) =>
         BaseConversionFactor(to.Units) * BaseConversionFactor(from.Units);
 

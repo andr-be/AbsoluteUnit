@@ -10,13 +10,13 @@ namespace AbsoluteUnit.Tests
         {
             // Arrange
             string[] args = ["--convert", "123.4e5 m", "ft"];
-            var correctComand = Command.Convert;
+            var correctCommand = Command.Convert;
 
             // Act
             CommandFactory commandParser = new(args);
 
             // Assert
-            Assert.AreEqual(correctComand, commandParser.ParseArguments().CommandType);
+            Assert.AreEqual(correctCommand, commandParser.ParseArguments().CommandType);
         }
 
         [TestMethod]
@@ -24,13 +24,13 @@ namespace AbsoluteUnit.Tests
         {
             // Arrange
             string[] args = ["--express", "123.4e5 ft"];
-            var correctComand = Command.Express;
+            var correctCommand = Command.Express;
 
             // Act
             CommandFactory commandParser = new(args);
 
             // Assert
-            Assert.AreEqual(correctComand, commandParser.ParseArguments().CommandType);
+            Assert.AreEqual(correctCommand, commandParser.ParseArguments().CommandType);
         }
 
         [TestMethod]
