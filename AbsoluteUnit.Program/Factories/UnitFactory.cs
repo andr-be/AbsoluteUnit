@@ -21,7 +21,7 @@ public class UnitFactory : IUnitFactory
         Miscellaneous.ValidUnitStrings,
     ];
 
-    public List<AbsUnit> BuildUnits(List<UnitGroup>? unitGroups = null)
+    public List<Unit> BuildUnits(List<UnitGroup>? unitGroups = null)
     {
         UnitGroups = unitGroups is null ? UnitGroups : unitGroups;
 
@@ -128,7 +128,7 @@ public class UnitFactory : IUnitFactory
             && GetPrefix(unit[0]) != null;
     }
 
-    private AbsUnit CreateUnit(UnitGroup group)
+    private Unit CreateUnit(UnitGroup group)
     {
         SIPrefix? prefix;
         if (group.HasPrefix)
@@ -142,7 +142,7 @@ public class UnitFactory : IUnitFactory
         {
             stringDict.TryGetValue(group.UnitSymbol, out var unit);
             if (unit is not null)
-                return new AbsUnit((IUnit)unit, group.Exponent, prefix!);
+                return new Unit((IUnit)unit, group.Exponent, prefix!);
         }
         throw new KeyNotFoundException($"{group.UnitSymbol} not found in key database...");
     }

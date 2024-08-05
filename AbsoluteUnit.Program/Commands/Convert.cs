@@ -69,7 +69,7 @@ public static class MeasurementConverter
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     /// <exception cref="ArgumentException"></exception>
-    public static List<AbsUnit> BaseConversion(AbsUnit unit) => unit.Unit switch
+    public static List<Unit> BaseConversion(Unit unit) => unit.UnitType switch
     {
         SIBase baseUnit => UnitConverter.ConvertSIBase(baseUnit),
         USCustomary customaryUnit => UnitConverter.ConvertUSCustomary(customaryUnit),
@@ -92,7 +92,7 @@ public static class MeasurementConverter
     /// </summary>
     /// <param name="units"></param>
     /// <returns></returns>
-    private static double BaseConversionFactor(List<AbsUnit> units) =>
+    private static double BaseConversionFactor(List<Unit> units) =>
         units.Select(u => u.ConversionToBase()).Aggregate((x, y) => x * y);
 
     /// <summary>
@@ -117,7 +117,7 @@ public static class UnitConverter
     /// </summary>
     /// <param name="baseUnit">the SIBase unit</param>
     /// <returns>exactly what you put in</returns>
-    public static List<AbsUnit> ConvertSIBase(SIBase baseUnit) =>
+    public static List<Unit> ConvertSIBase(SIBase baseUnit) =>
     [
         new AbsUnitFactory()
             .WithUnit(baseUnit)
@@ -130,7 +130,7 @@ public static class UnitConverter
     /// <param name="customaryUnit">the USCustomary unit you wish to convert to base</param>
     /// <returns>SI Base Representation</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static List<AbsUnit> ConvertUSCustomary(USCustomary customaryUnit) => customaryUnit.Unit switch
+    public static List<Unit> ConvertUSCustomary(USCustomary customaryUnit) => customaryUnit.Unit switch
     {
         // Length
         USCustomary.Units.Mil or
@@ -161,7 +161,7 @@ public static class UnitConverter
     /// <param name="derivedUnit">the SIDerived unit you wish to convert to base</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static List<AbsUnit> ConvertSIDerived(SIDerived derivedUnit) => derivedUnit.Unit switch
+    public static List<Unit> ConvertSIDerived(SIDerived derivedUnit) => derivedUnit.Unit switch
     {
         SIDerived.Units.Hertz => [Second(-1)],
         SIDerived.Units.Becquerel => [Second(-1)],
@@ -203,7 +203,7 @@ public static class UnitConverter
     /// <param name="miscUnit">the Miscellaneous unit you wish to convert to base</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static List<AbsUnit> ConvertMiscellaneous(Miscellaneous miscUnit)
+    public static List<Unit> ConvertMiscellaneous(Miscellaneous miscUnit)
     {
         throw new NotImplementedException($"{miscUnit} has no base conversions implemented!");
     }

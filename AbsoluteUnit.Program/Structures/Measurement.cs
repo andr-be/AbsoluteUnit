@@ -2,15 +2,15 @@
 namespace AbsoluteUnit.Program.Structures;
 
 public class Measurement(
-    List<AbsUnit>? units = null,
+    List<Unit>? units = null,
     double quantity = 0.0,
     int exponent = 1)
 {
-    public List<AbsUnit> Units { get; set; } = units ?? [];
+    public List<Unit> Units { get; set; } = units ?? [];
     public double Quantity { get; set; } = quantity;
     public int Exponent { get; set; } = exponent;
 
-    public Measurement(AbsUnit unit, double quantity = 0.0, int exponent = 1)
+    public Measurement(Unit unit, double quantity = 0.0, int exponent = 1)
         : this([unit], quantity, exponent)
     {
     }

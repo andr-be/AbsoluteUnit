@@ -193,7 +193,7 @@ namespace AbsoluteUnit.Tests
         }
 
         private static Measurement CreateMeasurement(
-            List<AbsUnit> units,
+            List<Unit> units,
             double quantity = 1.0,
             int exponent = 1
             ) => 

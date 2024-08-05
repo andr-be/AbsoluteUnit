@@ -28,7 +28,7 @@ namespace AbsoluteUnit.Program
 
     public interface IUnitFactory
     {
-        List<AbsUnit> BuildUnits(List<UnitGroup>? unitGroups = null);
+        List<Unit> BuildUnits(List<UnitGroup>? unitGroups = null);
     }
 
     public interface IUnitGroupParser
