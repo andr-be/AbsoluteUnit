@@ -1,6 +1,5 @@
 ﻿using AbsoluteUnit.Program;
 using AbsoluteUnit.Program.Interfaces;
-using AbsoluteUnit.Program.Parsers;
 using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Commands;
 
@@ -10,13 +9,16 @@ namespace AbsoluteUnit
     {
         static void Main(string[] args)
         {
+            var command = new CommandFactory(args);
+            var commandGroup = command.CommandGroup;
 
-            var unitGroupParser = ParserFactory.CreateUnitGroupParser();
-            var unitFactory = ParserFactory.CreateUnitFactory();
-            var measurementParser = new MeasurementParser(unitGroupParser, unitFactory);
-
-            var commandGroup = new CommandParser(args).CommandGroup;
-            var commandExecutor = new Executor(commandGroup, measurementParser);
+            var commandExecutor = new Runner(
+                    commandGroup, 
+                    new MeasurementParser(
+                        ParserFactory.CreateUnitGroupParser(), 
+                        ParserFactory.CreateUnitFactory()
+                        )
+                    );
 
             var result = commandExecutor.Execute();
 

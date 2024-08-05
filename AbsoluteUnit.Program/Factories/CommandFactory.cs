@@ -1,8 +1,9 @@
 ﻿using System.Data;
+using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Structures;
 using EnumExtension;
 
-namespace AbsoluteUnit.Program
+namespace AbsoluteUnit.Program.Factories
 {
     public enum Command
     {
@@ -20,22 +21,24 @@ namespace AbsoluteUnit.Program
     }
 }
 
-namespace AbsoluteUnit.Program.Parsers
+namespace AbsoluteUnit.Program.Factories
 {
-
-    public class CommandParser
+    public class CommandFactory(string[] args)
     {
-        public CommandGroup CommandGroup { get; set; }
+        public CommandGroup? CommandGroup { get; set; }
+        public string[] Arguments { get; init; } = args;
 
         private int ExtraArguments = 0;
 
-        public CommandParser(string[] args)
+        public CommandGroup ParseArguments()
         {
-            var commandType = ParseCommand(args.First());
-            var flags = GetFlags(args.Skip(1).ToArray());
-            var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
+            var commandType = ParseCommand(Arguments.First());
+            var flags = GetFlags(Arguments.Skip(1).ToArray());
+            var commandArgs = GetCommandArguments(commandType, Arguments.Skip(1).ToArray());
 
             CommandGroup = new(commandType, flags, commandArgs);
+
+            return CommandGroup;
         }
 
         /// <summary>
@@ -72,7 +75,7 @@ namespace AbsoluteUnit.Program.Parsers
         /// contains the number of valid arguments for each command type
         /// </summary>
         /// <returns>the number of valid arguments</returns>
-        private int CommandArgumentCount(Command type) => type switch
+        private static int CommandArgumentCount(Command type) => type switch
         {
             Command.Convert => 2,
             Command.Express => 1,
@@ -154,8 +157,6 @@ namespace AbsoluteUnit.Program.Parsers
 
 namespace EnumExtension
 {
-    using AbsoluteUnit.Program;
-
     public static class Extensions
     {
         /// <summary>

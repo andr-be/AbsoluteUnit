@@ -11,8 +11,8 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Equals_OneMeterEqualsOneMeter()
         {
-            var a = AbsUnitBuilder.Meter();
-            var b = AbsUnitBuilder.Meter();
+            var a = AbsUnitFactory.Meter();
+            var b = AbsUnitFactory.Meter();
 
             Assert.AreEqual(a, b);
         }
@@ -24,8 +24,8 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 5918.2,
                 units: [
-                    AbsUnitBuilder.Meter(),
-                    AbsUnitBuilder.Second(-1)
+                    AbsUnitFactory.Meter(),
+                    AbsUnitFactory.Second(-1)
                 ]
             );
 
@@ -33,11 +33,11 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 0.2330,
                 units: [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Inch))
                         .Build(),
                     
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new SIBase(SIBase.Units.Second))
                         .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
                         .WithExponent(-1)
@@ -60,19 +60,19 @@ namespace AbsoluteUnit.Tests
             var metersPerSecond = CreateMeasurement
             (
                 [
-                    AbsUnitBuilder.Meter(),
-                    AbsUnitBuilder.Second(-1)
+                    AbsUnitFactory.Meter(),
+                    AbsUnitFactory.Second(-1)
                 ]
             );
 
             var poundsPerSecondSquared = CreateMeasurement
             (
                 [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Pound))
                         .Build(),
 
-                    AbsUnitBuilder.Second(-2)
+                    AbsUnitFactory.Second(-2)
                 ]
             );
 
@@ -91,13 +91,13 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 1,
                 units: [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Feet))
                         .Build()
                 ]
             );
 
-            var expectedResult = CreateMeasurement([AbsUnitBuilder.Meter()], 0.3048);
+            var expectedResult = CreateMeasurement([AbsUnitFactory.Meter()], 0.3048);
 
             // Act
             var convertedFoot = MeasurementConverter.ExpressInBaseUnits(oneFoot);
@@ -114,11 +114,11 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 0.2330,
                 units: [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Inch))
                         .Build(),
 
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new SIBase("s"))
                         .WithExponent(-1)
                         .WithPrefix(new SIPrefix(SIPrefix.Prefixes.Micro))
@@ -131,8 +131,8 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 5918.2,
                 units: [
-                    AbsUnitBuilder.Meter(),
-                    AbsUnitBuilder.Second(-1)
+                    AbsUnitFactory.Meter(),
+                    AbsUnitFactory.Second(-1)
                 ]
             );
 
@@ -152,12 +152,12 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Convert_OneTonIntoKilograms_Correctly()
         {
-            var expected = CreateMeasurement([AbsUnitBuilder.Kilogram()], 907.18474);
+            var expected = CreateMeasurement([AbsUnitFactory.Kilogram()], 907.18474);
 
             var oneTon = CreateMeasurement
             (
                 [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Ton))
                         .Build()
                 ]
@@ -173,13 +173,13 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Convert_OneKilogramInto2pt2Pounds_Correctly()
         {
-            var kilogram = new AbsMeasurement(AbsUnitBuilder.Kilogram(), 1);
+            var kilogram = new AbsMeasurement(AbsUnitFactory.Kilogram(), 1);
 
             var expectedValue = CreateMeasurement
             (
                 quantity: 2.20462262,
                 units: [
-                    new AbsUnitBuilder()
+                    new AbsUnitFactory()
                         .WithUnit(new USCustomary(USCustomary.Units.Pound))
                         .Build()
                 ]

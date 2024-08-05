@@ -3,13 +3,13 @@ using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class Executor
+    public class Runner
     {
         public ICommand Command { get; set; }
 
         private readonly IMeasurementParser MeasurementParser;
 
-        public Executor(CommandGroup commandGroup, IMeasurementParser measurementParser)
+        public Runner(CommandGroup commandGroup, IMeasurementParser measurementParser)
         {
             MeasurementParser = measurementParser;
             Command = GetCommandType(commandGroup);
@@ -19,9 +19,9 @@ namespace AbsoluteUnit.Program.Commands
 
         private ICommand GetCommandType(CommandGroup commandGroup) => commandGroup.CommandType switch
         {
-            Program.Command.Convert => new Convert(commandGroup, MeasurementParser),
-            Program.Command.Express => new Express(commandGroup, MeasurementParser),
-            Program.Command.Simplify => new Simplify(commandGroup, MeasurementParser),
+            Factories.Command.Convert => new Convert(commandGroup, MeasurementParser),
+            Factories.Command.Express => new Express(commandGroup, MeasurementParser),
+            Factories.Command.Simplify => new Simplify(commandGroup, MeasurementParser),
             _ => throw new ArgumentException($"Command {commandGroup.CommandType} not recognised!")
         };
     }

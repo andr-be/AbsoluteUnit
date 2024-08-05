@@ -4,7 +4,7 @@ using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Factories;
 
-public class AbsUnitBuilder
+public class AbsUnitFactory
 {
     private SIPrefix Prefix = new(SIPrefix.Prefixes._None);
     private IUnit Unit = new SIBase(SIBase.Units.Meter);
@@ -12,19 +12,19 @@ public class AbsUnitBuilder
 
     public AbsUnit Build() => new(Unit, Exponent, Prefix);
 
-    public AbsUnitBuilder WithPrefix(SIPrefix prefix)
+    public AbsUnitFactory WithPrefix(SIPrefix prefix)
     {
         Prefix = prefix;
         return this;
     }
 
-    public AbsUnitBuilder WithUnit(IUnit unit)
+    public AbsUnitFactory WithUnit(IUnit unit)
     {
         Unit = unit;
         return this;
     }
 
-    public AbsUnitBuilder WithExponent(int exponent)
+    public AbsUnitFactory WithExponent(int exponent)
     {
         Exponent = exponent;
         return this;
@@ -34,7 +34,7 @@ public class AbsUnitBuilder
         string symbol,
         SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None,
         int exponent = 1
-        ) => new AbsUnitBuilder()
+        ) => new AbsUnitFactory()
             .WithUnit(new SIBase(symbol))
             .WithExponent(exponent)
             .WithPrefix(new SIPrefix(prefix))

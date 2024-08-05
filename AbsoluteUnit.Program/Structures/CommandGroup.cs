@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit.Program.Structures
+﻿using AbsoluteUnit.Program.Factories;
+
+namespace AbsoluteUnit.Program.Structures
 {
     public record CommandGroup(
         Command CommandType,

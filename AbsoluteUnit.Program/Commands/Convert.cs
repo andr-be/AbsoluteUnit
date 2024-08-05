@@ -5,7 +5,7 @@ namespace AbsoluteUnit.Program.Commands;
 using AbsoluteUnit.Program.Interfaces;
 using AbsoluteUnit.Program.Structures;
 using AbsoluteUnit.Program.Units;
-using static AbsUnitBuilder;
+using static AbsUnitFactory;
 
 public class Convert : ICommand
 {
@@ -128,7 +128,7 @@ public static class UnitConverter
     /// <returns>exactly what you put in</returns>
     public static List<AbsUnit> ConvertSIBase(SIBase baseUnit) =>
     [
-        new AbsUnitBuilder()
+        new AbsUnitFactory()
             .WithUnit(baseUnit)
             .Build()
     ];
