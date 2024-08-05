@@ -9,10 +9,12 @@ namespace AbsoluteUnit.Program.Commands
 
         private IMeasurementParser? MeasurementParser;
 
-        public void ParseCommands(IMeasurementParser measurementParser)
+        public Runner ParseCommandArguments(IMeasurementParser measurementParser)
         {
             MeasurementParser = measurementParser;
             Command = GetCommandType(CommandGroup);
+
+            return this;
         }
 
         public AbsMeasurement Run() => Command?.Run() ?? new();
