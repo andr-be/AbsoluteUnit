@@ -1,7 +1,8 @@
 ﻿using AbsoluteUnit.Program.Structures;
 using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program;
 
-namespace AbsoluteUnit.Program.Factories;
+namespace AbsoluteUnit.Tests;
 
 public class TestUnitBuilder
 {
