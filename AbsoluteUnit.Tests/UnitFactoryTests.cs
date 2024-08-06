@@ -18,11 +18,11 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             // Act
-            var parsedm2 = new UnitFactory().BuildUnits([metersSquared]).First();
+            var parsedM2 = new UnitFactory().BuildUnits(metersSquared).First();
 
             // Assert
-            Assert.AreEqual<object>(parsedm2.UnitType.Symbol, "m");
-            Assert.AreEqual(parsedm2.Exponent, 2);
+            Assert.AreEqual<object>(parsedM2.UnitType.Symbol, "m");
+            Assert.AreEqual(parsedM2.Exponent, 2);
         }
 
         [TestMethod]
@@ -43,14 +43,14 @@ namespace AbsoluteUnit.Tests
                 .WithDivMulti(UnitGroup.UnitOperation.Divide)
                 .Build();
 
-            List<UnitGroup> unitgroups = [kg, m, s2];
+            List<UnitGroup> unitGroups = [kg, m, s2];
 
             var grams = new SIBase(SIBase.Units.Gram);
             var meters = new SIBase(SIBase.Units.Meter);
             var seconds = new SIBase(SIBase.Units.Second);
 
             // Act
-            var result = new UnitFactory().BuildUnits(unitgroups);
+            var result = new UnitFactory().BuildUnits(unitGroups);
 
             // Assert
             Assert.AreEqual(result[0].UnitType.Unit, grams.Unit, "kg should parse as Kilo && Gram");
@@ -97,10 +97,10 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             var result = new UnitFactory()
-                .BuildUnits([oneInch])
+                .BuildUnits(oneInch)
                 .First();
 
-            Assert.AreEqual(result.UnitType.Unit, USCustomary.Units.Inch, "in should pase as Inch");
+            Assert.AreEqual(result.UnitType.Unit, USCustomary.Units.Inch, "in should parse as Inch");
         }
 
         [TestMethod]
@@ -111,7 +111,7 @@ namespace AbsoluteUnit.Tests
                 .Build();
 
             var result = new UnitFactory()
-                .BuildUnits([oneKm])
+                .BuildUnits(oneKm)
                 .First();
 
             Assert.AreEqual(result.UnitType.Unit, SIBase.Units.Meter, "km should parse as Kilo && Meter");

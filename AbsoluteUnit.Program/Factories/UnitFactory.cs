@@ -20,14 +20,26 @@ public class UnitFactory : IUnitFactory
             return [];
         }
 
-        var processedGroups = ProcessUnitGroups(unitGroups);
-        return processedGroups.Select(CreateUnit).ToList();
+        return ProcessUnitGroups(unitGroups)
+            .Select(CreateUnit)
+            .ToList();
     }
 
-    public static Unit BuildUnit(IUnitType unitType, int exponent = 1, SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
+    public List<Unit> BuildUnits(UnitGroup? unitGroup = null)
     {
-        return new Unit(unitType, exponent, new SIPrefix(prefix));
+        if (unitGroup is null) return [];
+
+        return BuildUnits([unitGroup]);
     }
+
+    public static Unit BuildUnit
+    (
+        IUnitType unitType, 
+        int exponent = 1, 
+        SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None
+   
+    ) => new(unitType, exponent, new(prefix));
+
 
     private List<UnitGroup> ProcessUnitGroups(List<UnitGroup> unitGroups)
     {
@@ -60,13 +72,17 @@ public class UnitFactory : IUnitFactory
     {
         bool reachedDivisionSign = false;
         return input.Select(current =>
-        {
-            if (current.Operation == UnitGroup.UnitOperation.Divide)
-                reachedDivisionSign = true;
-            return reachedDivisionSign
-                ? current with { Exponent = current.Exponent * -1 }
-                : current;
-        }).ToList();
+            {
+                if (current.Operation == UnitGroup.UnitOperation.Divide)
+                {
+                    reachedDivisionSign = true;
+                }
+
+                return reachedDivisionSign
+                    ? current with { Exponent = current.Exponent * -1 }
+                    : current;
+            }
+        ).ToList();
     }
 
     private static List<UnitGroup> ComplexPropagation(List<UnitGroup> input) =>
@@ -77,10 +93,8 @@ public class UnitFactory : IUnitFactory
     private void ValidateSymbols(List<UnitGroup> groups)
     {
         foreach (var unit in groups)
-        {
             if (!IsInUnitDictionaries(unit))
                 throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
-        }
     }
 
     private bool IsInUnitDictionaries(UnitGroup? unit) =>
