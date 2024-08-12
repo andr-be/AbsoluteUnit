@@ -103,7 +103,7 @@ namespace AbsoluteUnit.Tests
             var convertedFoot = MeasurementConverter.ExpressInBaseUnits(oneFoot);
 
             // Assert
-            Assert.AreEqual(expectedResult, convertedFoot);
+            AssertEqualityWithConfidence(expectedResult, convertedFoot);
         }
 
         [TestMethod]
@@ -140,13 +140,7 @@ namespace AbsoluteUnit.Tests
             var convertedUnit = MeasurementConverter.ExpressInBaseUnits(_02330InchesPerMicroSecond);
 
             // Assert
-            Assert.AreEqual
-            (
-                expected:   expected.Quantity, 
-                actual:     convertedUnit.Quantity, 
-                delta:      1e-12, 
-                $"actual: {convertedUnit} .. expected: {expected} .. (delta {expected.Quantity - convertedUnit.Quantity})"
-            );
+            AssertEqualityWithConfidence(expected, convertedUnit);
         }
 
         [TestMethod]
@@ -155,19 +149,17 @@ namespace AbsoluteUnit.Tests
             var expected = CreateMeasurement([UnitFactory.Kilogram()], 907.18474);
 
             var oneTon = CreateMeasurement
-            (
-                [
-                    new TestUnitBuilder()
-                        .WithUnit(new USCustomary(USCustomary.Units.Ton))
-                        .Build()
-                ]
-            );
+            ([
+                new TestUnitBuilder()
+                    .WithUnit(new USCustomary(USCustomary.Units.Ton))
+                    .Build()
+            ]);
 
             // Act
-            var actual = MeasurementConverter.ConvertMeasurement(oneTon, expected);
+            var actual = oneTon.ConvertTo(expected);
 
             // Assert
-            AssertWithConfidence(expected, actual);
+            AssertEqualityWithConfidence(expected, actual);
         }
 
         [TestMethod]
@@ -186,10 +178,10 @@ namespace AbsoluteUnit.Tests
             );
 
             // At
-            var actualValue = MeasurementConverter.ConvertMeasurement(kilogram, expectedValue);
+            var actualValue = kilogram.ConvertTo(expectedValue);
 
             // Assert
-            AssertWithConfidence(expectedValue, actualValue);
+            AssertEqualityWithConfidence(expectedValue, actualValue);
         }
 
         private static Measurement CreateMeasurement(
@@ -199,7 +191,7 @@ namespace AbsoluteUnit.Tests
             ) => 
                 new(units, quantity, exponent);
 
-        private static void AssertWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
+        private static void AssertEqualityWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
         (
             expected: expected.Quantity,
             actual: actual.Quantity,
