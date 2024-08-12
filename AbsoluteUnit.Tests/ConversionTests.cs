@@ -11,8 +11,8 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Equals_OneMeterEqualsOneMeter()
         {
-            var a = UnitFactory.Meter();
-            var b = UnitFactory.Meter();
+            var a = SIBase.Meter();
+            var b = SIBase.Meter();
 
             Assert.AreEqual(a, b);
         }
@@ -24,8 +24,8 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 5918.2,
                 units: [
-                    UnitFactory.Meter(),
-                    UnitFactory.Second(-1)
+                    SIBase.Meter(),
+                    SIBase.Second(-1)
                 ]
             );
 
@@ -60,8 +60,8 @@ namespace AbsoluteUnit.Tests
             var metersPerSecond = CreateMeasurement
             (
                 [
-                    UnitFactory.Meter(),
-                    UnitFactory.Second(-1)
+                    SIBase.Meter(),
+                    SIBase.Second(-1)
                 ]
             );
 
@@ -72,7 +72,7 @@ namespace AbsoluteUnit.Tests
                         .WithUnit(new USCustomary(USCustomary.Units.Pound))
                         .Build(),
 
-                    UnitFactory.Second(-2)
+                    SIBase.Second(-2)
                 ]
             );
 
@@ -97,7 +97,7 @@ namespace AbsoluteUnit.Tests
                 ]
             );
 
-            var expectedResult = CreateMeasurement([UnitFactory.Meter()], 0.3048);
+            var expectedResult = CreateMeasurement([SIBase.Meter()], 0.3048);
 
             // Act
             var convertedFoot = MeasurementConverter.ExpressInBaseUnits(oneFoot);
@@ -131,8 +131,8 @@ namespace AbsoluteUnit.Tests
             (
                 quantity: 5918.2,
                 units: [
-                    UnitFactory.Meter(),
-                    UnitFactory.Second(-1)
+                    SIBase.Meter(),
+                    SIBase.Second(-1)
                 ]
             );
 
@@ -146,7 +146,7 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Convert_OneTonIntoKilograms_Correctly()
         {
-            var expected = CreateMeasurement([UnitFactory.Kilogram()], 907.18474);
+            var expected = CreateMeasurement([SIBase.Kilogram()], 907.18474);
 
             var oneTon = CreateMeasurement
             ([
@@ -165,7 +165,7 @@ namespace AbsoluteUnit.Tests
         [TestMethod]
         public void Convert_OneKilogramInto2pt2Pounds_Correctly()
         {
-            var kilogram = new Measurement(UnitFactory.Kilogram(), 1);
+            var kilogram = new Measurement(SIBase.Kilogram(), 1);
 
             var expectedValue = CreateMeasurement
             (
