@@ -28,6 +28,14 @@ public class Measurement(
         Exponent
     );
 
+    public bool IsValidConversion(Measurement target)
+    {
+        var currentUnits = new Measurement(Units).ExpressInBaseUnits();
+        var targetUnits = new Measurement(target.Units).ExpressInBaseUnits();
+
+        return currentUnits.Equals(targetUnits);
+    }
+
     public override string ToString() =>
         $"{Quantity}{(Exponent != 0 ? $"e{Exponent}" : "")} {string.Join(".", Units)}";
 

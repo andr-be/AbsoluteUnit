@@ -1,5 +1,4 @@
-﻿using AbsoluteUnit.Program.Structures;
-using UnitType = AbsoluteUnit.Program.Structures.Unit;
+﻿using UnitType = AbsoluteUnit.Program.Structures.Unit;
 
 namespace AbsoluteUnit.Program.Units;
 

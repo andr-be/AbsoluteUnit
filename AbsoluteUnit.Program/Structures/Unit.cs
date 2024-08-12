@@ -15,7 +15,6 @@ public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null
     
     public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
 
-
     public override string ToString() =>
         $"{Prefix}{UnitType.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
 

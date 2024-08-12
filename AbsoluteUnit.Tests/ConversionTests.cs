@@ -46,8 +46,8 @@ namespace AbsoluteUnit.Tests
             );
 
             // Act
-            var isValidForwards = MeasurementConverter.IsValidConversion(metersPerSecond, inchesPerMicroSecond);
-            var isValidBackwards = MeasurementConverter.IsValidConversion(inchesPerMicroSecond, metersPerSecond);
+            var isValidForwards = metersPerSecond.IsValidConversion(target: inchesPerMicroSecond);
+            var isValidBackwards = inchesPerMicroSecond.IsValidConversion(target: metersPerSecond);
 
             // Assert
             Assert.IsTrue(isValidForwards && isValidBackwards);
@@ -77,7 +77,7 @@ namespace AbsoluteUnit.Tests
             );
 
             // Act
-            var isValid = MeasurementConverter.IsValidConversion(metersPerSecond, poundsPerSecondSquared);
+            var isValid = metersPerSecond.IsValidConversion(target: poundsPerSecondSquared);
 
             // Assert
             Assert.IsFalse(isValid);
@@ -100,7 +100,7 @@ namespace AbsoluteUnit.Tests
             var expectedResult = CreateMeasurement([SIBase.Meter()], 0.3048);
 
             // Act
-            var convertedFoot = MeasurementConverter.ExpressInBaseUnits(oneFoot);
+            var convertedFoot = oneFoot.ExpressInBaseUnits();
 
             // Assert
             AssertEqualityWithConfidence(expectedResult, convertedFoot);
@@ -137,7 +137,7 @@ namespace AbsoluteUnit.Tests
             );
 
             // Act
-            var convertedUnit = MeasurementConverter.ExpressInBaseUnits(_02330InchesPerMicroSecond);
+            var convertedUnit = _02330InchesPerMicroSecond.ExpressInBaseUnits();
 
             // Assert
             AssertEqualityWithConfidence(expected, convertedUnit);
