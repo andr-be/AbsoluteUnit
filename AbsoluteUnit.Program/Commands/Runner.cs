@@ -7,23 +7,20 @@ namespace AbsoluteUnit.Program.Commands
         public ICommand? Command { get; set; }
         public CommandGroup CommandGroup { get; init; } = commandGroup;
 
-        private IMeasurementParser? MeasurementParser;
-
         public Runner ParseCommandArguments(IMeasurementParser measurementParser)
         {
-            MeasurementParser = measurementParser;
-            Command = GetCommandType(CommandGroup);
+            Command = GetCommandType(CommandGroup, measurementParser);
 
             return this;
         }
 
         public Measurement Run() => Command?.Run() ?? new();
 
-        private ICommand GetCommandType(CommandGroup commandGroup) => commandGroup.CommandType switch
+        private static ICommand GetCommandType(CommandGroup commandGroup, IMeasurementParser parser) => commandGroup.CommandType switch
         {
-            Factories.Command.Convert => new Convert(commandGroup, MeasurementParser!),
-            Factories.Command.Express => new Express(commandGroup, MeasurementParser!),
-            Factories.Command.Simplify => new Simplify(commandGroup, MeasurementParser!),
+            Factories.Command.Convert => new Convert(commandGroup, parser),
+            Factories.Command.Express => new Express(commandGroup, parser),
+            Factories.Command.Simplify => new Simplify(commandGroup, parser),
             _ => throw new ArgumentException($"Command {commandGroup.CommandType} not recognised!")
         };
     }
