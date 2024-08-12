@@ -135,13 +135,4 @@ public class UnitFactory : IUnitFactory
 
         throw new KeyNotFoundException($"{symbol} not found in unit database.");
     }
-
-    // Static methods for common units
-    public static Unit Kilogram(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("g"), exponent, SIPrefix.Prefixes.Kilo);
-    public static Unit Meter(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("m"), exponent);
-    public static Unit Second(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("s"), exponent);
-    public static Unit Ampere(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("A"), exponent);
-    public static Unit Kelvin(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("K"), exponent);
-    public static Unit Candela(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("cd"), exponent);
-    public static Unit Mole(int exponent = 1) => UnitFactory.BuildUnit(new SIBase("mol"), exponent);
 }

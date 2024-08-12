@@ -24,6 +24,7 @@ namespace AbsoluteUnit.Program
         string Symbol { get; }
         double ToBase(double value=1.0);
         double FromBase(double value=1.0);
+        List<Unit> ExpressInBaseUnits();
     }
 
     public interface IUnitFactory

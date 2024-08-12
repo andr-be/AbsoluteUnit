@@ -3,7 +3,7 @@ using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Units;
-using static UnitFactory;
+using static SIBase;
 
 public static class UnitConverter
 {

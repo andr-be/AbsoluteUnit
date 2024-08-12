@@ -21,7 +21,7 @@ public class Convert : ICommand
         ToUnit = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[1], unitOnly: true);
 
         if (MeasurementConverter.IsValidConversion(FromUnit, ToUnit))
-            ConversionFactor = MeasurementConverter.QuantityConversionFactor(FromUnit, ToUnit);
+            ConversionFactor = FromUnit.QuantityConversionFactor(ToUnit);
 
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
@@ -38,23 +38,14 @@ public class Convert : ICommand
 public static class MeasurementConverter
 {
     /// <summary>
-    /// Given a valid from and to unit, will convert from one to another
-    /// </summary>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
-    /// <returns>a new AbsMeasurement in `to`'s units, with a converted quantity</returns>
-    public static Measurement ConvertMeasurement(Measurement from, Measurement to) =>
-        new(to.Units, from.Quantity * QuantityConversionFactor(from, to), from.Exponent);
-
-    /// <summary>
     /// Takes a single AbsMeasurement and converts it to the AbsMeasurement of the Base SI Conversion
     /// </summary>
     /// <param name="from"></param>
     /// <returns></returns>
     public static Measurement ExpressInBaseUnits(Measurement from) => new
     (
-        from.Units.SelectMany(BaseConversion).ToList(),
-        from.Quantity * BaseConversionFactor(from.Units),
+        from.Units.SelectMany(u => u.BaseConversion()).ToList(),
+        from.Quantity * from.Units.AggregateConversionFactors(),
         from.Exponent
     );
 
@@ -73,15 +64,6 @@ public static class MeasurementConverter
         Miscellaneous miscUnit => UnitConverter.ConvertMiscellaneous(miscUnit),
         _ => throw new ArgumentException($"{unit} is not a supported AbsUnit!")
     };
-
-    /// <summary>
-    /// Given a valid from and to unit, will give you the amount you have to multiply by to generate the converted quantity
-    /// </summary>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
-    /// <returns>factor to multiply `from`'s quantity by to represent it in `to`'s units</returns>
-    public static double QuantityConversionFactor(Measurement from, Measurement to) =>
-        BaseConversionFactor(to.Units) * BaseConversionFactor(from.Units);
 
     /// <summary>
     /// Returns the amount needed to multiply a unit by to convert to its base case.

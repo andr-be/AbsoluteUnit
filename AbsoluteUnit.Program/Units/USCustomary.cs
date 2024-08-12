@@ -1,13 +1,16 @@
 ﻿
+using AbsoluteUnit.Program.Structures;
+
 namespace AbsoluteUnit.Program.Units;
 
 public class USCustomary(USCustomary.Units unit) : IUnitType
 {
-    public static USCustomary Pound() => new(USCustomary.Units.Pound);
-    public static USCustomary Inch() => new(USCustomary.Units.Inch);
-    public static USCustomary Feet() => new(USCustomary.Units.Feet);
-    public static USCustomary Mile() => new(USCustomary.Units.Miles);
-    public static USCustomary Fahrenheit() => new(USCustomary.Units.Fahrenheit);
+    public static USCustomary Pound() => new(Units.Pound);
+    public static USCustomary Inch() => new(Units.Inch);
+    public static USCustomary Feet() => new(Units.Feet);
+    public static USCustomary Mile() => new(Units.Miles);
+    public static USCustomary Fahrenheit() => new(Units.Fahrenheit);
+    public object Unit { get; init; } = unit;
 
     public enum Units
     {
@@ -29,7 +32,6 @@ public class USCustomary(USCustomary.Units unit) : IUnitType
         Fahrenheit
     }
 
-    public object Unit { get; } = unit;
 
     public string Symbol => Unit switch
     {
@@ -122,6 +124,27 @@ public class USCustomary(USCustomary.Units unit) : IUnitType
     {
         return HashCode.Combine(Unit, Symbol);
     }
+
+    public List<Unit> ExpressInBaseUnits() => (Units)Unit switch
+    {
+        Units.Mil or
+        Units.Inch or
+        Units.Feet or
+        Units.Yards or
+        Units.Miles => [SIBase.Meter()],
+
+        Units.Ounce or 
+        Units.Pound or 
+        Units.Ton => [SIBase.Kilogram()],
+
+        Units.FluidOunce or
+        Units.Pint or 
+        Units.Gallon => [SIBase.Meter(3)],
+
+        Units.Fahrenheit => [SIBase.Kelvin()],
+
+        _ => throw new NotImplementedException($"No base conversion case implemented for {Unit}"),
+    };
 
     static readonly Dictionary<Units, double> Conversion = new()
     {

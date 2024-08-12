@@ -20,7 +20,14 @@ public class Measurement(
 
     public double QuantityConversionFactor(Measurement target) =>
         target.Units.AggregateConversionFactors() * Units.AggregateConversionFactors();
-    
+
+    public Measurement ExpressInBaseUnits() => new
+    (
+        Units.SelectMany(u => u.BaseConversion()).ToList(),
+        Quantity * Units.AggregateConversionFactors(),
+        Exponent
+    );
+
     public override string ToString() =>
         $"{Quantity}{(Exponent != 0 ? $"e{Exponent}" : "")} {string.Join(".", Units)}";
 

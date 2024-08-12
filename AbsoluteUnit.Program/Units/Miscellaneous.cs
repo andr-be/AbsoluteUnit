@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit.Program.Units;
+﻿using AbsoluteUnit.Program.Structures;
+
+namespace AbsoluteUnit.Program.Units;
 
 public class Miscellaneous : IUnitType
 {
@@ -12,6 +14,11 @@ public class Miscellaneous : IUnitType
     }
 
     public double ToBase(double value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<Unit> ExpressInBaseUnits()
     {
         throw new NotImplementedException();
     }
