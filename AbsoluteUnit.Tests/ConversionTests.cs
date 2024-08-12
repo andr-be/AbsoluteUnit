@@ -177,8 +177,61 @@ namespace AbsoluteUnit.Tests
                 ]
             );
 
-            // At
+            // Act
             var actualValue = kilogram.ConvertTo(expectedValue);
+
+            // Assert
+            AssertEqualityWithConfidence(expectedValue, actualValue);
+        }
+
+        [TestMethod]
+        public void Convert_OneHourInto3600Seconds_Correctly()
+        {
+            // Arrange
+            var oneHour = CreateMeasurement
+            (
+                quantity: 1.0,
+                units: [
+                    new TestUnitBuilder()
+                    .WithUnit(new Miscellaneous(Miscellaneous.Units.Hour))
+                    .Build()
+                ]
+            );
+
+            var expectedValue = CreateMeasurement
+            (
+                quantity: 3600.0,
+                units: [ SIBase.Second() ]
+            );
+
+            // Act
+            var actualValue = oneHour.ConvertTo(expectedValue);
+
+            // Assert
+            AssertEqualityWithConfidence(expectedValue, actualValue);
+        }
+
+        [TestMethod]
+        public void Convert3600SecondsIntoOneHour_Correctly()
+        {
+            var _3600Seconds = CreateMeasurement
+            (
+                quantity: 3600.0,
+                units: [SIBase.Second()]
+            );
+
+            var expectedValue = CreateMeasurement
+            (
+                quantity: 1.0,
+                units: [
+                    new TestUnitBuilder()
+                    .WithUnit(new Miscellaneous(Miscellaneous.Units.Hour))
+                    .Build()
+                ]
+            );
+
+            // Act
+            var actualValue = _3600Seconds.ConvertTo(expectedValue);
 
             // Assert
             AssertEqualityWithConfidence(expectedValue, actualValue);
