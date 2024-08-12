@@ -20,8 +20,13 @@ public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null
 
     public List<Unit> ExpressInBaseUnits() => MeasurementConverter.BaseConversion(this);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(UnitType, Exponent, Prefix);
-    }
+    public override int GetHashCode() => HashCode.Combine(UnitType, Exponent, Prefix);
+}
+
+
+public static class UnitListExtensions
+{
+    public static double AggregateConversionFactors(this List<Unit> units) => units
+        .Select(u => u.ConversionToBase())
+        .Aggregate((x, y) => x * y);
 }

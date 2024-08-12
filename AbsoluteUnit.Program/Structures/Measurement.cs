@@ -15,6 +15,12 @@ public class Measurement(
     {
     }
 
+    public Measurement ConvertTo(Measurement target) =>
+        new(target.Units, Quantity * QuantityConversionFactor(target), Exponent);
+
+    public double QuantityConversionFactor(Measurement target) =>
+        target.Units.AggregateConversionFactors() * Units.AggregateConversionFactors();
+    
     public override string ToString() =>
         $"{Quantity}{(Exponent != 0 ? $"e{Exponent}" : "")} {string.Join(".", Units)}";
 
@@ -29,8 +35,6 @@ public class Measurement(
         else return false;
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Units, Quantity, Exponent);
-    }
+    public override int GetHashCode() => HashCode.Combine(Units, Quantity, Exponent);
+    
 }

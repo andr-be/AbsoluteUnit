@@ -26,7 +26,7 @@ public class Convert : ICommand
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
 
-    public Measurement Run() => MeasurementConverter.ConvertMeasurement(FromUnit, ToUnit);
+    public Measurement Run() => FromUnit.ConvertTo(ToUnit);
 
     public override string ToString() =>
         $"{CommandGroup.CommandType}:\tFrom: {FromUnit}\tTo: {string.Join(".", ToUnit.Units)}";
