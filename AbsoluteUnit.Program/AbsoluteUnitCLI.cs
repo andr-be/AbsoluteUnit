@@ -4,9 +4,9 @@ using AbsoluteUnit.Program.Commands;
 
 namespace AbsoluteUnit
 {
-    internal class AbsoluteUnitCLI
+    public class AbsoluteUnitCLI
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var commandFactory = new CommandFactory(args);
             var commandGroup = commandFactory.ParseArguments();
