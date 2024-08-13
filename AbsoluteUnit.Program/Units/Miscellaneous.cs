@@ -74,4 +74,13 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
         { Units.Hour,       3_600 },
         { Units.Minute,        60 },
     };
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Miscellaneous other) return false;
+
+        var unitEquals = other.Unit.Equals(Unit);
+
+        return unitEquals;
+    }
 }

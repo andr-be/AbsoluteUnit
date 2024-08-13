@@ -3,7 +3,7 @@ using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Program.Structures;
 
-public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
+public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
 {
     public IUnitType UnitType { get; init; } = UnitType;
     public int Exponent { get; init; } = Exponent;
@@ -27,6 +27,17 @@ public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null
         SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None
 
     ) => new(unitType, exponent, new(prefix));
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not Unit other) return false;
+
+        var typeEqual = UnitType.Equals(other.UnitType);
+        var exponentEqual = Exponent == other.Exponent;
+        var prefixEqual = Prefix.Equals(other.Prefix);
+
+        return typeEqual && exponentEqual && prefixEqual;
+    }
 }
 
 

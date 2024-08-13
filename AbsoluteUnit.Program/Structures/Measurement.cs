@@ -41,13 +41,13 @@ public class Measurement(
 
     public override bool Equals(object? obj)
     {
-        if (obj is Measurement other)
-        {
-            return Units.SequenceEqual(other.Units)
-                && Quantity.Equals(other.Quantity)
-                && Exponent.Equals(other.Exponent);
-        }
-        else return false;
+        if (obj is not Measurement other) return false;
+     
+        var unitsEqual = Units.SequenceEqual(other.Units);
+        var quantityEqual = Quantity.Equals(other.Quantity);
+        var exponentEqual = Exponent.Equals(other.Exponent);
+
+        return unitsEqual && quantityEqual && exponentEqual;
     }
 
     public override int GetHashCode() => HashCode.Combine(Units, Quantity, Exponent);
