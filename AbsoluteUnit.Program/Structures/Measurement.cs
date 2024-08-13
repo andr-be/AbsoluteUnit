@@ -19,7 +19,7 @@ public class Measurement(
         new(target.Units, Quantity * QuantityConversionFactor(target), Exponent);
 
     public double QuantityConversionFactor(Measurement target) =>
-        target.Units.AggregateConversionFactors() * Units.AggregateConversionFactors();
+         Units.AggregateConversionFactors() / target.Units.AggregateConversionFactors();
 
     public Measurement ExpressInBaseUnits() => new
     (
