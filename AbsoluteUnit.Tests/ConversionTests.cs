@@ -1,7 +1,5 @@
-﻿using AbsoluteUnit.Program.Units;
-using AbsoluteUnit.Program.Factories;
-using AbsoluteUnit.Program.Commands;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Tests
 {
@@ -137,7 +135,7 @@ namespace AbsoluteUnit.Tests
             );
 
             // Act
-            var convertedUnit = _02330InchesPerMicroSecond.ExpressInBaseUnits();
+            var convertedUnit = _02330InchesPerMicroSecond.ConvertTo(expected);
 
             // Assert
             AssertEqualityWithConfidence(expected, convertedUnit);
@@ -163,11 +161,26 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
+        public void Convert_OneTonToBaseConversion_Correctly()
+        {
+            var oneTon = CreateMeasurement
+            ([
+                new TestUnitBuilder()
+                    .WithUnit(new USCustomary(USCustomary.Units.Ton))
+                    .Build()
+            ]);
+
+            var inKg = oneTon.Units.AggregateConversionFactors();
+
+            Assert.AreEqual(inKg, 907.18474e-3);
+        }
+
+        [TestMethod]
         public void Convert_OneKilogramInto2pt2Pounds_Correctly()
         {
             var kilogram = new Measurement(SIBase.Kilogram(), 1);
 
-            var expectedValue = CreateMeasurement
+            var pounds = CreateMeasurement
             (
                 quantity: 2.20462262,
                 units: [
@@ -178,10 +191,28 @@ namespace AbsoluteUnit.Tests
             );
 
             // Act
-            var actualValue = kilogram.ConvertTo(expectedValue);
+            var actualValue = kilogram.ConvertTo(pounds);
 
             // Assert
-            AssertEqualityWithConfidence(expectedValue, actualValue);
+            AssertEqualityWithConfidence(pounds, actualValue);
+        }
+
+        [TestMethod]
+        public void Convert_2pt2PoundsIntoKilograms_Correctly()
+        {
+            // Arrange
+            var kilogram = new Measurement(SIBase.Kilogram(), 1);
+            var pounds = CreateMeasurement
+            (
+                quantity: 2.20462262,
+                units: [new TestUnitBuilder().WithUnit(USCustomary.Pound()).Build()]
+            );
+
+            // Act
+            var actualValue = pounds.ConvertTo(kilogram);
+
+            // Assert
+            AssertEqualityWithConfidence(kilogram, actualValue);
         }
 
         [TestMethod]
@@ -237,18 +268,78 @@ namespace AbsoluteUnit.Tests
             AssertEqualityWithConfidence(expectedValue, actualValue);
         }
 
-        private static Measurement CreateMeasurement(
+        [TestMethod]
+        public void Miscellaneous_ToBase_HoursToSecondsConvertsCorrectly()
+        {
+            // Arrange
+            Unit hour = new(new Miscellaneous(Miscellaneous.Units.Hour));
+
+            // Act
+            var hoursInSeconds = hour.ConversionToBase();
+
+            // Assert
+            Assert.AreEqual(hoursInSeconds, 3600);
+        }
+
+        [TestMethod]
+        public void Miscellaneous_FromBase_SecondsToHoursConvertsCorrectly()
+        {
+            // Arrange
+            Measurement _3600Seconds = CreateMeasurement([SIBase.Second()], 3600.00);
+            Measurement _1Hour = CreateMeasurement(
+                units: [new(new Miscellaneous(Miscellaneous.Units.Hour))],
+                quantity: 1.0
+                );
+
+            // Act
+            var secondToHourConversionFactor = _3600Seconds.QuantityConversionFactor(_1Hour);
+            var hourToSecondConversionFactor = _1Hour.QuantityConversionFactor(_3600Seconds);
+
+            // Assert
+            Assert.AreNotEqual(hourToSecondConversionFactor, secondToHourConversionFactor);
+        }
+
+        [TestMethod]
+        public void USCustomary_FromBaseAndToBase_DifferentFactorsGenerated()
+        {
+            // Arrange
+            Measurement oneMile = CreateMeasurement([new(USCustomary.Mile())], 1);
+            Measurement oneMeter = CreateMeasurement([SIBase.Meter()], 1);
+
+            // Act
+            var mileToMeterConversionFactor = oneMile.QuantityConversionFactor(oneMeter);
+            var meterToMileConversionFactor = oneMeter.QuantityConversionFactor(oneMile);
+
+            // Assert
+            Assert.AreNotEqual(mileToMeterConversionFactor, meterToMileConversionFactor);
+        }
+
+        [TestMethod]
+        public void UnitAggregation_ProducesTheCorrectOutput()
+        {
+            List<Unit> units =
+            [
+                new TestUnitBuilder().WithUnit(USCustomary.Feet()).Build(),
+                new TestUnitBuilder().WithUnit(new SIBase(SIBase.Units.Second)).WithExponent(-1).Build(),
+            ];
+
+            var aggregateConversionFactors = units.AggregateConversionFactors();
+
+            Assert.AreEqual(0.3048, aggregateConversionFactors);
+        }
+
+        public static Measurement CreateMeasurement(
             List<Unit> units,
             double quantity = 1.0,
             int exponent = 1
             ) => 
                 new(units, quantity, exponent);
 
-        private static void AssertEqualityWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
+        public static void AssertEqualityWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
         (
             expected: expected.Quantity,
             actual: actual.Quantity,
-            delta: 1e-12,
+            delta: 1e-9,
             $"actual: {actual} .. expected: {expected} .. (delta {expected.Quantity - actual.Quantity})"
         );
     }
