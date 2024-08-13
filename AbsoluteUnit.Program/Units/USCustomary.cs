@@ -154,9 +154,9 @@ public class USCustomary(USCustomary.Units unit) : IUnitType
         { Units.Yards, 0.9144 },
         { Units.Miles, 1.609344e3 },
 
-        { Units.Ounce, 35.273962e3 },
-        { Units.Pound, 2.20462262e3 },
-        { Units.Ton, 907.18474e3 },
+        { Units.Ounce, 0.02834952e-3 },
+        { Units.Pound, 0.45359237e-3 },
+        { Units.Ton, 907.18474e-3 },
 
         { Units.FluidOunce, 2.957e-5 },
         { Units.Pint, 4.7318e-4 },
