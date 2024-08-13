@@ -18,9 +18,9 @@ namespace AbsoluteUnit.Program.Commands
 
         private static ICommand GetCommandType(CommandGroup commandGroup, IMeasurementParser parser) => commandGroup.CommandType switch
         {
-            Factories.Command.Convert => new Convert(commandGroup, parser),
-            Factories.Command.Express => new Express(commandGroup, parser),
-            Factories.Command.Simplify => new Simplify(commandGroup, parser),
+            Program.Command.Convert => new Convert(commandGroup, parser),
+            Program.Command.Express => new Express(commandGroup, parser),
+            Program.Command.Simplify => new Simplify(commandGroup, parser),
             _ => throw new ArgumentException($"Command {commandGroup.CommandType} not recognised!")
         };
     }
