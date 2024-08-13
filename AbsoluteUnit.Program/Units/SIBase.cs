@@ -62,7 +62,7 @@ public class SIBase : IUnitType
 
     public double FromBase(double value) => value;
 
-    public List<UnitType> ExpressInBaseUnits() => [new(new SIBase((Units)Unit))];
+    public List<UnitType> ExpressInBaseUnits() => this is SIBase _ ? [new(this)] : [];
 
     public override bool Equals(object? obj) =>
         obj is SIBase other &&

@@ -38,6 +38,20 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
+        public void CLI_Convert_KgsIntoShortTons_Correctly()
+        {
+            // Arrange
+            string[] args = ["--convert", "1ton", "kg"];
+
+            // Act
+            AbsoluteUnitCLI.Main(args);
+
+            // Assert
+            string output = consoleOutput.ToString();
+            Assert.IsTrue(output.Contains("907.408"), "Expected output to contain 907.408 kg");
+        }
+
+        [TestMethod]
         public void CLI_ExpressesProperly()
         {
             // Arrange
