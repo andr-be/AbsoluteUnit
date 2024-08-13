@@ -1,9 +1,8 @@
-﻿using System.Data;
-using AbsoluteUnit.Program.Factories;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
 using EnumExtension;
+using System.Data;
 
-namespace AbsoluteUnit.Program.Factories
+namespace AbsoluteUnit.Program
 {
     public enum Command
     {
@@ -11,6 +10,7 @@ namespace AbsoluteUnit.Program.Factories
         Express,
         Simplify,
     }
+
     public enum Flag
     {
         VerboseCalculation,
@@ -165,6 +165,7 @@ namespace AbsoluteUnit.Program.Factories
 
 namespace EnumExtension
 {
+    using AbsoluteUnit.Program;
     public static class Extensions
     {
         /// <summary>
