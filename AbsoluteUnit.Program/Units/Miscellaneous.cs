@@ -26,15 +26,9 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
 
     public object Unit { get; init; } = unit;
 
-    public double FromBase(double value) => Unit switch
-    {
-        _ => value / Conversion[unit],
-    };
+    public double FromBase(double value) => value / Conversion[(Units)Unit];
 
-    public double ToBase(double value) => Unit switch
-    {
-        _ => value * Conversion[unit],
-    };
+    public double ToBase(double value) => value * Conversion[(Units)Unit];
 
     public List<Unit> ExpressInBaseUnits() => (Units)Unit switch
     {
@@ -74,10 +68,10 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
 
     static readonly Dictionary<Units, double> Conversion = new()
     {
-        { Units.Year,   3.15360000e7 },
-        { Units.Month,  2.62800288e6 },
-        { Units.Day,    86400 },
-        { Units.Hour,   3600 },
-        { Units.Minute, 60 },
+        { Units.Year,  31_536_000 },
+        { Units.Month,  2_628_000 },
+        { Units.Day,       86_400 },
+        { Units.Hour,       3_600 },
+        { Units.Minute,        60 },
     };
 }
