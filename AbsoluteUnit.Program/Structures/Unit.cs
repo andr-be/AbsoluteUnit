@@ -39,9 +39,5 @@ public static class UnitListExtensions
 
 public static class UnitExtensions
 {
-    public static List<Unit> BaseConversion(this Unit unit) => unit.UnitType switch
-    {
-        IUnitType unitType => unitType.ExpressInBaseUnits(),
-        _ => throw new ArgumentException($"{unit} is not a supported Unit!")
-    };
+    public static List<Unit> BaseConversion(this Unit unit) => unit.UnitType.ExpressInBaseUnits();
 }
