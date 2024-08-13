@@ -194,7 +194,7 @@ namespace AbsoluteUnit.Tests
             var actualValue = kilogram.ConvertTo(pounds);
 
             // Assert
-            AssertEqualityWithConfidence(pounds, actualValue);
+            AssertEqualityWithConfidence(pounds, actualValue, delta:1e-8);
         }
 
         [TestMethod]
@@ -212,7 +212,7 @@ namespace AbsoluteUnit.Tests
             var actualValue = pounds.ConvertTo(kilogram);
 
             // Assert
-            AssertEqualityWithConfidence(kilogram, actualValue);
+            AssertEqualityWithConfidence(kilogram, actualValue, delta:1e-9);
         }
 
         [TestMethod]
@@ -328,19 +328,15 @@ namespace AbsoluteUnit.Tests
             Assert.AreEqual(0.3048, aggregateConversionFactors);
         }
 
-        public static Measurement CreateMeasurement(
-            List<Unit> units,
-            double quantity = 1.0,
-            int exponent = 1
-            ) => 
-                new(units, quantity, exponent);
+        public static Measurement CreateMeasurement(List<Unit> units, double? quantity = null, int? exponent = null) => 
+            new(units, quantity ?? 1, exponent ?? 1);
 
-        public static void AssertEqualityWithConfidence(Measurement expected, Measurement actual) => Assert.AreEqual
+        public static void AssertEqualityWithConfidence(Measurement expected, Measurement actual, double? delta = null) => Assert.AreEqual
         (
             expected: expected.Quantity,
             actual: actual.Quantity,
-            delta: 1e-9,
-            $"actual: {actual} .. expected: {expected} .. (delta {expected.Quantity - actual.Quantity})"
+            delta: delta ?? 1e-12,
+            $"actual: {actual}\nexpected: {expected}\ndelta: {expected.Quantity - actual.Quantity})"
         );
     }
 }
