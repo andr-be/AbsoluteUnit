@@ -24,7 +24,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        public void CLI_Convert_InchesPerMicrosecondIntoMetersPerSecond_0p2330__5918p2()
+        public void CLI_Convert_InchesPerMicrosecondIntoMetersPerSecond_Correctly()
         {
             // Arrange
             string[] args = ["--convert", "0.2330 in/µs", "m/s"];

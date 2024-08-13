@@ -1,6 +1,7 @@
 ﻿using AbsoluteUnit.Program;
 using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.Units;
 
 namespace AbsoluteUnit.Tests
 {
@@ -248,6 +249,21 @@ namespace AbsoluteUnit.Tests
                     Assert.IsInstanceOfType(e, typeof(ParseErrorException));
                 }
             }
+        }
+
+        [TestMethod]
+        public void MeasurementParser_MinutesParseCorrectly()
+        {
+            Unit minute = new TestUnitBuilder()
+                .WithUnit(new Miscellaneous(Miscellaneous.Units.Minute))
+                .Build();
+
+            Measurement expected = new(units: [minute], quantity:1, exponent:0);
+
+            string minutes = "1 min";
+            var parsed = _measurementParser?.ProcessMeasurement(minutes) ?? null;
+
+            Assert.AreEqual(expected, parsed);
         }
     }
 }
