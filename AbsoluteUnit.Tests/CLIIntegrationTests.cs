@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AbsoluteUnit;
-
-namespace AbsoluteUnit.Tests
+﻿namespace AbsoluteUnit.Tests
 {
     [TestClass]
     public class CLIIntegrationTests
@@ -48,7 +43,49 @@ namespace AbsoluteUnit.Tests
 
             // Assert
             string output = consoleOutput.ToString();
-            Assert.IsTrue(output.Contains("907.408"), "Expected output to contain 907.408 kg");
+            Assert.IsTrue(output.Contains("907.18474"), "Expected output to contain 907.18474 kg");
+        }
+
+        [TestMethod]
+        public void CLI_Convert_YearsIntoMonths()
+        {
+            // Arrange
+            string[] args = ["--convert", "1yr", "month"];
+
+            // Act
+            AbsoluteUnitCLI.Main(args);
+
+            // Assert
+            string output = consoleOutput.ToString();
+            Assert.IsTrue(output.Contains("12"), "Expected output to be 12 months!");
+        }
+
+        [TestMethod]
+        public void CLI_Convert_MilesPerHourIntoMetersPerSecond()
+        {
+            // Arrange
+            string[] args = ["--convert", "100mi/h", "m/s"];
+
+            // Act
+            AbsoluteUnitCLI.Main(args);
+
+            // Assert
+            string output = consoleOutput.ToString();
+            Assert.IsTrue(output.Contains("44.704"), "Expected output to be 44.704 m/s!");
+        }
+
+        [TestMethod]
+        public void CLI_ConvertTenYearsIntoDays()
+        {
+            // Arrange
+            string[] args = ["--convert", "10 yr", "day"];
+
+            // Act
+            AbsoluteUnitCLI.Main(args);
+
+            // Assert
+            string output = consoleOutput.ToString();
+            Assert.IsTrue(output.Contains("3650"), "Expected output to be 3650 days!");
         }
 
         [TestMethod]
