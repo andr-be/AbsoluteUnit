@@ -3,7 +3,7 @@ namespace AbsoluteUnit.Program.Structures;
 
 public class Measurement(
     List<Unit>? units = null,
-    double quantity = 0.0,
+    double quantity = 1.0,
     int exponent = 1)
 {
     public List<Unit> Units { get; set; } = units ?? [];

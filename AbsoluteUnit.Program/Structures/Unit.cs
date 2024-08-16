@@ -9,6 +9,22 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
     public int Exponent { get; init; } = Exponent;
     public SIPrefix Prefix { get; init; } = Prefix ?? new();
 
+    public static Unit OfType(object? unitType, SIPrefix? prefix = null, int exponent = 1)
+    {
+        ArgumentNullException.ThrowIfNull(unitType);
+
+        IUnitType newType = unitType switch
+        {
+            SIBase.Units siBase => new SIBase(siBase),
+            SIDerived.Units siDerived => new SIDerived(siDerived),
+            USCustomary.Units usCustomary => new USCustomary(usCustomary),
+            Miscellaneous.Units miscUnit => new Miscellaneous(miscUnit),
+            _ => throw new NotImplementedException($"No Unit corresponding to {unitType}!"),
+        };
+
+        return new(newType, exponent, prefix);
+    }
+
     public double ConversionFromBase() => UnitType.FromBase() * PrefixValue();
 
     public double ConversionToBase() => UnitType.ToBase() / PrefixValue();
@@ -19,14 +35,6 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
         $"{Prefix}{UnitType.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
 
     public override int GetHashCode() => HashCode.Combine(UnitType, Exponent, Prefix);
-
-    public static Unit BuildUnit
-    (
-        IUnitType unitType,
-        int exponent = 1,
-        SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None
-
-    ) => new(unitType, exponent, new(prefix));
 
     public override bool Equals(object? obj)
     {
