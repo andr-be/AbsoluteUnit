@@ -3,10 +3,8 @@ using static AbsoluteUnit.Program.Units.SIBase;
 
 namespace AbsoluteUnit.Program.Units;
 
-public class SIDerived : IUnitType
+public class SIDerived(SIDerived.Units unit) : IUnitType
 {
-    public SIDerived(SIDerived.Units unit) => Unit = unit;
-
     public enum Units
     {
         Hertz,
@@ -33,9 +31,13 @@ public class SIDerived : IUnitType
         Katal,
     }
 
-    public string Symbol => throw new NotImplementedException();
+    public string Symbol => Unit switch
+    {
+        Units.Joule => "J",
+        _ => throw new NotImplementedException("TODO: implement the rest of the SI Derived unit symbols"),
+    };
 
-    public object Unit { get; init; }
+    public object Unit { get; init; } = unit;
 
     public double ToBase(double value) =>
         (Units)Unit == Units.Celsius
@@ -47,7 +49,14 @@ public class SIDerived : IUnitType
             ? value - 273.15
             : value;
 
-    public static readonly Dictionary<string, object> ValidUnitStrings = [];
+    // TODO: Create all of the derived unit strings...
+    public static readonly Dictionary<string, object> ValidUnitStrings = new()
+    {
+        { "J", new SIDerived(Units.Joule) },
+        { "joule", new SIDerived(Units.Joule) },
+        { "joules", new SIDerived(Units.Joule) },
+        // FUCK LOADS MORE COMING SOON!
+    };
 
     public override bool Equals(object? obj) =>
         obj is SIDerived other &&
