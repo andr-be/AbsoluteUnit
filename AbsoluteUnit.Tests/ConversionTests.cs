@@ -279,6 +279,37 @@ public class ConversionTests
     }
 
     [TestMethod]
+    public void Convert_20MetersPerSecond_ToKilometersPerHour()
+    {
+        // Arrange
+        var twentyMetersPerSecond = new Measurement
+        (
+            quantity: 20.0,
+            units:
+            [
+                Unit.OfType(SIBase.Units.Meter),
+                Unit.OfType(SIBase.Units.Second, exponent:-1)
+            ]
+        );
+
+        var kilometerPerHour = new Measurement
+        (
+            quantity: 72.0,
+            units:
+            [
+                Unit.OfType(SIBase.Units.Meter, new SIPrefix(SIPrefix.Prefixes.Kilo)),
+                Unit.OfType(Miscellaneous.Units.Hour, exponent: -1)
+            ]
+        );
+
+        // Act
+        var result = twentyMetersPerSecond.ConvertTo(kilometerPerHour);
+
+        // Assert
+        AssertEqualityWithConfidence(kilometerPerHour, result);
+    }
+
+    [TestMethod]
     public void Miscellaneous_FromBase_SecondsToHoursConvertsCorrectly()
     {
         // Arrange
