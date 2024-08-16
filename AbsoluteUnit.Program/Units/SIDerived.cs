@@ -5,6 +5,8 @@ namespace AbsoluteUnit.Program.Units;
 
 public class SIDerived : IUnitType
 {
+    public SIDerived(SIDerived.Units unit) => Unit = unit;
+
     public enum Units
     {
         Hertz,
@@ -33,7 +35,7 @@ public class SIDerived : IUnitType
 
     public string Symbol => throw new NotImplementedException();
 
-    public object Unit => throw new NotImplementedException();
+    public object Unit { get; init; }
 
     public double ToBase(double value) =>
         (Units)Unit == Units.Celsius

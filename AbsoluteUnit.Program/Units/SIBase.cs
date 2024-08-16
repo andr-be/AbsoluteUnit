@@ -20,19 +20,19 @@ public class SIBase : IUnitType
         Candela
     }
     
-    public static UnitType Kilogram(int exponent = 1) => UnitType.BuildUnit(new SIBase("g"), exponent, SIPrefix.Prefixes.Kilo);
+    public static UnitType Kilogram(int exponent = 1) => new(new SIBase("g"), exponent, new(SIPrefix.Prefixes.Kilo));
     
-    public static UnitType Meter(int exponent = 1) => UnitType.BuildUnit(new SIBase("m"), exponent);
+    public static UnitType Meter(int exponent = 1) => new(new SIBase("m"), exponent);
     
-    public static UnitType Second(int exponent = 1) => UnitType.BuildUnit(new SIBase("s"), exponent);
+    public static UnitType Second(int exponent = 1) => new(new SIBase("s"), exponent);
     
-    public static UnitType Ampere(int exponent = 1) => UnitType.BuildUnit(new SIBase("A"), exponent);
+    public static UnitType Ampere(int exponent = 1) => new(new SIBase("A"), exponent);
     
-    public static UnitType Kelvin(int exponent = 1) => UnitType.BuildUnit(new SIBase("K"), exponent);
+    public static UnitType Kelvin(int exponent = 1) => new(new SIBase("K"), exponent);
     
-    public static UnitType Candela(int exponent = 1) => UnitType.BuildUnit(new SIBase("cd"), exponent);
+    public static UnitType Candela(int exponent = 1) => new(new SIBase("cd"), exponent);
     
-    public static UnitType Mole(int exponent = 1) => UnitType.BuildUnit(new SIBase("mol"), exponent);
+    public static UnitType Mole(int exponent = 1) => new(new SIBase("mol"), exponent);
 
 
     public static Dictionary<string, object> ValidUnitStrings { get; } = new()
