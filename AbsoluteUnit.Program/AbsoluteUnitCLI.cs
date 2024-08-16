@@ -9,6 +9,7 @@ namespace AbsoluteUnit
     {
         public static void Main(string[] args)
         {
+            Run(args);
             foreach (var test in testArguments)
             {
                 try
@@ -39,12 +40,13 @@ namespace AbsoluteUnit
             Console.WriteLine(result);
         }
 
-        private static string[][] testArguments =
+        private readonly static string[][] testArguments =
         [
             ["--convert", "0.2330 in/µs", "m/s", "-sig", "3"],
             ["--convert", "20 m/s", "km/h"],
             ["--express", "100J"],
             ["--convert", "10 days", "hours"],
+            ["--convert", "100mi/h", "m/s"],
         ];
     }
 
