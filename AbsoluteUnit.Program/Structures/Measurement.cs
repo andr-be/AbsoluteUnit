@@ -33,7 +33,7 @@ public class Measurement(
         var currentUnits = new Measurement(Units).ExpressInBaseUnits();
         var targetUnits = new Measurement(target.Units).ExpressInBaseUnits();
 
-        return currentUnits.Equals(targetUnits);
+        return currentUnits.Units.SequenceEqual(targetUnits.Units);
     }
 
     public override string ToString() =>
