@@ -1,5 +1,5 @@
-using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program;
+using AbsoluteUnit.Program.Factories;
 
 namespace AbsoluteUnit.Tests
 {
