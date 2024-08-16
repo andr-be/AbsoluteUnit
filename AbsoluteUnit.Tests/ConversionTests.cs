@@ -18,7 +18,7 @@ public class ConversionTests
     [TestMethod]
     public void Convert_MetersPerSecondToInchesPerMicrosecond_IsValidConversion()
     {
-        var metersPerSecond = CreateMeasurement
+        var metersPerSecond = new Measurement
         (
             quantity: 5918.2,
             units: [
@@ -27,19 +27,17 @@ public class ConversionTests
             ]
         );
 
-        var inchesPerMicroSecond = CreateMeasurement
+        var inchesPerMicroSecond = new Measurement
         (
             quantity: 0.2330,
-            units: [
-                new TestUnitBuilder()
-                    .WithUnit(USCustomary.Inch())
-                    .Build(),
-                
-                new TestUnitBuilder()
-                    .WithUnit(new SIBase(SIBase.Units.Second))
-                    .WithPrefix(SIPrefix.Prefixes.Micro)
-                    .WithExponent(-1)
-                    .Build(),
+            units:
+            [
+                Unit.OfType(USCustomary.Units.Inch),
+
+                Unit.OfType(SIBase.Units.Second,
+                    prefix: new(SIPrefix.Prefixes.Micro),
+                    exponent: -1
+                )
             ]
         );
 
@@ -48,14 +46,15 @@ public class ConversionTests
         var isValidBackwards = inchesPerMicroSecond.IsValidConversion(target: metersPerSecond);
 
         // Assert
-        Assert.IsTrue(isValidForwards && isValidBackwards);
+        Assert.IsTrue(isValidForwards && isValidBackwards, 
+            $"isValidForwards = {isValidForwards} && isValidBackwards = {isValidBackwards}");
     }
 
     [TestMethod]
     public void Convert_MetersPerSecondToPoundsPerSecondSquared_IsNotValidConversion()
     {
         // Arrange
-        var metersPerSecond = CreateMeasurement
+        var metersPerSecond = new Measurement
         (
             [
                 SIBase.Meter(),
@@ -63,13 +62,10 @@ public class ConversionTests
             ]
         );
 
-        var poundsPerSecondSquared = CreateMeasurement
+        var poundsPerSecondSquared = new Measurement
         (
             [
-                new TestUnitBuilder()
-                    .WithUnit(new USCustomary(USCustomary.Units.Pound))
-                    .Build(),
-
+                Unit.OfType(USCustomary.Units.Pound),
                 SIBase.Second(-2)
             ]
         );
@@ -82,50 +78,43 @@ public class ConversionTests
     }
 
     [TestMethod]
-    public void Convert_ConvertsOneFootToMeters_Correctly()
+    public void Convert_OneFoot_ToMeters()
     {
         // Arrange
-        var oneFoot = CreateMeasurement
+        var oneFoot = new Measurement
         (
-            quantity: 1,
-            units: [
-                new TestUnitBuilder()
-                    .WithUnit(USCustomary.Feet())
-                    .Build()
-            ]
+            quantity: 1.0,
+            units: [Unit.OfType(USCustomary.Units.Feet)]
         );
 
-        var expectedResult = CreateMeasurement([SIBase.Meter()], 0.3048);
+        var meters = new Measurement([SIBase.Meter()], 0.3048);
 
         // Act
-        var convertedFoot = oneFoot.ExpressInBaseUnits();
+        var convertedFoot = oneFoot.ConvertTo(meters);
 
         // Assert
-        AssertEqualityWithConfidence(expectedResult, convertedFoot);
+        AssertEqualityWithConfidence(meters, convertedFoot);
     }
 
     [TestMethod]
-    public void Convert_02330InchesPerMicrosecondTo5918MetersPerSecond_Correctly()
+    public void Convert_02330InchesPerMicrosecond_To5918MetersPerSecond()
     {
         // Arrange
-        var _02330InchesPerMicroSecond = CreateMeasurement
+        var _02330InchesPerMicroSecond = new Measurement
         (
             quantity: 0.2330,
-            units: [
-                new TestUnitBuilder()
-                    .WithUnit(USCustomary.Inch())
-                    .Build(),
+            units: 
+            [
+                Unit.OfType(USCustomary.Units.Inch),
 
-                new TestUnitBuilder()
-                    .WithUnit(new SIBase("s"))
-                    .WithExponent(-1)
-                    .WithPrefix(SIPrefix.Prefixes.Micro)
-                    .Build()
-            ]
-                
+                Unit.OfType(SIBase.Units.Second, 
+                    prefix: new(SIPrefix.Prefixes.Micro), 
+                    exponent: -1
+                )
+            ] 
         );
 
-        var expected = CreateMeasurement
+        var expected = new Measurement
         (
             quantity: 5918.2,
             units: [
@@ -142,16 +131,19 @@ public class ConversionTests
     }
 
     [TestMethod]
-    public void Convert_OneTonIntoKilograms_Correctly()
+    public void Convert_OneTon_To907Kilograms()
     {
-        var expected = CreateMeasurement([SIBase.Kilogram()], 907.18474);
+        var oneTon = new Measurement
+        (
+            quantity: 1.0,
+            units:[Unit.OfType(USCustomary.Units.Ton)]
+        );
 
-        var oneTon = CreateMeasurement
-        ([
-            new TestUnitBuilder()
-                .WithUnit(new USCustomary(USCustomary.Units.Ton))
-                .Build()
-        ]);
+        var expected = new Measurement
+        (
+            quantity: 907.18474,
+            units: [SIBase.Kilogram()]
+        );
 
         // Act
         var actual = oneTon.ConvertTo(expected);
@@ -161,33 +153,28 @@ public class ConversionTests
     }
 
     [TestMethod]
-    public void Convert_OneTonToBaseConversion_Correctly()
+    public void Convert_OneTon_ToBaseConversion()
     {
-        var oneTon = CreateMeasurement
-        ([
-            new TestUnitBuilder()
-                .WithUnit(new USCustomary(USCustomary.Units.Ton))
-                .Build()
-        ]);
+        var oneTon = new Measurement
+        (
+            quantity: 1.0,
+            units: [Unit.OfType(USCustomary.Units.Ton)]
+        );
 
         var inKg = oneTon.Units.AggregateConversionFactors();
 
-        Assert.AreEqual(inKg, 907.18474e-3);
+        Assert.AreEqual(907.18474e-3, inKg);
     }
 
     [TestMethod]
-    public void Convert_OneKilogramInto2pt2Pounds_Correctly()
+    public void Convert_OneKilogram_To2p2Pounds()
     {
         var kilogram = new Measurement(SIBase.Kilogram(), 1);
 
-        var pounds = CreateMeasurement
+        var pounds = new Measurement
         (
             quantity: 2.20462262,
-            units: [
-                new TestUnitBuilder()
-                    .WithUnit(USCustomary.Pound())
-                    .Build()
-            ]
+            units: [Unit.OfType(USCustomary.Units.Pound)]
         );
 
         // Act
@@ -198,113 +185,124 @@ public class ConversionTests
     }
 
     [TestMethod]
-    public void Convert_2pt2PoundsIntoKilograms_Correctly()
+    public void Convert_2p2Pounds_ToKilograms()
     {
         // Arrange
-        var kilogram = new Measurement(SIBase.Kilogram(), 1);
-        var pounds = CreateMeasurement
+        var pounds = new Measurement
         (
             quantity: 2.20462262,
-            units: [new TestUnitBuilder().WithUnit(USCustomary.Pound()).Build()]
+            units: [Unit.OfType(USCustomary.Units.Pound)]
         );
 
-        // Act
-        var actualValue = pounds.ConvertTo(kilogram);
-
-        // Assert
-        AssertEqualityWithConfidence(kilogram, actualValue, delta:1e-9);
-    }
-
-    [TestMethod]
-    public void Convert_OneHourInto3600Seconds_Correctly()
-    {
-        // Arrange
-        var oneHour = CreateMeasurement
+        var oneKilogram = new Measurement
         (
             quantity: 1.0,
-            units: [
-                new TestUnitBuilder()
-                .WithUnit(new Miscellaneous(Miscellaneous.Units.Hour))
-                .Build()
-            ]
-        );
-
-        var expectedValue = CreateMeasurement
-        (
-            quantity: 3600.0,
-            units: [ SIBase.Second() ]
+            units: [SIBase.Kilogram()]
         );
 
         // Act
-        var actualValue = oneHour.ConvertTo(expectedValue);
+        var actualValue = pounds.ConvertTo(oneKilogram);
 
         // Assert
-        AssertEqualityWithConfidence(expectedValue, actualValue);
+        AssertEqualityWithConfidence(oneKilogram, actualValue, delta:1e-9);
     }
 
     [TestMethod]
-    public void Convert3600SecondsIntoOneHour_Correctly()
+    public void Convert_3600Seconds_ToOneHour()
     {
-        var _3600Seconds = CreateMeasurement
+        var _3600Seconds = new Measurement
         (
             quantity: 3600.0,
             units: [SIBase.Second()]
         );
 
-        var expectedValue = CreateMeasurement
+        var oneHour = new Measurement
         (
             quantity: 1.0,
-            units: [
-                new TestUnitBuilder()
-                .WithUnit(new Miscellaneous(Miscellaneous.Units.Hour))
-                .Build()
-            ]
+            units: [Unit.OfType(Miscellaneous.Units.Hour)]
         );
 
         // Act
-        var actualValue = _3600Seconds.ConvertTo(expectedValue);
+        var actualValue = _3600Seconds.ConvertTo(oneHour);
 
         // Assert
-        AssertEqualityWithConfidence(expectedValue, actualValue);
+        AssertEqualityWithConfidence(oneHour, actualValue);
     }
 
     [TestMethod]
-    public void Miscellaneous_ToBase_HoursToSecondsConvertsCorrectly()
+    public void Convert_OneHour_To3600Seconds()
     {
         // Arrange
-        Unit hour = new(new Miscellaneous(Miscellaneous.Units.Hour));
+        var oneHour = new Measurement
+        (
+            quantity: 1,
+            units:[Unit.OfType(Miscellaneous.Units.Hour)]
+        );
+
+        var seconds = new Measurement(units:[SIBase.Second()], quantity: 3600);
 
         // Act
-        var hoursInSeconds = hour.ConversionToBase();
+        var hoursInSeconds = oneHour.ConvertTo(seconds);
 
         // Assert
-        Assert.AreEqual(hoursInSeconds, 3600);
+        Assert.AreEqual(seconds, hoursInSeconds);
+    }
+
+    [TestMethod]
+    public void Convert_MilesPerHour_ToMetersPerSecond()
+    {
+        // Arrange
+        var SixtyMilesPerHour = new Measurement
+        (
+            quantity: 60,
+            units: 
+            [ 
+                Unit.OfType(USCustomary.Units.Miles), 
+                Unit.OfType(Miscellaneous.Units.Hour, exponent:-1)
+            ]
+        );
+
+        var metersPerSecond = new Measurement
+        ( 
+            quantity: 26.8224,
+            units: [ 
+                SIBase.Meter(), 
+                SIBase.Second(-1) 
+            ] 
+        );
+
+        // Act
+        var result = SixtyMilesPerHour.ConvertTo( metersPerSecond );
+
+        // Assert
+        Assert.AreEqual(metersPerSecond, result);
     }
 
     [TestMethod]
     public void Miscellaneous_FromBase_SecondsToHoursConvertsCorrectly()
     {
         // Arrange
-        Measurement _3600Seconds = CreateMeasurement([SIBase.Second()], 3600.00);
-        Measurement _1Hour = CreateMeasurement(
-            units: [new(new Miscellaneous(Miscellaneous.Units.Hour))],
-            quantity: 1.0
-            );
+        var _3600Seconds = new Measurement([SIBase.Second()], 3600.00);
+        var _1Hour = new Measurement
+        (
+            quantity: 1.0,
+            units: [Unit.OfType(Miscellaneous.Units.Hour)]
+        );
 
         // Act
         var secondToHourConversionFactor = _3600Seconds.QuantityConversionFactor(_1Hour);
         var hourToSecondConversionFactor = _1Hour.QuantityConversionFactor(_3600Seconds);
 
         // Assert
-        Assert.AreNotEqual(hourToSecondConversionFactor, secondToHourConversionFactor);
+        Assert.AreEqual(hourToSecondConversionFactor, 1/secondToHourConversionFactor);
     }
 
     [TestMethod]
     public void USCustomary_FromBaseAndToBase_DifferentFactorsGenerated()
     {
         // Arrange
-        Measurement oneMile = CreateMeasurement([new(USCustomary.Mile())], 1);
-        Measurement oneMeter = CreateMeasurement([SIBase.Meter()], 1);
+        var oneMile = new Measurement([Unit.OfType(USCustomary.Units.Miles)], 1);
+        var oneMeter = new Measurement([SIBase.Meter()], 1);
 
         // Act
         var mileToMeterConversionFactor = oneMile.QuantityConversionFactor(oneMeter);
@@ -319,17 +317,14 @@ public class ConversionTests
     {
         List<Unit> units =
         [
-            new TestUnitBuilder().WithUnit(USCustomary.Feet()).Build(),
-            new TestUnitBuilder().WithUnit(new SIBase(SIBase.Units.Second)).WithExponent(-1).Build(),
+            Unit.OfType(USCustomary.Units.Feet),
+            SIBase.Second(-1),
         ];
 
         var aggregateConversionFactors = units.AggregateConversionFactors();
 
         Assert.AreEqual(0.3048, aggregateConversionFactors);
     }
-
-    public static Measurement CreateMeasurement(List<Unit> units, double? quantity = null, int? exponent = null) => 
-        new(units, quantity ?? 1, exponent ?? 1);
 
     public static void AssertEqualityWithConfidence(Measurement expected, Measurement actual, double? delta = null) => Assert.AreEqual
     (
