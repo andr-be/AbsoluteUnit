@@ -1,9 +1,17 @@
-﻿using AbsoluteUnit.Program.Interfaces;
+﻿
+using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Units;
 
-public class USCustomary(USCustomary.Units unit) : IUnit
+public class USCustomary(USCustomary.Units unit) : IUnitType
 {
+    public static USCustomary Pound() => new(Units.Pound);
+    public static USCustomary Inch() => new(Units.Inch);
+    public static USCustomary Feet() => new(Units.Feet);
+    public static USCustomary Mile() => new(Units.Miles);
+    public static USCustomary Fahrenheit() => new(Units.Fahrenheit);
+    public object Unit { get; init; } = unit;
+
     public enum Units
     {
         // Length
@@ -24,7 +32,6 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         Fahrenheit
     }
 
-    public object Unit { get; } = unit;
 
     public string Symbol => Unit switch
     {
@@ -43,16 +50,16 @@ public class USCustomary(USCustomary.Units unit) : IUnit
         _ => throw new InvalidDataException($"Invalid Unit: {unit}")
     };
 
-    public double FromBase(double value) => Unit switch
+    public double FromBase(double value=1.0) => Unit switch
     {
         Units.Fahrenheit => KelvinToFahrenheit(value),
         _ => value / Conversion[unit]
     };
 
-    public double ToBase(double value) => Unit switch
+    public double ToBase(double value=1.0) => Unit switch
     {
         Units.Fahrenheit => FahrenheitToKelvin(value),
-        _ => value * Conversion[unit],
+        _ => 1 / FromBase(value),
     };
 
     public static readonly Dictionary<string, object> ValidUnitStrings = new()
@@ -113,16 +120,42 @@ public class USCustomary(USCustomary.Units unit) : IUnit
     static double KelvinToFahrenheit(double value) =>
         value - 273.15 * (9.0 / 5.0) + 32;
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Symbol);
+    }
+
+    public List<Unit> ExpressInBaseUnits() => (Units)Unit switch
+    {
+        Units.Mil or
+        Units.Inch or
+        Units.Feet or
+        Units.Yards or
+        Units.Miles => [SIBase.Meter()],
+
+        Units.Ounce or 
+        Units.Pound or 
+        Units.Ton => [SIBase.Kilogram()],
+
+        Units.FluidOunce or
+        Units.Pint or 
+        Units.Gallon => [SIBase.Meter(3)],
+
+        Units.Fahrenheit => [SIBase.Kelvin()],
+
+        _ => throw new NotImplementedException($"No base conversion case implemented for {Unit}"),
+    };
+
     static readonly Dictionary<Units, double> Conversion = new()
     {
         { Units.Mil, 25.4e-6 },
         { Units.Inch, 25.4e-3 },
         { Units.Feet, 0.3048 },
         { Units.Yards, 0.9144 },
-        { Units.Miles, 1.609344e3 },
+        { Units.Miles, 1609.344 },
 
-        { Units.Ounce, 35.273962e3 },
-        { Units.Pound, 2.20462262e3 },
+        { Units.Ounce, 0.02834952e3 },
+        { Units.Pound, 0.45359237e3 },
         { Units.Ton, 907.18474e3 },
 
         { Units.FluidOunce, 2.957e-5 },

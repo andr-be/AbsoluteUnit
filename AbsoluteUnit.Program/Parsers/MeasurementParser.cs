@@ -1,5 +1,5 @@
-﻿using AbsoluteUnit.Program.Interfaces;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program;
 using System.Text.RegularExpressions;
 
 namespace AbsoluteUnit
@@ -31,10 +31,10 @@ namespace AbsoluteUnit
                 return MeasurementGroup;
             }
 
-            else throw new ParseError($"invalid measurementString: [{MeasurementString}]: invalid format");
+            else throw new ParseErrorException($"invalid measurementString: [{MeasurementString}]: invalid format");
         }
 
-        public AbsMeasurement ProcessMeasurement()
+        public Measurement ProcessMeasurement()
         {
             var units = unitFactory.BuildUnits(MeasurementGroup?.Units ?? []);
             var quantity = MeasurementGroup?.Quantity ?? 0;
@@ -43,7 +43,7 @@ namespace AbsoluteUnit
             return new(units, quantity, exponent);
         }
 
-        public AbsMeasurement ProcessMeasurement(string measurementString, bool unitOnly = false)
+        public Measurement ProcessMeasurement(string measurementString, bool unitOnly = false)
         {
             GenerateMeasurementGroup(measurementString, unitOnly);
             return ProcessMeasurement();
@@ -60,20 +60,20 @@ namespace AbsoluteUnit
 
                 return new(quantity, exponent, units);
             }
-            catch (ParseError e)
+            catch (ParseErrorException e)
             {
-                throw new ParseError($"unable to parse {MeasurementString} as MeasurementGroup", inner: e);
+                throw new ParseErrorException($"unable to parse {MeasurementString} as MeasurementGroup", inner: e);
             }
             catch (ArgumentException a)
             {
-                throw new ParseError($"unable to parse {match.Groups[3].Value} as UnitGroup", inner: a);
+                throw new ParseErrorException($"unable to parse {match.Groups[3].Value} as UnitGroup", inner: a);
             }
         }
 
         private MeasurementGroup CreateUnitOnlyGroup(Match match)
         {
             if (!match.Groups[3].Success || match.Groups[3].Value.Contains('e'))
-                throw new ParseError($"invalid measurementString [{MeasurementString}]: no units provided");
+                throw new ParseErrorException($"invalid measurementString [{MeasurementString}]: no units provided");
 
             try
             {
@@ -81,20 +81,20 @@ namespace AbsoluteUnit
             }
             catch (Exception e)
             {
-                throw new ParseError($"Unable to parse {MeasurementString} as a UnitOnly measurement group", inner: e);
+                throw new ParseErrorException($"Unable to parse {MeasurementString} as a UnitOnly measurement group", inner: e);
             }
         }
 
         private void ValidateFullGroup(Match match)
         {
             if (match.Groups[0].Length == 0)
-                throw new ArgumentException("blank measurement string; invalid format");
+                throw new ArgumentNullException(nameof(match), message:"blank measurement string; invalid format");
 
             else if (!match.Groups[1].Success)
-                throw new ParseError($"invalid measurementString [{MeasurementString}]: no quantity provided");
+                throw new ArgumentException($"invalid measurementString [{MeasurementString}]: no quantity provided");
 
             else if (!match.Groups[3].Success || match.Groups[3].Value.Contains('e'))
-                throw new ParseError($"invalid measurementString [{MeasurementString}]: no units provided");
+                throw new ArgumentException($"invalid measurementString [{MeasurementString}]: no units provided");
         }
 
         private List<UnitGroup> GetUnitGroups(string unitString) => 
@@ -120,14 +120,14 @@ namespace AbsoluteUnit
             // ================== DON'T TRY THIS AT HOME  ================== 
 
             else
-                throw new ParseError($"unable to parse quantity: {quantityString}");
+                throw new ParseErrorException($"unable to parse quantity: {quantityString}");
         }
     }
 
-    public class ParseError : Exception
+    public class ParseErrorException : Exception
     {
-        public ParseError() { }
-        public ParseError(string message) : base(message) { }
-        public ParseError(string message, Exception inner) : base(message, inner) { }
+        public ParseErrorException() { }
+        public ParseErrorException(string message) : base(message) { }
+        public ParseErrorException(string message, Exception inner) : base(message, inner) { }
     }
 }

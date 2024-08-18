@@ -1,16 +1,21 @@
-﻿using AbsoluteUnit.Program.Interfaces;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class Express(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
+    public class Express : ICommand
     {
-        private CommandGroup CommandGroup { get; } = commandGroup;
+        private CommandGroup CommandGroup { get; }
+        private Measurement InputMeasurement { get; }
 
-        public AbsMeasurement Execute()
+        public Express(CommandGroup commandGroup, IMeasurementParser measurementParser)
         {
-            throw new NotImplementedException();
+            CommandGroup = commandGroup;
+            InputMeasurement = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
         }
-    }
 
+        public Measurement Run() => InputMeasurement.ExpressInBaseUnits();
+
+        public override string ToString() =>
+            $"{CommandGroup.CommandType}:\t{InputMeasurement} expressed in base units";
+    }
 }

@@ -6,7 +6,7 @@ public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, in
     {
         '/' => UnitOperation.Divide,
         '.' => UnitOperation.Multiply,
-        _ => throw new ParseError("invalid DivMulti symbol")
+        _ => throw new ParseErrorException("invalid DivMulti symbol")
     };
 
     public enum UnitOperation

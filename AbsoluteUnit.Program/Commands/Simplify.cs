@@ -1,5 +1,4 @@
-﻿using AbsoluteUnit.Program.Interfaces;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
@@ -7,7 +6,7 @@ namespace AbsoluteUnit.Program.Commands
     {
         private CommandGroup CommandGroup { get; } = commandGroup;
 
-        public AbsMeasurement Execute()
+        public Measurement Run()
         {
             throw new NotImplementedException();
         }

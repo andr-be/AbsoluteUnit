@@ -1,6 +1,6 @@
-﻿using System.Data;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
 using EnumExtension;
+using System.Data;
 
 namespace AbsoluteUnit.Program
 {
@@ -10,6 +10,7 @@ namespace AbsoluteUnit.Program
         Express,
         Simplify,
     }
+
     public enum Flag
     {
         VerboseCalculation,
@@ -20,22 +21,32 @@ namespace AbsoluteUnit.Program
     }
 }
 
-namespace AbsoluteUnit.Program.Parsers
+namespace AbsoluteUnit.Program.Factories
 {
-
-    public class CommandParser
+    public class CommandFactory(string[] args)
     {
-        public CommandGroup CommandGroup { get; set; }
+        public CommandGroup? CommandGroup { get; private set; }
+        public string[] Arguments { get; init; } = args;
 
         private int ExtraArguments = 0;
 
-        public CommandParser(string[] args)
+        public CommandGroup ParseArguments()
         {
-            var commandType = ParseCommand(args.First());
-            var flags = GetFlags(args.Skip(1).ToArray());
-            var commandArgs = GetCommandArguments(commandType, args.Skip(1).ToArray());
+            try
+            {
+                var commandType = ParseCommandType(Arguments.First());
+                var flags = ParseFlags(Arguments.Skip(1).ToArray());
+                var commandArgs = ParseCommandArguments(commandType, Arguments.Skip(1).ToArray());
 
-            CommandGroup = new(commandType, flags, commandArgs);
+                CommandGroup = new(commandType, flags, commandArgs);
+
+                return CommandGroup;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -44,7 +55,7 @@ namespace AbsoluteUnit.Program.Parsers
         /// <param name="commandString"></param>
         /// <returns>Command enum</returns>
         /// <exception cref="CommandNotRecognised"></exception>
-        private static Command ParseCommand(string commandString) => commandString.ToLowerInvariant() switch
+        private static Command ParseCommandType(string commandString) => commandString.ToLowerInvariant() switch
         {
             "--convert" or "-c" => Command.Convert,
             "--express" or "-e" => Command.Express,
@@ -72,7 +83,7 @@ namespace AbsoluteUnit.Program.Parsers
         /// contains the number of valid arguments for each command type
         /// </summary>
         /// <returns>the number of valid arguments</returns>
-        private int CommandArgumentCount(Command type) => type switch
+        private static int CommandArgumentCount(Command type) => type switch
         {
             Command.Convert => 2,
             Command.Express => 1,
@@ -86,7 +97,7 @@ namespace AbsoluteUnit.Program.Parsers
         /// </summary>
         /// <param name="args">user-provided CLI arguments</param>
         /// <returns>(Flag, int) dictionary of flags and arguments</returns>
-        private Dictionary<Flag, int> GetFlags(string[] args)
+        private Dictionary<Flag, int> ParseFlags(string[] args)
         {
             var flags = new Dictionary<Flag, int>();
             for (int i = 0; i < args.Length; i++)
@@ -112,7 +123,7 @@ namespace AbsoluteUnit.Program.Parsers
         /// <param name="flagsAndArguments">all of the command line arguments except the first</param>
         /// <returns>a list of only the command arguments</returns>
         /// <exception cref="ArgumentException">invalid argument count error</exception>
-        private List<string> GetCommandArguments(Command type, string[] flagsAndArguments)
+        private List<string> ParseCommandArguments(Command type, string[] flagsAndArguments)
         {
             var arguments = flagsAndArguments.Where(a => a[0] != '-').ToArray();
 
@@ -155,7 +166,6 @@ namespace AbsoluteUnit.Program.Parsers
 namespace EnumExtension
 {
     using AbsoluteUnit.Program;
-
     public static class Extensions
     {
         /// <summary>
