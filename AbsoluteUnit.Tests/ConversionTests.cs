@@ -35,7 +35,7 @@ public class ConversionTests
                 Unit.OfType(USCustomary.Units.Inch),
 
                 Unit.OfType(SIBase.Units.Second,
-                    prefix: new(SIPrefix.Prefixes.Micro),
+                    prefix: SIPrefix.Prefixes.Micro,
                     exponent: -1
                 )
             ]
@@ -78,6 +78,54 @@ public class ConversionTests
     }
 
     [TestMethod]
+    public void Convert_OneSquareKilometer_ToOneMillionSquareMeters()
+    {
+        // Arrange
+        var squareKilometer = new Measurement
+        (
+            quantity: 1.0,
+            units: [ Unit.OfType(SIBase.Units.Meter, 
+                     SIPrefix.Prefixes.Kilo, exponent: 2) ]
+        );
+
+        var squareMeter = new Measurement
+        (
+            quantity: 1_000_000.0,
+            units: [ Unit.OfType(SIBase.Units.Meter, exponent: 2) ]
+        );
+
+        // Act
+        var result = squareKilometer.ConvertTo(squareMeter);
+
+        // Assert
+        AssertEqualityWithConfidence(squareMeter, result);
+    }
+
+    [TestMethod]
+    public void Convert_OneCubicKilometer_ToOneBillionSquareMeters()
+    {
+        // Arrange
+        var squareKilometer = new Measurement
+        (
+            quantity: 1.0,
+            units: [ Unit.OfType(SIBase.Units.Meter,
+                     SIPrefix.Prefixes.Kilo, exponent: 3) ]
+        );
+
+        var squareMeter = new Measurement
+        (
+            quantity: 1_000_000_000.0,
+            units: [Unit.OfType(SIBase.Units.Meter, exponent: 3)]
+        );
+
+        // Act
+        var result = squareKilometer.ConvertTo(squareMeter);
+
+        // Assert
+        AssertEqualityWithConfidence(squareMeter, result);
+    }
+
+    [TestMethod]
     public void Convert_OneFoot_ToMeters()
     {
         // Arrange
@@ -108,7 +156,7 @@ public class ConversionTests
                 Unit.OfType(USCustomary.Units.Inch),
 
                 Unit.OfType(SIBase.Units.Second, 
-                    prefix: new(SIPrefix.Prefixes.Micro), 
+                    prefix: SIPrefix.Prefixes.Micro, 
                     exponent: -1
                 )
             ] 
@@ -297,7 +345,7 @@ public class ConversionTests
             quantity: 72.0,
             units:
             [
-                Unit.OfType(SIBase.Units.Meter, new SIPrefix(SIPrefix.Prefixes.Kilo)),
+                Unit.OfType(SIBase.Units.Meter, SIPrefix.Prefixes.Kilo),
                 Unit.OfType(Miscellaneous.Units.Hour, exponent: -1)
             ]
         );
@@ -362,6 +410,6 @@ public class ConversionTests
         expected: expected.Quantity,
         actual: actual.Quantity,
         delta: delta ?? 1e-12,
-        $"actual: {actual}\nexpected: {expected}\ndelta: {expected.Quantity - actual.Quantity})"
+        $"\nactual: {actual}\nexpected: {expected}\ndelta: {expected.Quantity - actual.Quantity})"
     );
 }
