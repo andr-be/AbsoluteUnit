@@ -22,14 +22,14 @@
         public void CLI_Convert_InchesPerMicrosecondIntoMetersPerSecond_Correctly()
         {
             // Arrange
-            string[] args = ["--convert", "0.2330 in/µs", "m/s"];
+            string[] args = ["--convert", "0.2330 in/µs", "m/s", "-dec", "2"];
 
             // Act
             AbsoluteUnitCLI.Main(args);
 
             // Assert
             string output = consoleOutput.ToString();
-            Assert.IsTrue(output.Contains("5918.2"), "Expected output to contain '5918.2 m/s'");
+            Assert.IsTrue(output.Contains("5918.20"), "Expected output to contain '5918.20 m/s'");
         }
 
         [TestMethod]
@@ -43,14 +43,14 @@
             string output = consoleOutput.ToString();
 
             // Assert
-            Assert.IsTrue(output.Contains("907.18474"), "Expected output to contain 907.18474 kg");
+            Assert.IsTrue(output.Contains("907.2"), "Expected output to contain 907.2 kg");
         }
 
         [TestMethod]
         public void CLI_Convert_YearsIntoMonths()
         {
             // Arrange
-            string[] args = ["--convert", "1yr", "month"];
+            string[] args = ["--convert", "1yr", "month", "-dec", "0"];
 
             // Act
             AbsoluteUnitCLI.Main(args);
@@ -71,7 +71,7 @@
 
             // Assert
             string output = consoleOutput.ToString();
-            Assert.IsTrue(output.Contains("44.704"), "Expected output to be 44.704 m/s!");
+            Assert.IsTrue(output.Contains("44.7"), "Expected output to be 44.7 m/s!");
         }
 
         [TestMethod]
