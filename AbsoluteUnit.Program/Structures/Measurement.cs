@@ -35,13 +35,13 @@ public class Measurement(
         double factorOfTen = 0.0;
         double exponent = 0;
 
-        while (convertedQuantity > factorOfTen)
+        while (convertedQuantity / factorOfTen > 10)
             factorOfTen = Math.Pow(10, exponent++);
         
         return
         (
-            newQuantity: convertedQuantity / (factorOfTen / 10),
-            newExponent: (int)exponent
+            newQuantity: convertedQuantity / factorOfTen,
+            newExponent: (int)exponent - 1
         );
     }
 
