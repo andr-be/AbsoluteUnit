@@ -8,13 +8,15 @@ namespace AbsoluteUnit
     {
         public static void Main(string[] args)
         {
-            if (args is not null && args.Length > 0) Run(args);
+            var debug = true;
+            
+            if (args is not null && args.Length > 0) Run(args, debug);
 
             foreach (var test in testArguments)
             {
                 try
                 {
-                    Run(test);
+                    Run(test, debug);
                 }
                 catch (Exception e)
                 {
@@ -23,7 +25,7 @@ namespace AbsoluteUnit
             }
         }
 
-        public static void Run(string[] args)
+        public static void Run(string[] args, bool debug)
         {
             var commandFactory = new CommandFactory(args);
             var commandGroup = commandFactory.ParseArguments();
@@ -34,18 +36,23 @@ namespace AbsoluteUnit
 
             var result = commandRunner.Run();
 
-            var formatter = new CLIOutputFactory(commandGroup, result, commandRunner);
+            var formatter = new OutputFactory(commandGroup, result, commandRunner, debug);
             Console.WriteLine(formatter.FormatOutput());
         }
 
         private readonly static string[][] testArguments =
         [
-            ["--convert", "0.2330 in/µs", "m/s", "-sig", "3"],
+            ["--convert", "0.2330 in/µs", "m/s", "-dec", "2"],
+            ["--convert", "0.2330 in/µs", "m/s", "-std"],
+
             ["--convert", "20 m/s", "km/h", "-std", "-ver"],
+            ["--convert", "100mi/h", "m/s", "-dec", "4", "-ver"],
+            ["--convert", "10 days", "hours", "-std", "-ver"],
+
             ["--express", "100J"],
             ["--express", "69.420 mi/h"],
-            ["--convert", "10 days", "hours", "-ver"],
-            ["--convert", "100mi/h", "m/s"],
+
+            ["--simplify", "10 kg.m.s^-2"]
         ];
     }
 
