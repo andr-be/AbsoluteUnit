@@ -4,6 +4,8 @@ public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
 {
     public readonly Prefixes Prefix = prefix;
 
+    public double Value => Math.Pow(10.0, (double)Prefix);
+
     public override string ToString() => Prefix switch
     {
         Prefixes.Quetta => "Q",

@@ -50,16 +50,16 @@ public class USCustomary(USCustomary.Units unit) : IUnitType
         _ => throw new InvalidDataException($"Invalid Unit: {unit}")
     };
 
-    public double FromBase(double value) => Unit switch
+    public double FromBase(double value=1.0) => Unit switch
     {
         Units.Fahrenheit => KelvinToFahrenheit(value),
         _ => value / Conversion[unit]
     };
 
-    public double ToBase(double value) => Unit switch
+    public double ToBase(double value=1.0) => Unit switch
     {
         Units.Fahrenheit => FahrenheitToKelvin(value),
-        _ => value * Conversion[unit],
+        _ => 1 / FromBase(value),
     };
 
     public static readonly Dictionary<string, object> ValidUnitStrings = new()
@@ -152,11 +152,11 @@ public class USCustomary(USCustomary.Units unit) : IUnitType
         { Units.Inch, 25.4e-3 },
         { Units.Feet, 0.3048 },
         { Units.Yards, 0.9144 },
-        { Units.Miles, 1.609344e3 },
+        { Units.Miles, 1609.344 },
 
-        { Units.Ounce, 0.02834952e-3 },
-        { Units.Pound, 0.45359237e-3 },
-        { Units.Ton, 907.18474e-3 },
+        { Units.Ounce, 0.02834952e3 },
+        { Units.Pound, 0.45359237e3 },
+        { Units.Ton, 907.18474e3 },
 
         { Units.FluidOunce, 2.957e-5 },
         { Units.Pint, 4.7318e-4 },

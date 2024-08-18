@@ -161,9 +161,9 @@ public class ConversionTests
             units: [Unit.OfType(USCustomary.Units.Ton)]
         );
 
-        var inKg = oneTon.Units.AggregateConversionFactors();
+        var inGrams = oneTon.Units.AggregateToBaseConversionFactors();
 
-        Assert.AreEqual(907.18474e-3, inKg);
+        Assert.AreEqual(907.18474e3, inGrams);
     }
 
     [TestMethod]
@@ -352,7 +352,7 @@ public class ConversionTests
             SIBase.Second(-1),
         ];
 
-        var aggregateConversionFactors = units.AggregateConversionFactors();
+        var aggregateConversionFactors = units.AggregateToBaseConversionFactors();
 
         Assert.AreEqual(0.3048, aggregateConversionFactors);
     }

@@ -26,9 +26,9 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
 
     public object Unit { get; init; } = unit;
 
-    public double FromBase(double value) => value / Conversion[(Units)Unit];
+    public double FromBase(double value=1) => value / Conversion[(Units)Unit];
 
-    public double ToBase(double value) => value * Conversion[(Units)Unit];
+    public double ToBase(double value=1) => value * Conversion[(Units)Unit];
 
     public List<Unit> ExpressInBaseUnits() => (Units)Unit switch
     {
