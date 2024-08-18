@@ -8,7 +8,7 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
     public int Exponent { get; init; } = Exponent;
     public SIPrefix Prefix { get; init; } = Prefix ?? new();
 
-    public static Unit OfType(object? unitType, SIPrefix? prefix = null, int exponent = 1)
+    public static Unit OfType(object? unitType, SIPrefix.Prefixes? prefix = null, int exponent = 1)
     {
         ArgumentNullException.ThrowIfNull(unitType);
 
@@ -21,7 +21,7 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
             _ => throw new NotImplementedException($"No Unit corresponding to {unitType}!"),
         };
 
-        return new(newType, exponent, prefix);
+        return new(newType, exponent, new(prefix??SIPrefix.Prefixes._None));
     }
     
     public double ConversionToBase() => UnitType.ToBase() * Prefix.Value;
