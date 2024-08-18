@@ -16,6 +16,6 @@ namespace AbsoluteUnit.Program.Commands
         public Measurement Run() => InputMeasurement.ExpressInBaseUnits();
 
         public override string ToString() =>
-            $"{CommandGroup.CommandType}: {InputMeasurement} expressed in base units";
+            $"{CommandGroup.CommandType}:\t{InputMeasurement} expressed in base units";
     }
 }
