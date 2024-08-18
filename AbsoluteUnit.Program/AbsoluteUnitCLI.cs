@@ -12,7 +12,7 @@ namespace AbsoluteUnit
             
             if (args is not null && args.Length > 0) Run(args, debug);
 
-            foreach (var test in testArguments)
+            else foreach (var test in testArguments)
             {
                 try
                 {
@@ -31,13 +31,13 @@ namespace AbsoluteUnit
             var commandGroup = commandFactory.ParseArguments();
 
             // intentionally left long to remind you to fix this mess
-            var commandRunner = new Runner(commandGroup)
+            var calculator = new Calculator(commandGroup)
                 .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
 
-            var result = commandRunner.Run();
+            var result = calculator.Calculate();
 
-            var formatter = new OutputFactory(commandGroup, result, commandRunner, debug);
-            Console.WriteLine(formatter.FormatOutput());
+            var writer = new OutputWriter(commandGroup, result, calculator, debug);
+            Console.WriteLine(writer.FormatOutput());
         }
 
         private readonly static string[][] testArguments =

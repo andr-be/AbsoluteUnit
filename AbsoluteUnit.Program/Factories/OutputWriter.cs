@@ -4,12 +4,12 @@ using System.Globalization;
 
 namespace AbsoluteUnit.Program.Factories
 {
-    public class OutputFactory(CommandGroup commandGroup, Measurement result, Runner runner, bool debug = false)
+    public class OutputWriter(CommandGroup commandGroup, Measurement result, Calculator runner, bool debug = false)
     {
         /// This class will control all of the CLI's output such that I can format it with Command Arguments!
         CommandGroup CommandGroup { get; init; } = commandGroup;
         Measurement Result { get; init; } = result;
-        Runner Runner { get; init; } = runner;
+        Calculator Runner { get; init; } = runner;
 
         bool DebugOutput { get; init; } = debug;
         bool VerboseOutput { get; init; } = commandGroup.Flags.ContainsKey(Flag.VerboseCalculation);

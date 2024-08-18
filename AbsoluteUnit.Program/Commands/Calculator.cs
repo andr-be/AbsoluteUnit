@@ -2,19 +2,19 @@
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class Runner(CommandGroup commandGroup)
+    public class Calculator(CommandGroup commandGroup)
     {
         public ICommand? Command { get; set; }
         public CommandGroup CommandGroup { get; init; } = commandGroup;
 
-        public Runner ParseCommandArguments(IMeasurementParser measurementParser)
+        public Calculator ParseCommandArguments(IMeasurementParser measurementParser)
         {
             Command = GetCommandType(CommandGroup, measurementParser);
 
             return this;
         }
 
-        public Measurement Run() => Command?.Run() ?? new();
+        public Measurement Calculate() => Command?.Run() ?? new();
 
         private static ICommand GetCommandType(CommandGroup commandGroup, IMeasurementParser parser) => commandGroup.CommandType switch
         {
