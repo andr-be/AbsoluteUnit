@@ -24,13 +24,11 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
 
         return new(newType, exponent, prefix);
     }
-
-    public double ConversionFromBase() => UnitType.FromBase() * PrefixValue();
-
-    public double ConversionToBase() => UnitType.ToBase() / PrefixValue();
     
-    public double PrefixValue() => Math.Pow(10.0, Prefix.Prefix.Factor());
+    public double ConversionToBase() => UnitType.ToBase() * Prefix.Value;
 
+    public double ConversionFromBase() => UnitType.FromBase() / Prefix.Value;
+    
     public override string ToString() =>
         $"{Prefix}{UnitType.Symbol}{(Exponent != 1 ? "^" + Exponent : "")}";
 
@@ -51,9 +49,25 @@ public class Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
 
 public static class UnitListExtensions
 {
-    public static double AggregateConversionFactors(this List<Unit> units) => units
-        .Select(u => u.ConversionToBase())
-        .Aggregate((x, y) => x * y);
+    public static double AggregateToBaseConversionFactors(this List<Unit> units)
+    {
+        double aggregateFactor = 1.0;
+
+        foreach(var unit in units)
+            aggregateFactor *= Math.Pow(unit.ConversionToBase(), unit.Exponent);
+
+        return aggregateFactor;
+    }
+
+    public static double AggregateFromBaseConversionFactors(this List<Unit> units)
+    {
+        double aggregateFactor = 1.0;
+
+        foreach (var unit in units)
+            aggregateFactor *= Math.Pow(unit.ConversionFromBase(), unit.Exponent);
+
+        return aggregateFactor;
+    }
 }
 
 public static class UnitExtensions

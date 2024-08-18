@@ -18,11 +18,11 @@ public class Measurement(
     public Measurement ConvertTo(Measurement target, bool standardForm=false)
     {
         var newUnits = target.Units;
-        var normalisedQuantity = Quantity * Math.Pow(10, Exponent);
+        var normalisedQuantity = this.Quantity * Math.Pow(10, this.Exponent);
         var convertedQuantity = CalculateNewQuantity(target, normalisedQuantity);
 
         (double newQuantity, int newExponent) = standardForm
-            ? CalculateNewExponents(convertedQuantity)
+            ? RepresentInStandardForm(convertedQuantity)
             : (convertedQuantity, 0);
         
         return new Measurement(newUnits, newQuantity, newExponent);
@@ -30,31 +30,35 @@ public class Measurement(
 
     double CalculateNewQuantity(Measurement target, double quantity) => quantity * QuantityConversionFactor(target);
 
-    static (double newQuantity, int newExponent) CalculateNewExponents(double convertedQuantity)
+    public static (double newQuantity, int newExponent) RepresentInStandardForm(double convertedQuantity)
     {
         double factorOfTen = 0.0;
-        double standardFormTracker = 0.0;
+        double exponent = 0;
 
-        while (convertedQuantity > standardFormTracker)
-        {
-            standardFormTracker = Math.Pow(10, factorOfTen);
-            factorOfTen += 1;
-        }
-
+        while (convertedQuantity > factorOfTen)
+            factorOfTen = Math.Pow(10, exponent++);
+        
         return
         (
-            newQuantity: convertedQuantity / (standardFormTracker / 10),
-            newExponent: (int)factorOfTen
+            newQuantity: convertedQuantity / (factorOfTen / 10),
+            newExponent: (int)exponent
         );
     }
 
-    public double QuantityConversionFactor(Measurement target) =>
-         Units.AggregateConversionFactors() / target.Units.AggregateConversionFactors();
+    public double QuantityConversionFactor(Measurement target)
+    {
+        // To convert a quantity to another, we do so via a base unit (SIBase)
+        // If the unit is already SIBase, that factor is 1.
+        var currentToBaseFactor = this.Units.AggregateToBaseConversionFactors();
+        var targetFromBaseFactor = target.Units.AggregateFromBaseConversionFactors();
+
+        return currentToBaseFactor * targetFromBaseFactor;
+    }
 
     public Measurement ExpressInBaseUnits() => new
     (
         Units.SelectMany(u => u.BaseConversion()).ToList(),
-        Quantity * Units.AggregateConversionFactors(),
+        Quantity * Units.AggregateToBaseConversionFactors(),
         Exponent
     );
 
