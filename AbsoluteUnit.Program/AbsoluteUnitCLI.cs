@@ -1,7 +1,6 @@
 ﻿using AbsoluteUnit.Program;
-using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Commands;
-using System;
+using AbsoluteUnit.Program.Factories;
 
 namespace AbsoluteUnit
 {
@@ -9,7 +8,8 @@ namespace AbsoluteUnit
     {
         public static void Main(string[] args)
         {
-            Run(args);
+            if (args is not null && args.Length > 0) Run(args);
+
             foreach (var test in testArguments)
             {
                 try
@@ -33,19 +33,18 @@ namespace AbsoluteUnit
                 .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
 
             var result = commandRunner.Run();
-            
 
-            Console.WriteLine(commandGroup);
-            Console.WriteLine(commandRunner.Command);
-            Console.WriteLine(result);
+            var formatter = new CLIOutputFactory(commandGroup, result, commandRunner);
+            Console.WriteLine(formatter.FormatOutput());
         }
 
         private readonly static string[][] testArguments =
         [
             ["--convert", "0.2330 in/µs", "m/s", "-sig", "3"],
-            ["--convert", "20 m/s", "km/h"],
+            ["--convert", "20 m/s", "km/h", "-std", "-ver"],
             ["--express", "100J"],
-            ["--convert", "10 days", "hours"],
+            ["--express", "69.420 mi/h"],
+            ["--convert", "10 days", "hours", "-ver"],
             ["--convert", "100mi/h", "m/s"],
         ];
     }

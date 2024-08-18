@@ -40,9 +40,9 @@
 
             // Act
             AbsoluteUnitCLI.Main(args);
+            string output = consoleOutput.ToString();
 
             // Assert
-            string output = consoleOutput.ToString();
             Assert.IsTrue(output.Contains("907.18474"), "Expected output to contain 907.18474 kg");
         }
 
