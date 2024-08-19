@@ -30,7 +30,6 @@ namespace AbsoluteUnit
             var commandFactory = new CommandFactory(args);
             var commandGroup = commandFactory.ParseArguments();
 
-            // intentionally left long to remind you to fix this mess
             var calculator = new Calculator(commandGroup)
                 .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
 
