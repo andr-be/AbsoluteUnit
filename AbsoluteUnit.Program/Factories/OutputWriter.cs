@@ -5,9 +5,15 @@ using System.Globalization;
 
 namespace AbsoluteUnit.Program.Factories
 {
+    /// <summary>
+    /// This class generates the CLI's output, formatting and rounding in line with the flags provided by the user.
+    /// </summary>
+    /// <param name="commandGroup"></param>
+    /// <param name="result"></param>
+    /// <param name="runner"></param>
+    /// <param name="debug"></param>
     public class OutputWriter(CommandGroup commandGroup, Measurement result, Calculator runner, bool debug = false)
     {
-        /// This class will control all of the CLI's output such that I can format it with Command Arguments!
         CommandGroup CommandGroup { get; init; } = commandGroup;
         Measurement Result { get; init; } = result;
         Calculator Calculator { get; init; } = runner;
@@ -45,7 +51,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        private static int CalculateAutoPrecision(double quantity) => quantity switch
+        static int CalculateAutoPrecision(double quantity) => quantity switch
         {
             < 1e+3 and >= 1e+2 => 1,
             < 1e+2 and >= 1e+1 => 2,
@@ -60,7 +66,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="convert"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
+        static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
             $"({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
         
         /// <summary>
@@ -68,7 +74,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        private static string ExponentString(Measurement result) => 
+        static string ExponentString(Measurement result) => 
             (result.Exponent != 0) ? $"e{result.Exponent}" : "";
 
         /// <summary>
@@ -77,7 +83,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="convert"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private static string PreConversionQuantity(Commands.Convert convert, Measurement result) =>
+        static string PreConversionQuantity(Commands.Convert convert, Measurement result) =>
             $"{result.Quantity * Math.Pow(10, result.Exponent) / convert.ConversionFactor}";
         
         /// <summary>
@@ -86,7 +92,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="commandGroup"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        private static string ResultsString(CommandGroup commandGroup, Measurement result)
+        static string ResultsString(CommandGroup commandGroup, Measurement result)
         {
             bool precisionProvided = commandGroup.Flags
                 .TryGetValue(Flag.DecimalPlaces, out var decimalPrecision);
@@ -104,7 +110,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="convert"></param>
         /// <returns></returns>
-        private static string RoundedConversionFactor(Commands.Convert convert) => 
+        static string RoundedConversionFactor(Commands.Convert convert) => 
             RoundedQuantityString(convert.ConversionFactor, CalculateAutoPrecision(convert.ConversionFactor) + 1);
 
         /// <summary>
@@ -112,7 +118,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="decimalPrecision">the decimal precision (???)</param>
         /// <returns>the formatted </returns>
-        private static string RoundedQuantityString(double rawQuantity, int decimalPrecision) =>
+        static string RoundedQuantityString(double rawQuantity, int decimalPrecision) =>
             string.Format(new NumberFormatInfo() { NumberDecimalDigits = decimalPrecision }, "{0:F}", new decimal(rawQuantity));
 
         /// <summary>
@@ -120,7 +126,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="units"></param>
         /// <returns></returns>
-        private static string UnitString(Measurement result) => string.Join(".", result.Units);
+        static string UnitString(Measurement result) => string.Join(".", result.Units);
         
     }
 }
