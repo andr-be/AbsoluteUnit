@@ -1,5 +1,6 @@
 ﻿using AbsoluteUnit.Program.Commands;
 using AbsoluteUnit.Program.Structures;
+using System;
 using System.Globalization;
 
 namespace AbsoluteUnit.Program.Factories
@@ -9,67 +10,117 @@ namespace AbsoluteUnit.Program.Factories
         /// This class will control all of the CLI's output such that I can format it with Command Arguments!
         CommandGroup CommandGroup { get; init; } = commandGroup;
         Measurement Result { get; init; } = result;
-        Calculator Runner { get; init; } = runner;
+        Calculator Calculator { get; init; } = runner;
 
         bool DebugOutput { get; init; } = debug;
         bool VerboseOutput { get; init; } = commandGroup.Flags.ContainsKey(Flag.VerboseCalculation);
 
+        /// <summary>
+        /// Provides a fully formatted output string for the Calculator's commands and arguments.
+        /// </summary>
+        /// <returns></returns>
         public string FormatOutput()
         {
             var resultString = DebugOutput?
                 CommandGroup + "\n" 
                 : "";
 
-            resultString += Runner.Command + "\n";
+            resultString += Calculator.Command + "\n";
 
-            resultString += FormatResult();
+            resultString += ResultsString(Calculator.CommandGroup, Result);
 
-            if (VerboseOutput) resultString += Runner.Command switch
+            if (VerboseOutput) resultString += Calculator.Command switch
             {
-                Commands.Convert c => GetVerboseConversionFactor(c),
-            //  Commands.Express e => GetVerboseExpressionFactor(e),
-            //  Commands.Simplify s => GetVerboseSimplificationFactor(s),
+                Commands.Convert convert => ConversionFactorString(convert, Result),
+            //  Commands.Express express => GetVerboseExpressionFactor(express, Result),
+            //  Commands.Simplify simplify => GetVerboseSimplificationFactor(simplify, Result),
                 _ => "",
             };
 
             return resultString + "\n";
         }
-
-
-        private string FormatResult()
+        
+        /// <summary>
+        /// calculate the number of decimal places quantity should be represented with
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        private static int CalculateAutoPrecision(double quantity) => quantity switch
         {
-            bool precisionProvided = Runner.CommandGroup.Flags
-                .TryGetValue(Flag.DecimalPlaces, out var decimalPrecision);
-            
-            if (!precisionProvided) 
-                decimalPrecision = GetAutoPrecision(Result.Quantity);
-            
-            string resultString = RoundedQuantity(decimalPrecision);
+            < 1e+3 and >= 1e+2 => 1,
+            < 1e+2 and >= 1e+1 => 2,
+            < 1e+1 and >= 1e-1 => 3,
+            < 1e-1 => 4,
+            _ => 0,
+        };
 
-            return $"Result:\t\t{resultString + GetResultExponent()} {ConcatenateUnits()}";
+        /// <summary>
+        /// generate the verbose output conversion factor string that is appended to the results
+        /// </summary>
+        /// <param name="convert"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
+            $"({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
+        
+        /// <summary>
+        /// represents the exponent as either a formatted value or empty string
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static string ExponentString(Measurement result) => 
+            (result.Exponent != 0) ? $"e{result.Exponent}" : "";
+
+        /// <summary>
+        /// generates the quantity prior to conversion; the original value input
+        /// </summary>
+        /// <param name="convert"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static string PreConversionQuantity(Commands.Convert convert, Measurement result) =>
+            $"{result.Quantity * Math.Pow(10, result.Exponent) / convert.ConversionFactor}";
+        
+        /// <summary>
+        /// generates a formatted, rounded result to return to the user
+        /// </summary>
+        /// <param name="commandGroup"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private static string ResultsString(CommandGroup commandGroup, Measurement result)
+        {
+            bool precisionProvided = commandGroup.Flags
+                .TryGetValue(Flag.DecimalPlaces, out var decimalPrecision);
+
+            if (!precisionProvided)
+                decimalPrecision = CalculateAutoPrecision(result.Quantity);
+
+            string resultString = RoundedQuantityString(result.Quantity, decimalPrecision);
+
+            return $"Result:\t\t{resultString + ExponentString(result)} {UnitString(result.Units)}";
         }
 
-        private string ConcatenateUnits() => string.Join(".", Result.Units);
+        /// <summary>
+        /// uses the autoPrecision routine to calculate how many DPs the conversion factor should have
+        /// </summary>
+        /// <param name="convert"></param>
+        /// <returns></returns>
+        private static string RoundedConversionFactor(Commands.Convert convert) => 
+            RoundedQuantityString(convert.ConversionFactor, CalculateAutoPrecision(convert.ConversionFactor) + 1);
 
         /// <summary>
         /// Weird stackoverflow decimal rounding hack for string format; don't think too much about it
         /// </summary>
         /// <param name="decimalPrecision">the decimal precision (???)</param>
         /// <returns>the formatted </returns>
-        private string RoundedQuantity(int decimalPrecision) =>
-            string.Format(new NumberFormatInfo() { NumberDecimalDigits = decimalPrecision }, "{0:F}", new decimal(Result.Quantity));
+        private static string RoundedQuantityString(double rawQuantity, int decimalPrecision) =>
+            string.Format(new NumberFormatInfo() { NumberDecimalDigits = decimalPrecision }, "{0:F}", new decimal(rawQuantity));
 
-        private static int GetAutoPrecision(double quantity) => quantity switch
-        {
-            < 1000 and >= 10 => 1,
-            < 10 and >= 1 => 2,
-            < 1 and >= 0.1 => 3,
-            < 0.1 => 4,
-            _ => 0,
-        };
-
-        private string GetResultExponent() => (Result.Exponent != 0) ? $"e{Result.Exponent}" : "";
-        private string GetVerboseConversionFactor(Commands.Convert convert) => 
-            $" ({Result.Quantity * Math.Pow(10, Result.Exponent) / convert.ConversionFactor} x{convert.ConversionFactor})";
+        /// <summary>
+        /// generates a string representation of the units in Result.
+        /// </summary>
+        /// <param name="units"></param>
+        /// <returns></returns>
+        private static string UnitString(Measurement result) => string.Join(".", result.Units);
+        
     }
 }
