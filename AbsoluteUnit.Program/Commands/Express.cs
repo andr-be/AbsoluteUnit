@@ -13,7 +13,7 @@ namespace AbsoluteUnit.Program.Commands
             Input = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
         }
 
-        public Measurement Run() => Input.ExpressInBaseUnits();
+        public List<Measurement> Run() => [Input.ExpressInBaseUnits()];
 
         public override string ToString() =>
             $"{CommandGroup.CommandType}:\t{Input} expressed in base units";

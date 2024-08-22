@@ -35,7 +35,7 @@ namespace AbsoluteUnit
 
             var result = calculator.Calculate();
 
-            var writer = new OutputWriter(commandGroup, result, calculator, debug);
+            var writer = new OutputWriter(commandGroup, result[0], calculator, debug);
             Console.WriteLine(writer.FormatOutput());
         }
 

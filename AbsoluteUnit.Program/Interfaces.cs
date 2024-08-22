@@ -9,7 +9,7 @@ namespace AbsoluteUnit.Program
 {
     public interface ICommand
     {
-        public abstract Measurement Run();
+        public abstract List<Measurement> Run();
     }
 
     public interface IMeasurementParser

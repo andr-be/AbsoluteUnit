@@ -29,7 +29,7 @@ public class Convert : ICommand
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
 
-    public Measurement Run() => FromUnit.ConvertTo(ToUnit, StandardForm);
+    public List<Measurement> Run() => [FromUnit.ConvertTo(ToUnit, StandardForm)];
 
     public override string ToString() =>
         $"{CommandGroup.CommandType}:\tFrom: {FromUnit}\tTo: {string.Join(".", ToUnit.Units)}";

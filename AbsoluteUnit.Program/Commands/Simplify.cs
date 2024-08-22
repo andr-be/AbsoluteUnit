@@ -1,29 +1,29 @@
-﻿using AbsoluteUnit.Program.Structures;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using AbsoluteUnit.Program.Structures;
 using AbsoluteUnit.Program.Units;
-using System.Security.Cryptography;
 
 namespace AbsoluteUnit.Program.Commands;
 
 public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
 {
-    private CommandGroup CommandGroup { get; init; } = commandGroup;
-
     private Measurement Input { get; init; } = GetInput(commandGroup, measurementParser);
 
-    public Measurement Run()
+    public List<Measurement> Run()
     {
         var baseRepresentation = Input.ExpressInBaseUnits();
         var baseCounts = new BaseUnitCount(baseRepresentation);
         var simplifiedUnits = baseCounts.GetUnits();
 
-        return new Measurement(simplifiedUnits, baseRepresentation.Quantity);
+        return [new Measurement(simplifiedUnits[0], baseRepresentation.Quantity)];
     }
 
     private static Measurement GetInput(CommandGroup commandGroup, IMeasurementParser measurementParser) => 
         measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
 }
 
-struct BaseUnitCount
+readonly struct BaseUnitCount : IEnumerable
 {
     public int Meter { get; }
     public int Kilogram { get; }
@@ -33,7 +33,14 @@ struct BaseUnitCount
     public int Mole { get; }
     public int Candela { get; }
 
-    public int Complexity { get; set; } = 0;
+    public readonly int Complexity =>
+        Math.Abs(Meter) +
+        Math.Abs(Kilogram) +
+        Math.Abs(Second) +
+        Math.Abs(Ampere) +
+        Math.Abs(Kelvin) +
+        Math.Abs(Mole) +
+        Math.Abs(Candela);
 
     /// <summary>
     /// Generate a BaseUnitCount from integer values
@@ -87,11 +94,116 @@ struct BaseUnitCount
         }
     }
 
-    public BaseUnitCount Subtract
-
-    public List<Unit> GetUnits()
+    /// <summary>
+    /// Generate a BaseUnitCount from an array of Integers
+    /// </summary>
+    /// <param name="counts"></param>
+    public BaseUnitCount(int[] counts)
     {
-        return [];
+        if (counts.Length != 7) throw new ArgumentException("Counts can only be initialised via array of size 7!");
+
+        this = new BaseUnitCount(counts[0], counts[1], counts[2], counts[3], counts[4], counts[5], counts[6]);
+    }
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        yield return Meter;
+        yield return Kilogram;
+        yield return Second;
+        yield return Ampere;
+        yield return Kelvin;
+        yield return Mole;
+        yield return Candela;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int[] ToArray() => [Meter, Kilogram, Second, Ampere, Kelvin, Mole, Candela];
+
+    public bool CanSubtract(BaseUnitCount other) =>
+        this.Meter > other.Meter
+     && this.Kilogram >= other.Kilogram
+     && this.Second >= other.Second
+     && this.Ampere >= other.Ampere
+     && this.Kelvin >= other.Kelvin
+     && this.Mole >= other.Mole
+     && this.Candela >= other.Candela;
+
+    public readonly BaseUnitCount SubtractCount(BaseUnitCount other) => new
+    (
+        this.Meter - other.Meter, 
+        this.Kilogram - other.Kilogram, 
+        this.Second - other.Second, 
+        this.Ampere - other.Ampere,
+        this.Kelvin - other.Kelvin,
+        this.Mole - other.Mole,
+        this.Candela - other.Candela
+    );
+
+    public readonly BaseUnitCount AddCount(BaseUnitCount other) => new
+    (
+        this.Meter + other.Meter,
+        this.Kilogram + other.Kilogram,
+        this.Second + other.Second,
+        this.Ampere + other.Ampere,
+        this.Kelvin + other.Kelvin,
+        this.Mole + other.Mole,
+        this.Candela + other.Candela
+    );
+
+    public List<List<Unit>> GetUnits() => RecursivelyGetUnits(this, [], 0);
+
+    private static List<List<Unit>> RecursivelyGetUnits(BaseUnitCount unit, List<Unit> currentPath, int depth)
+    {
+        const int MaxDepth = 100; // Adjust this value based on your needs
+        List<List<Unit>> solutions = [];
+
+        // Base case: if the unit is fully simplified (all zeros) or max depth reached
+        if (unit.Complexity == 0 || depth >= MaxDepth)
+        {
+            currentPath.AddRange(ConvertBaseUnitCountToUnits(unit));
+            solutions.Add(new List<Unit>(currentPath));
+            return solutions;
+        }
+
+        bool simplified = false;
+        foreach (var complexUnit in SimplifyUtilities.GetComplexityOrder())
+        {
+            var candidateUnitCount = SimplifyUtilities.DerivedBaseCounts[complexUnit];
+            if (unit.CanSubtract(candidateUnitCount))
+            {
+                var remainingUnitCount = unit.SubtractCount(candidateUnitCount);
+                if (remainingUnitCount.Complexity < unit.Complexity)
+                {
+                    simplified = true;
+                    var newUnit = Unit.OfType(complexUnit);
+                    var newPath = new List<Unit>(currentPath) { newUnit };
+                    solutions.AddRange(RecursivelyGetUnits(remainingUnitCount, newPath, depth + 1));
+                }
+            }
+        }
+
+        // If no complex units could be subtracted, add the remaining base units to the path
+        if (!simplified)
+        {
+            currentPath.AddRange(ConvertBaseUnitCountToUnits(unit));
+            solutions.Add(currentPath);
+        }
+
+        return solutions;
+    }
+
+    private static List<Unit> ConvertBaseUnitCountToUnits(BaseUnitCount count)
+    {
+        var units = new List<Unit>();
+        if (count.Meter != 0) units.Add(Unit.OfType(SIBase.Units.Meter, exponent: count.Meter));
+        if (count.Kilogram != 0) units.Add(Unit.OfType(SIBase.Units.Gram, SIPrefix.Prefixes.Kilo, count.Kilogram));
+        if (count.Second != 0) units.Add(Unit.OfType(SIBase.Units.Second, exponent: count.Second));
+        if (count.Ampere != 0) units.Add(Unit.OfType(SIBase.Units.Ampere, exponent: count.Ampere));
+        if (count.Kelvin != 0) units.Add(Unit.OfType(SIBase.Units.Kelvin, exponent: count.Kelvin));
+        if (count.Mole != 0) units.Add(Unit.OfType(SIBase.Units.Mole, exponent: count.Mole));
+        if (count.Candela != 0) units.Add(Unit.OfType(SIBase.Units.Candela, exponent: count.Candela));
+        return units;
     }
 }
 
@@ -140,4 +252,13 @@ internal static class SimplifyUtilities
         { SIBase.Units.Mole,    new(mole:1) },
         { SIBase.Units.Candela, new(candela:1) },
     };
+
+    public static List<SIDerived.Units> GetComplexityOrder()
+    {
+        var order = DerivedBaseCounts.Keys.ToList();
+
+        order.Sort((a, b) => DerivedBaseCounts[b].Complexity.CompareTo(DerivedBaseCounts[a].Complexity));
+
+        return order;
+    }
 }

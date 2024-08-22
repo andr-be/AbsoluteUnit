@@ -14,7 +14,7 @@ namespace AbsoluteUnit.Program.Commands
             return this;
         }
 
-        public Measurement Calculate() => Command?.Run() ?? new();
+        public List<Measurement> Calculate() => Command?.Run() ?? new();
 
         private static ICommand GetCommandType(CommandGroup commandGroup, IMeasurementParser parser) => commandGroup.CommandType switch
         {

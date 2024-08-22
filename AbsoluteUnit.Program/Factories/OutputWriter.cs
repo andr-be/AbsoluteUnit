@@ -102,11 +102,11 @@ namespace AbsoluteUnit.Program.Factories
 
             string resultString = RoundedQuantityString(result.Quantity, decimalPrecision);
 
-            return $"Result:\t\t{resultString + ExponentString(result)} {UnitString(result.Units)}";
+            return $"Result:\t\t{resultString + ExponentString(result)} {UnitString(result)}";
         }
 
         /// <summary>
-        /// uses the autoPrecision routine to calculate how many DPs the conversion factor should have
+        /// uses the autoPrecision routine to calculate how many decimal places the conversion factor should have
         /// </summary>
         /// <param name="convert"></param>
         /// <returns></returns>
