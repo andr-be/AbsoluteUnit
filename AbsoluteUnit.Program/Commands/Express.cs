@@ -5,17 +5,17 @@ namespace AbsoluteUnit.Program.Commands
     public class Express : ICommand
     {
         private CommandGroup CommandGroup { get; }
-        private Measurement InputMeasurement { get; }
+        private Measurement Input { get; }
 
         public Express(CommandGroup commandGroup, IMeasurementParser measurementParser)
         {
             CommandGroup = commandGroup;
-            InputMeasurement = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
+            Input = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
         }
 
-        public Measurement Run() => InputMeasurement.ExpressInBaseUnits();
+        public Measurement Run() => Input.ExpressInBaseUnits();
 
         public override string ToString() =>
-            $"{CommandGroup.CommandType}:\t{InputMeasurement} expressed in base units";
+            $"{CommandGroup.CommandType}:\t{Input} expressed in base units";
     }
 }
