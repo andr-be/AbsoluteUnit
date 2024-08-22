@@ -121,13 +121,14 @@ readonly struct BaseUnitCount : IEnumerable
     public int[] ToArray() => [Meter, Kilogram, Second, Ampere, Kelvin, Mole, Candela];
 
     public bool CanSubtract(BaseUnitCount other) =>
-        this.Meter > other.Meter
+        this.Meter >= other.Meter
      && this.Kilogram >= other.Kilogram
      && this.Second >= other.Second
      && this.Ampere >= other.Ampere
      && this.Kelvin >= other.Kelvin
      && this.Mole >= other.Mole
-     && this.Candela >= other.Candela;
+     && this.Candela >= other.Candela
+     && SubtractCount(other).Complexity <= this.Complexity;
 
     public readonly BaseUnitCount SubtractCount(BaseUnitCount other) => new
     (
@@ -153,40 +154,38 @@ readonly struct BaseUnitCount : IEnumerable
 
     public List<List<Unit>> GetUnits() => RecursivelyGetUnits(this, [], 0);
 
-    private static List<List<Unit>> RecursivelyGetUnits(BaseUnitCount unit, List<Unit> currentPath, int depth)
+    private static List<List<Unit>> RecursivelyGetUnits(BaseUnitCount unitCount, List<Unit> currentPath, int depth)
     {
-        const int MaxDepth = 100; // Adjust this value based on your needs
+        const int MaxDepth = 100; // Don't want a stack overflow now...
         List<List<Unit>> solutions = [];
 
         // Base case: if the unit is fully simplified (all zeros) or max depth reached
-        if (unit.Complexity == 0 || depth >= MaxDepth)
+        if (unitCount.Complexity == 0 || depth >= MaxDepth)
         {
-            currentPath.AddRange(ConvertBaseUnitCountToUnits(unit));
+            currentPath.AddRange(ConvertBaseUnitCountToUnits(unitCount));
             solutions.Add(new List<Unit>(currentPath));
             return solutions;
         }
 
+        // Otherwise, run through every complex unit and recurse if it's possible to remove a unit from the chunk
         bool simplified = false;
         foreach (var complexUnit in SimplifyUtilities.GetComplexityOrder())
         {
             var candidateUnitCount = SimplifyUtilities.DerivedBaseCounts[complexUnit];
-            if (unit.CanSubtract(candidateUnitCount))
+            if (unitCount.CanSubtract(candidateUnitCount))
             {
-                var remainingUnitCount = unit.SubtractCount(candidateUnitCount);
-                if (remainingUnitCount.Complexity < unit.Complexity)
-                {
-                    simplified = true;
-                    var newUnit = Unit.OfType(complexUnit);
-                    var newPath = new List<Unit>(currentPath) { newUnit };
-                    solutions.AddRange(RecursivelyGetUnits(remainingUnitCount, newPath, depth + 1));
-                }
+                simplified = true;
+                var remainingUnitCount = unitCount.SubtractCount(candidateUnitCount);
+                var newUnit = Unit.OfType(complexUnit);
+                var newPath = new List<Unit>(currentPath) { newUnit };
+                solutions.AddRange(RecursivelyGetUnits(remainingUnitCount, newPath, depth + 1));
             }
         }
 
         // If no complex units could be subtracted, add the remaining base units to the path
         if (!simplified)
         {
-            currentPath.AddRange(ConvertBaseUnitCountToUnits(unit));
+            currentPath.AddRange(ConvertBaseUnitCountToUnits(unitCount));
             solutions.Add(currentPath);
         }
 
