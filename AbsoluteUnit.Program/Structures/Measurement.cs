@@ -57,7 +57,7 @@ public class Measurement(
 
     public Measurement ExpressInBaseUnits() => new
     (
-        Units.SelectMany(u => u.BaseConversion()).ToList(),
+        Units.SelectMany(u => u.ExpressInBaseUnits()).ToList(),
         Quantity * Units.AggregateToBaseConversionFactors(),
         Exponent
     );

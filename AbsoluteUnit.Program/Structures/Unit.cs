@@ -71,5 +71,5 @@ public static class UnitListExtensions
 
 public static class UnitExtensions
 {
-    public static List<Unit> BaseConversion(this Unit unit) => unit.UnitType.ExpressInBaseUnits();
+    public static List<Unit> ExpressInBaseUnits(this Unit unit) => unit.UnitType.ExpressInBaseUnits(unit.Prefix, unit.Exponent);
 }

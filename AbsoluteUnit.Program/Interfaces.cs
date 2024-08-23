@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program
 {
@@ -18,6 +13,7 @@ namespace AbsoluteUnit.Program
         Measurement ProcessMeasurement(string measurementString, bool unitOnly = false);
         MeasurementGroup GenerateMeasurementGroup(string measurementString, bool unitOnly = false);
     }
+
     public interface IUnitType
     {
         object Unit { get; }
