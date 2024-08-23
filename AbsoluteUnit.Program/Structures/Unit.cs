@@ -1,4 +1,4 @@
-﻿using AbsoluteUnit.Program.Units;
+﻿using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Program.Structures;
 
@@ -71,5 +71,5 @@ public static class UnitListExtensions
 
 public static class UnitExtensions
 {
-    public static List<Unit> ExpressInBaseUnits(this Unit unit) => unit.UnitType.ExpressInBaseUnits(unit.Prefix, unit.Exponent);
+    public static List<Unit> ExpressInBaseUnits(this Unit unit) => unit.UnitType.ExpressInBaseUnits(unit);
 }

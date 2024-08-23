@@ -1,6 +1,6 @@
 ﻿using AbsoluteUnit.Program;
 using AbsoluteUnit.Program.Structures;
-using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Tests;
 

@@ -1,6 +1,6 @@
 ﻿using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Structures;
-using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Tests
 {
@@ -53,12 +53,12 @@ namespace AbsoluteUnit.Tests
             var result = new UnitFactory().BuildUnits(unitGroups);
 
             // Assert
-            Assert.AreEqual(result[0].UnitType.Unit, grams.Unit, "kg should parse as Kilo && Gram");
+            Assert.AreEqual(result[0].UnitType.UnitType, grams.UnitType, "kg should parse as Kilo && Gram");
             Assert.AreEqual(result[0].Prefix.Prefix, SIPrefix.Prefixes.Kilo, "kg should parse as Kilo && Gram");
 
-            Assert.AreEqual(result[1].UnitType.Unit, meters.Unit, "m should parse as Meter");
+            Assert.AreEqual(result[1].UnitType.UnitType, meters.UnitType, "m should parse as Meter");
             
-            Assert.AreEqual(result[2].UnitType.Unit, seconds.Unit, "s should parse as Second");
+            Assert.AreEqual(result[2].UnitType.UnitType, seconds.UnitType, "s should parse as Second");
             Assert.AreEqual(result[2].Exponent, -2, "divide + exp:2 should build as -2 exponent");
         }
 
@@ -81,7 +81,7 @@ namespace AbsoluteUnit.Tests
             // Act
             var resultExponent = new UnitFactory()
                 .BuildUnits(unitGroups)
-                .Where(g => (SIBase.Units)g.UnitType.Unit == SIBase.Units.Second)
+                .Where(g => (SIBase.Units)g.UnitType.UnitType == SIBase.Units.Second)
                 .First()
                 .Exponent;
 
@@ -100,7 +100,7 @@ namespace AbsoluteUnit.Tests
                 .BuildUnits(oneInch)
                 .First();
 
-            Assert.AreEqual(result.UnitType.Unit, USCustomary.Units.Inch, "in should parse as Inch");
+            Assert.AreEqual(result.UnitType.UnitType, USCustomary.Units.Inch, "in should parse as Inch");
         }
 
         [TestMethod]
@@ -114,7 +114,7 @@ namespace AbsoluteUnit.Tests
                 .BuildUnits(oneKm)
                 .First();
 
-            Assert.AreEqual(result.UnitType.Unit, SIBase.Units.Meter, "km should parse as Kilo && Meter");
+            Assert.AreEqual(result.UnitType.UnitType, SIBase.Units.Meter, "km should parse as Kilo && Meter");
             Assert.AreEqual(result.Prefix.Prefix, SIPrefix.Prefixes.Kilo, "km should parse as Kilo && Meter");
         }
 
@@ -145,8 +145,8 @@ namespace AbsoluteUnit.Tests
             // Assert
             for (int i = 0; i < result.Count; i++)
             {
-                Assert.AreEqual(result[i].UnitType.Unit, correctUnits[i], 
-                    $"{result[i].UnitType.Unit} should equal {correctUnits[i]}");
+                Assert.AreEqual(result[i].UnitType.UnitType, correctUnits[i], 
+                    $"{result[i].UnitType.UnitType} should equal {correctUnits[i]}");
 
                 Assert.AreEqual(result[i].Exponent, correctExponents[i], 
                     $"{result[i].Exponent} should equal {correctExponents[i]}");
@@ -163,7 +163,7 @@ namespace AbsoluteUnit.Tests
 
             var result = new UnitFactory().BuildUnits([oneMm]).First();
 
-            Assert.AreEqual(result.UnitType.Unit, SIBase.Units.Meter);
+            Assert.AreEqual(result.UnitType.UnitType, SIBase.Units.Meter);
             Assert.AreEqual(result.Prefix.Prefix, SIPrefix.Prefixes.Milli);
         }
     }

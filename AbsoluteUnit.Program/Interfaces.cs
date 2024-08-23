@@ -1,4 +1,5 @@
 ﻿using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Program
 {
@@ -16,7 +17,7 @@ namespace AbsoluteUnit.Program
 
     public interface IUnitType
     {
-        object Unit { get; }
+        object UnitType { get; }
         string Symbol { get; }
         double ToBase(double value=1.0);
         double FromBase(double value=1.0);

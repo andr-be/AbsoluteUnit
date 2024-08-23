@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using AbsoluteUnit.Program.Structures;
-using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Program.Commands;
 
@@ -78,7 +78,7 @@ readonly struct BaseUnitCount : IEnumerable
     {
         foreach (var unit in baseRepresentation.Units)
         {
-            if (unit.UnitType.Unit is SIBase.Units baseUnit)
+            if (unit.UnitType.UnitType is SIBase.Units baseUnit)
             {
                 switch (baseUnit)
                 {

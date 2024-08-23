@@ -1,7 +1,7 @@
 ﻿using AbsoluteUnit.Program;
 using AbsoluteUnit.Program.Commands;
 using AbsoluteUnit.Program.Structures;
-using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Tests
 {
@@ -21,7 +21,7 @@ namespace AbsoluteUnit.Tests
             var result = calculator.Calculate();
 
             // Assert
-            Assert.AreEqual(SIBase.Units.Meter, result[0].Units.First().UnitType.Unit, "should have simplified to a meter");
+            Assert.AreEqual(SIBase.Units.Meter, result[0].Units.First().UnitType.UnitType, "should have simplified to a meter");
             
         }
 
