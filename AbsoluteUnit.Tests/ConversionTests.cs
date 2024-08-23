@@ -377,7 +377,7 @@ public class ConversionTests
     }
 
     [TestMethod]
-    public void USCustomary_FromBaseAndToBase_DifferentFactorsGenerated()
+    public void USCustomary_FromBaseAndToBase_InverseFactorsGenerated()
     {
         // Arrange
         var oneMile = new Measurement([Unit.OfType(USCustomary.Units.Miles)], 1);
@@ -388,7 +388,7 @@ public class ConversionTests
         var meterToMileConversionFactor = oneMeter.QuantityConversionFactor(oneMile);
 
         // Assert
-        Assert.AreNotEqual(mileToMeterConversionFactor, meterToMileConversionFactor);
+        Assert.AreEqual(1.0 / mileToMeterConversionFactor, meterToMileConversionFactor);
     }
 
     [TestMethod]
