@@ -13,19 +13,20 @@ namespace AbsoluteUnit
             if (args is not null && args.Length > 0) 
             {
                 Run(args, debug);
-                Environment.Exit(0);
             }
-
-            Console.WriteLine("No arguments provided; starting in test mode...\n");
-            foreach (var test in testArguments)
+            else
             {
-                try
+                Console.WriteLine("No arguments provided; starting in test mode...\n");
+                foreach (var test in testArguments)
                 {
-                    Run(test, debug);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("\n" + e.ToString() + "\n");
+                    try
+                    {
+                        Run(test, debug);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("\n" + e.ToString() + "\n");
+                    }
                 }
             }
         }
