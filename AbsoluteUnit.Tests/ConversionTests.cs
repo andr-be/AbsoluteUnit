@@ -1,5 +1,5 @@
 ﻿using AbsoluteUnit.Program.Structures;
-using AbsoluteUnit.Program.Units;
+using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Tests;
 
@@ -209,9 +209,9 @@ public class ConversionTests
             units: [Unit.OfType(USCustomary.Units.Ton)]
         );
 
-        var inGrams = oneTon.Units.AggregateToBaseConversionFactors();
+        var inKilograms = oneTon.Units.AggregateToBaseConversionFactors();
 
-        Assert.AreEqual(907.18474e3, inGrams);
+        Assert.AreEqual(907.18474, inKilograms);
     }
 
     [TestMethod]

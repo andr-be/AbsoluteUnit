@@ -99,7 +99,7 @@
 
             // Assert
             string output = consoleOutput.ToString();
-            Assert.IsTrue(output.Contains("0.28 m/s"), "Expected output to contain '0.28 m/s'");
+            Assert.IsTrue(output.Contains("0.28 m.s^-1"), "Expected output to contain '0.28 m/s'");
         }
 
         [TestMethod]
