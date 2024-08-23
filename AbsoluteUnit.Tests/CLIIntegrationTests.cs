@@ -142,7 +142,7 @@ namespace AbsoluteUnit.Tests
 
             // Assert
             string output = consoleOutput.ToString();
-            Assert.IsTrue(output.Contains("Conversion steps:"), "Expected verbose output");
+            Assert.IsTrue(output.Contains("x0.3048"), "Expected verbose output");
         }
     }
 }
