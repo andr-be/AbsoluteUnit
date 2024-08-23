@@ -3,20 +3,13 @@ using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
-    public class Express : ICommand
+    public class Express(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
     {
-        private CommandGroup CommandGroup { get; }
-        private Measurement Input { get; }
-
-        public Express(CommandGroup commandGroup, IMeasurementParser measurementParser)
-        {
-            CommandGroup = commandGroup;
-            Input = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
-        }
+        private Measurement Input { get; } = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
 
         public List<Measurement> Run() => [Input.ExpressInBaseUnits()];
 
         public override string ToString() =>
-            $"{CommandGroup.CommandType}:\t{Input} expressed in base units";
+            $"{commandGroup.CommandType}:\t{Input} expressed in base units";
     }
 }
