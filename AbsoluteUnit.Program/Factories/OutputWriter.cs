@@ -39,14 +39,14 @@ namespace AbsoluteUnit.Program.Factories
             if (VerboseOutput) resultString += Calculator.Command switch
             {
                 Commands.Convert convert => ConversionFactorString(convert, Result),
-            //  Commands.Express express => GetVerboseExpressionFactor(express, Result),
-            //  Commands.Simplify simplify => GetVerboseSimplificationFactor(simplify, Result),
+                Commands.Express express => ExpressionFactorString(express, Result),
+                Commands.Simplify simplify => SimplificationFactorString(simplify, Result),
                 _ => "",
             };
 
             return resultString + "\n";
         }
-        
+
         /// <summary>
         /// calculate the number of decimal places quantity should be represented with
         /// </summary>
@@ -69,7 +69,18 @@ namespace AbsoluteUnit.Program.Factories
         /// <returns></returns>
         static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
             $"\t({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
-        
+
+
+        private string SimplificationFactorString(Simplify simplify, Measurement result)
+        {
+            throw new NotImplementedException("Need to implement simplification factor.");
+        }
+
+        private string ExpressionFactorString(Express express, Measurement result)
+        {
+            throw new NotImplementedException("Need to implement simplification factor.");
+        }
+
         /// <summary>
         /// represents the exponent as either a formatted value or empty string
         /// </summary>
