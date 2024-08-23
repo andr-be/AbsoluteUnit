@@ -1,4 +1,4 @@
-﻿namespace AbsoluteUnit.Program.Structures;
+﻿namespace AbsoluteUnit.Program.Parsers.ParserGroups;
 
 public record UnitGroup(UnitGroup.UnitOperation Operation, string UnitSymbol, int Exponent, bool HasPrefix = false)
 {

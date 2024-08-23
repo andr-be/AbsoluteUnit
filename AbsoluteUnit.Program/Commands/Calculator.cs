@@ -1,4 +1,5 @@
-﻿using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Parsers.ParserGroups;
+using AbsoluteUnit.Program.Structures;
 
 namespace AbsoluteUnit.Program.Commands
 {
@@ -14,7 +15,7 @@ namespace AbsoluteUnit.Program.Commands
             return this;
         }
 
-        public List<Measurement> Calculate() => Command?.Run() ?? new();
+        public List<Measurement> Calculate() => Command?.Run() ?? [];
 
         private static ICommand GetCommandType(CommandGroup commandGroup, IMeasurementParser parser) => commandGroup.CommandType switch
         {

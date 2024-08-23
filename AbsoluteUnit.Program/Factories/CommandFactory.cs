@@ -1,4 +1,4 @@
-﻿using AbsoluteUnit.Program.Structures;
+﻿using AbsoluteUnit.Program.Parsers.ParserGroups;
 using EnumExtension;
 using System.Data;
 

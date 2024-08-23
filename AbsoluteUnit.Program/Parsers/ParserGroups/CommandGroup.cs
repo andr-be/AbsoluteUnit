@@ -1,6 +1,6 @@
 ﻿using AbsoluteUnit.Program.Factories;
 
-namespace AbsoluteUnit.Program.Structures
+namespace AbsoluteUnit.Program.Parsers.ParserGroups
 {
     public record CommandGroup(
         Command CommandType,

@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.Parsers.ParserGroups;
 
 namespace AbsoluteUnit.Program;
 

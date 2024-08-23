@@ -1,4 +1,4 @@
-﻿namespace AbsoluteUnit.Program.Structures
+﻿namespace AbsoluteUnit.Program.Parsers.ParserGroups
 {
     public record MeasurementGroup(double Quantity, int Exponent, List<UnitGroup> Units)
     {

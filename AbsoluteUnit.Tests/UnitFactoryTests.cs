@@ -1,5 +1,5 @@
 ﻿using AbsoluteUnit.Program.Factories;
-using AbsoluteUnit.Program.Structures;
+using AbsoluteUnit.Program.Parsers.ParserGroups;
 using AbsoluteUnit.Program.UnitTypes;
 
 namespace AbsoluteUnit.Tests
