@@ -12,15 +12,59 @@ public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementP
 
     public List<Measurement> Run()
     {
-        var baseRepresentation = Input.ExpressInBaseUnits();
-        var baseCounts = new BaseUnitCount(baseRepresentation);
-        var simplifiedUnits = baseCounts.GetUnits();
+        var baseMeasurement = Input.ExpressInBaseUnits();
+        var baseQuantity = baseMeasurement.Quantity * Math.Pow(10, Input.Exponent);
 
-        return [new Measurement(simplifiedUnits[0], baseRepresentation.Quantity)];
+        var baseCounts = new BaseUnitCount(baseMeasurement);
+        var simplifiedUnits = baseCounts.GetUnits();
+        
+        var prefixSimplified = PrefixSimplification(simplifiedUnits[0], baseQuantity);
+
+        return [prefixSimplified];
+    }
+
+    private static Measurement PrefixSimplification(List<Unit> units, double quantity)
+    {
+        if (quantity is < 1e+3 and > 1e-3)
+            return new Measurement(units, quantity);
+
+        int exponentValue = 0;
+
+        if (quantity > 1)
+            while (quantity > 1)
+            {
+                quantity /= 1e3;
+                exponentValue += 3;
+            }
+        
+        else
+            while (quantity < 1)
+            {
+                quantity *= 1e3;
+                exponentValue -= 3;
+            }
+        
+        units = SimplifyFirstUnit(units, exponentValue);
+
+        return new Measurement(units, quantity);
+    }
+
+    private static List<Unit> SimplifyFirstUnit(List<Unit> units, int exponentValue)
+    {
+        units[0] = Unit.OfType
+        (
+            unitType: units[0].UnitType.UnitType, 
+            prefix:   (SIPrefix.Prefixes)exponentValue, 
+            exponent: units[0].Exponent
+        );
+
+        return units;
     }
 
     private static Measurement GetInput(CommandGroup commandGroup, IMeasurementParser measurementParser) => 
         measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
+
+    public override string ToString() => $"{commandGroup.CommandType}:\t{Input} represented in simplest form";
 }
 
 readonly struct BaseUnitCount : IEnumerable
@@ -82,13 +126,20 @@ readonly struct BaseUnitCount : IEnumerable
             {
                 switch (baseUnit)
                 {
-                    case SIBase.Units.Meter: Meter++; break;
-                    case SIBase.Units.Gram: Kilogram++; break;
-                    case SIBase.Units.Second: Second++; break;
-                    case SIBase.Units.Ampere: Ampere++; break;
-                    case SIBase.Units.Kelvin: Kelvin++; break;
-                    case SIBase.Units.Mole: Mole++; break;
-                    case SIBase.Units.Candela: Candela++; break;
+                    case SIBase.Units.Meter:   Meter += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Gram:    Kilogram += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Second:  Second += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Ampere:  Ampere += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Kelvin:  Kelvin += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Mole:    Mole += unit.Exponent; 
+                        break;
+                    case SIBase.Units.Candela: Candela += unit.Exponent; 
+                        break;
                 }
             }
         }
