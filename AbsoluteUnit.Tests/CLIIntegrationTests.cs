@@ -1,4 +1,6 @@
-﻿namespace AbsoluteUnit.Tests
+﻿using AbsoluteUnit.Program.Factories;
+
+namespace AbsoluteUnit.Tests
 {
     [TestClass]
     public class CLIIntegrationTests
@@ -117,7 +119,7 @@
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CommandNotRecognised))]
         public void CLI_HandlesInvalidCommandProperly()
         {
             // Arrange
