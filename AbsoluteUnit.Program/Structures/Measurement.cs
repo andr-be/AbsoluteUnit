@@ -55,12 +55,14 @@ public class Measurement(
         return currentToBaseFactor * targetFromBaseFactor;
     }
 
-    public Measurement ExpressInBaseUnits() => new
-    (
-        Units.SelectMany(u => u.ExpressInBaseUnits()).ToList(),
-        Quantity * Units.AggregateToBaseConversionFactors(),
-        Exponent
-    );
+    public Measurement ExpressInBaseUnits()
+    {
+        var newUnits = Units.SelectMany(u => u.ExpressInBaseUnits()).ToList();
+        var newQuantity = Quantity * Units.AggregateToBaseConversionFactors();
+        var newExponent = Exponent;
+
+        return new (newUnits, newQuantity, newExponent);
+    }
 
     public bool IsValidConversion(Measurement target)
     {
