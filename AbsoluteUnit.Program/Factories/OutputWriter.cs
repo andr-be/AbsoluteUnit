@@ -67,7 +67,7 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="result"></param>
         /// <returns></returns>
         static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
-            $"({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
+            $"\t({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
         
         /// <summary>
         /// represents the exponent as either a formatted value or empty string
@@ -114,7 +114,7 @@ namespace AbsoluteUnit.Program.Factories
             RoundedQuantityString(convert.ConversionFactor, CalculateAutoPrecision(convert.ConversionFactor) + 1);
 
         /// <summary>
-        /// Weird stackoverflow decimal rounding hack for string format; don't think too much about it
+        /// Weird StackOverflow decimal rounding hack for string format; don't think too much about it
         /// </summary>
         /// <param name="decimalPrecision">the decimal precision (???)</param>
         /// <returns>the formatted </returns>
