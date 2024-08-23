@@ -8,11 +8,16 @@ namespace AbsoluteUnit
     {
         public static void Main(string[] args)
         {
-            var debug = true;
-            
-            if (args is not null && args.Length > 0) Run(args, debug);
+            var debug = false;
 
-            else foreach (var test in testArguments)
+            if (args is not null && args.Length > 0) 
+            {
+                Run(args, debug);
+                Environment.Exit(0);
+            }
+
+            Console.WriteLine("No arguments provided; starting in test mode...\n");
+            foreach (var test in testArguments)
             {
                 try
                 {
@@ -36,6 +41,8 @@ namespace AbsoluteUnit
             var result = calculator.Calculate();
 
             var writer = new OutputWriter(commandGroup, result[0], calculator, debug);
+
+            Console.WriteLine("Arguments:\t" + string.Join(' ', args));
             Console.WriteLine(writer.FormatOutput());
         }
 
@@ -44,14 +51,17 @@ namespace AbsoluteUnit
             ["--convert", "0.2330 in/µs", "m/s", "-dec", "2"],
             ["--convert", "0.2330 in/µs", "m/s", "-std"],
 
-            ["--convert", "20 m/s", "km/h", "-std", "-ver"],
-            ["--convert", "100mi/h", "m/s", "-dec", "4", "-ver"],
-            ["--convert", "10 days", "hours", "-std", "-ver"],
+            ["-c", "20 m/s", "km/h", "-std", "-ver"],
+            ["-c", "100mi/h", "m/s", "-dec", "4", "-ver"],
+            ["-c", "10 days", "hours", "-std", "-ver"],
 
             ["--express", "100J"],
-            ["--express", "69.420 mi/h"],
+            ["-e", "100 kJ", "-std"],
+            ["-e", "69.420 mi/h"],
 
-            ["--simplify", "10 kg.m.s^-2"]
+            ["--simplify", "10 kg.m.s^-2"],
+            ["-s", "1000 kg.m.s^-2"],
+            ["-s", "1e-12 m"],
         ];
     }
 
