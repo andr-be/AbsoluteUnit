@@ -156,7 +156,7 @@ readonly struct BaseUnitCount : IEnumerable
 
     private static List<List<Unit>> RecursivelyGetUnits(BaseUnitCount unitCount, List<Unit> currentPath, int depth)
     {
-        const int MaxDepth = 100; // Don't want a stack overflow now...
+        const int MaxDepth = 10; // Don't want a stack overflow now...
         List<List<Unit>> solutions = [];
 
         // Base case: if the unit is fully simplified (all zeros) or max depth reached
@@ -237,8 +237,6 @@ internal static class SimplifyUtilities
         { SIDerived.Units.Sievert,   new(meter:2, second:-2) },
 
         { SIDerived.Units.Katal,     new(mole:1, second:-1) },
-        { SIDerived.Units.Radian,    new() },
-        { SIDerived.Units.Steradian, new() },
     };
 
     public static Dictionary<SIBase.Units, BaseUnitCount> SIBaseCounts => new()
