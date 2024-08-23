@@ -1,6 +1,6 @@
 ﻿using AbsoluteUnit.Program.Structures;
 
-namespace AbsoluteUnit.Program.Units;
+namespace AbsoluteUnit.Program.UnitTypes;
 
 public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
 {
@@ -14,31 +14,31 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
         Minute,
     }
 
-    public string Symbol => Unit switch
+    public string Symbol => UnitType switch
     {
         Units.Year => "yr",
         Units.Month => "mth",
         Units.Day => "day",
         Units.Hour => "h",
         Units.Minute => "min",
-        _ => throw new NotImplementedException($"{Unit} has no Symbol implementation!")
+        _ => throw new NotImplementedException($"{UnitType} has no Symbol implementation!")
     };
 
-    public object Unit { get; init; } = unit;
+    public object UnitType { get; init; } = unit;
 
-    public double FromBase(double value=1) => value / Conversion[(Units)Unit];
+    public double FromBase(double value=1) => value / Conversion[(Units)UnitType];
 
-    public double ToBase(double value=1) => value * Conversion[(Units)Unit];
+    public double ToBase(double value=1) => value * Conversion[(Units)UnitType];
 
-    public List<Unit> ExpressInBaseUnits() => (Units)Unit switch
+    public List<Unit> ExpressInBaseUnits(Unit unit) => (Units)UnitType switch
     {
         Units.Year or
         Units.Month or
         Units.Day or
         Units.Hour or
-        Units.Minute => [SIBase.Second()],
+        Units.Minute => [SIBase.Second(unit.Exponent)],
 
-        _ => throw new NotImplementedException($"No base unit conversion for {Unit}")
+        _ => throw new NotImplementedException($"No base unit conversion for {UnitType}")
     };
 
     public static readonly Dictionary<string, object> ValidUnitStrings = new()
@@ -79,7 +79,7 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
     {
         if (obj is not Miscellaneous other) return false;
 
-        var unitEquals = other.Unit.Equals(Unit);
+        var unitEquals = other.UnitType.Equals(UnitType);
 
         return unitEquals;
     }

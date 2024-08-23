@@ -1,4 +1,4 @@
-﻿namespace AbsoluteUnit.Program.Units;
+﻿namespace AbsoluteUnit.Program.UnitTypes;
 
 public class SIPrefix(SIPrefix.Prefixes prefix = SIPrefix.Prefixes._None)
 {

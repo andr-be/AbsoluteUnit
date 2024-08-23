@@ -2,7 +2,7 @@
 using AbsoluteUnit.Program.Factories;
 using AbsoluteUnit.Program.Structures;
 
-namespace AbsoluteUnit.Program.Units;
+namespace AbsoluteUnit.Program.UnitTypes;
 using static SIBase;
 
 public static class UnitConverter
@@ -20,7 +20,7 @@ public static class UnitConverter
     /// <param name="customaryUnit">the USCustomary unit you wish to convert to base</param>
     /// <returns>SI Base Representation</returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static List<Unit> ConvertUSCustomary(USCustomary customaryUnit) => customaryUnit.Unit switch
+    public static List<Unit> ConvertUSCustomary(USCustomary customaryUnit) => customaryUnit.UnitType switch
     {
         // Length
         USCustomary.Units.Mil or
@@ -51,7 +51,7 @@ public static class UnitConverter
     /// <param name="derivedUnit">the SIDerived unit you wish to convert to base</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static List<Unit> ConvertSIDerived(SIDerived derivedUnit) => derivedUnit.Unit switch
+    public static List<Unit> ConvertSIDerived(SIDerived derivedUnit) => derivedUnit.UnitType switch
     {
         SIDerived.Units.Hertz => [ Second(-1) ],
         SIDerived.Units.Becquerel => [ Second(-1) ],
