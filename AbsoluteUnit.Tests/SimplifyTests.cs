@@ -39,6 +39,42 @@ namespace AbsoluteUnit.Tests
             Assert.AreEqual<Measurement>(expectedResult, result[0]);
         }
 
+        [TestMethod]
+        [TestCategory("ComplexTests")]
+        public void Simplify_OneThousandKilogramMetersPerSecondSquare_ToOneKilonewton()
+        {
+            var calculator = new Calculator(CreateSimplifyCommandGroup("1000 kg.m.s^-2"))
+                .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
+
+            var expected = new Measurement
+            (
+                units: [Unit.OfType(SIDerived.Units.Newton, SIPrefix.Prefixes.Kilo)], 
+                quantity: 1
+            );
+
+            var result = calculator.Calculate();
+
+            Assert.AreEqual(expected, result.First(), message: "1000kgm/s^2 should be 1kN!");
+        }
+
+        [TestMethod]
+        [TestCategory("ComplexTests")]
+        public void Simplify_1eMinus3Meters_ToOneMillimeter()
+        {
+            var calculator = new Calculator(CreateSimplifyCommandGroup("1e-3 m"))
+                .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
+
+            var expected = new Measurement
+            (
+                units: [Unit.OfType(SIBase.Units.Meter, SIPrefix.Prefixes.Milli)],
+                quantity: 1
+            );
+
+            var result = calculator.Calculate();
+
+            Assert.AreEqual(expected, result.First(), message: "1e-3m should be 1mm!");
+        }
+
         private static CommandGroup CreateSimplifyCommandGroup(string startMeasurement, Dictionary<Flag, int>? flags = null)
             => new(Command.Simplify, flags ?? [], [startMeasurement]);
     }
