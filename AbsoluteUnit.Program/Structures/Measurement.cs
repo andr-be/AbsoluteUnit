@@ -148,7 +148,7 @@ public class Measurement(
     /// Returns a new measurement that's the same as the current one represented in base SI units. <br/>
     /// The quantity is converted and the exponent is left unchanged, so this is not a numerically simplified representation
     /// </summary>
-    /// <returns></returns>
+    /// <returns>base SI representation Measurement</returns>
     public Measurement ExpressInBaseUnits()
     {
         var baseSIUnits = Units.SelectMany(u => u.ExpressInBaseUnits()).ToList();
@@ -188,6 +188,7 @@ public class Measurement(
             && exponentEqual;
     }
 
-    public override int GetHashCode() => HashCode.Combine(Units, Quantity, Exponent);
+    public override int GetHashCode() => 
+        HashCode.Combine(Units, Quantity, Exponent);
     
 }
