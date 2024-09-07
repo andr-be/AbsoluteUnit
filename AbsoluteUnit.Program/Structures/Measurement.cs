@@ -45,6 +45,9 @@ public class Measurement(
     /// <returns>this Measurement converted to Target's units</returns>
     public Measurement ConvertTo(Measurement target, bool standardForm=false)
     {
+        if (!IsLegalConversion(target)) 
+            throw new ArgumentException($"Invalid conversion! -> {this} != {target}");
+        
         var newUnits = target.Units;
         var normalisedQuantity = this.Quantity * Math.Pow(10, this.Exponent);
         var convertedQuantity = normalisedQuantity * QuantityConversionFactor(this, target);
@@ -85,7 +88,11 @@ public class Measurement(
     /// - Engineering: x * 10^y; 1 <= |x| < 1000, y ≡ 0 (mod 3), y ∈ ℤ
     /// </returns>
     /// <exception cref="NotImplementedException"></exception>
-    public static (double newQuantity, int newExponent) RepresentInStandardForm(double quantity, StandardFormType type = StandardFormType.Scientific)
+    public static (double newQuantity, int newExponent) RepresentInStandardForm
+    (
+        double quantity = 1.0, 
+        StandardFormType type = StandardFormType.Scientific
+    )
     {
         if (quantity == 0) return (0, 0);
 
@@ -128,23 +135,35 @@ public class Measurement(
     /// <returns></returns>
     public static double QuantityConversionFactor(Measurement current, Measurement target)
     {
-        // To convert a quantity to another, we do so via a base unit (SIBase)
-        // If the unit is already SIBase, that factor is 1.
+        /* To convert a quantity to another, we do so via a base unit (SIBase)
+           If the unit is already SIBase, that factor is 1. 
+        */
         var currentToBaseFactor = current.Units.AggregateToBaseConversionFactors();
         var targetFromBaseFactor = target.Units.AggregateFromBaseConversionFactors();
 
         return currentToBaseFactor * targetFromBaseFactor;
     }
 
+    /// <summary>
+    /// Returns a new measurement that's the same as the current one represented in base SI units. <br/>
+    /// The quantity is converted and the exponent is left unchanged, so this is not a numerically simplified representation
+    /// </summary>
+    /// <returns></returns>
     public Measurement ExpressInBaseUnits()
     {
-        var newUnits = Units.SelectMany(u => u.ExpressInBaseUnits()).ToList();
+        var baseSIUnits = Units.SelectMany(u => u.ExpressInBaseUnits()).ToList();
         var newQuantity = Quantity * Units.AggregateToBaseConversionFactors();
         var newExponent = Exponent;
 
-        return new (newUnits, newQuantity, newExponent);
+        return new (baseSIUnits, newQuantity, newExponent);
     }
 
+    /// <summary>
+    /// Converts both this's units and the target's units to base representations and checks if they match <br/>
+    /// If they don't match, you cannot convert from this to the target.
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool IsLegalConversion(Measurement target)
     {
         var currentUnits = new Measurement(Units).ExpressInBaseUnits();
@@ -164,7 +183,9 @@ public class Measurement(
         var quantityEqual = Quantity.Equals(other.Quantity);
         var exponentEqual = Exponent.Equals(other.Exponent);
 
-        return unitsEqual && quantityEqual && exponentEqual;
+        return unitsEqual 
+            && quantityEqual 
+            && exponentEqual;
     }
 
     public override int GetHashCode() => HashCode.Combine(Units, Quantity, Exponent);
