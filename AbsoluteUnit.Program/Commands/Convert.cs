@@ -24,8 +24,8 @@ public class Convert : ICommand
         
         StandardForm = commandGroup.Flags.ContainsKey(Flag.StandardForm);
 
-        if (FromUnit.IsValidConversion(ToUnit))
-            ConversionFactor = FromUnit.QuantityConversionFactor(ToUnit);
+        if (FromUnit.IsLegalConversion(ToUnit))
+            ConversionFactor = Measurement.QuantityConversionFactor(FromUnit, ToUnit);
 
         else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
     }
