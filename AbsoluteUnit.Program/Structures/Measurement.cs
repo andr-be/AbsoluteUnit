@@ -56,21 +56,76 @@ public class Measurement(
         return new Measurement(newUnits, newQuantity, newExponent);
     }
 
-    public static (double newQuantity, int newExponent) RepresentInStandardForm(double convertedQuantity)
+    public enum StandardFormType
     {
-        double factorOfTen = 0.0;
-        double exponent = 0;
+        /// <summary>
+        /// Scientific notation where 0 < |x| < 10
+        /// </summary>
+        Scientific,
 
-        while (convertedQuantity / factorOfTen > 10)
-            factorOfTen = Math.Pow(10, exponent++);
-        
-        return
+        /// <summary>
+        /// Normalised notation where 1 < |x| < 10
+        /// </summary>
+        Normalised,
+
+        /// <summary>
+        /// Engineering notation where 1 <= |x| < 1000 and y ≡ 0 (mod 3), y ∈ ℤ 
+        /// </summary>
+        Engineering,
+    }
+
+    /// <summary>
+    /// Simplifies a value to a chosen Standard Form representation
+    /// </summary>
+    /// <param name="quantity">the value to standardise</param>
+    /// <param name="type">the scheme to standardise the value to</param>
+    /// <returns>
+    /// - Scientific:  x * 10^y; 0  < |x| <   10, y ∈ ℤ <br/>
+    /// - Normalised:  x * 10^y; 1  < |x| <   10, y ∈ ℤ <br/>
+    /// - Engineering: x * 10^y; 1 <= |x| < 1000, y ≡ 0 (mod 3), y ∈ ℤ
+    /// </returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public static (double newQuantity, int newExponent) RepresentInStandardForm(double quantity, StandardFormType type = StandardFormType.Scientific)
+    {
+        if (quantity == 0) return (0, 0);
+
+        var base10Log = Math.Log10(Math.Abs(quantity));
+
+        var newExponent = (int)Math.Floor(base10Log);
+        var newQuantity = quantity / Math.Pow(10, newExponent);
+
+        return type switch
+        {
+            StandardFormType.Scientific => (newQuantity, newExponent),
+            StandardFormType.Normalised => NormalisedForm(newQuantity, newExponent),
+            StandardFormType.Engineering => EngineeringForm(newQuantity, newExponent),
+            _ => throw new NotImplementedException(),
+        };
+
+        /// <summary>
+        /// if the quantity is below 1, bump the quantity up by *10, reduce the exponent by 1
+        /// </summary>
+        static (double quantity, int exponent) NormalisedForm(double initialQuantity, int initialExponent) =>
+            (Math.Abs(initialQuantity) < 1)
+                ? (initialQuantity * 10, initialExponent - 1) 
+                : (initialQuantity, initialExponent);
+
+        /// <summary>
+        /// reduce the exponent to the nearest multiple of 3 and normalise the quantity by the same amount
+        /// </summary>
+        static (double quantity, int exponent) EngineeringForm(double initialQuantity, int initialExponent) =>
         (
-            newQuantity: convertedQuantity / factorOfTen,
-            newExponent: (int)exponent - 1
+            quantity: initialQuantity * Math.Pow(10, initialExponent % 3),
+            exponent: initialExponent - initialExponent % 3
         );
     }
 
+    /// <summary>
+    /// The double value you need to multiple <b>current</b>'s quantity by to convert it to <b>target's<br/> units.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public static double QuantityConversionFactor(Measurement current, Measurement target)
     {
         // To convert a quantity to another, we do so via a base unit (SIBase)
