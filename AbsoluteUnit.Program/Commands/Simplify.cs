@@ -26,32 +26,36 @@ public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementP
 
     private static Measurement PrefixSimplification(List<Unit> units, double quantity)
     {
+        // SI Prefixes operate in steps of 1e3; anything between 1 & -1 cannot be simplified further
         if (quantity is < 1e+3 and > 1e-3)
             return new Measurement(units, quantity);
 
-        int exponentValue = 0;
+        (quantity, int exponent) = SimplifyExponentAndQuantity(quantity);
 
-        if (quantity > 1)
-            while (quantity > 1)
-            {
-                quantity /= 1e3;
-                exponentValue += 3;
-            }
-        
-        else
-            while (quantity < 1)
-            {
-                quantity *= 1e3;
-                exponentValue -= 3;
-            }
-        
-        units = SimplifyFirstUnit(units, exponentValue);
+        units = SimplifyFirstUnit(units, exponent);
 
         return new Measurement(units, quantity);
     }
 
+    private static (double quantity, int exponent) SimplifyExponentAndQuantity(double quantity)
+    {
+        const int BaseExponent = 3; // SI prefixes use powers of 1000 (10^3)
+
+        double logValue = Math.Log10(Math.Abs(quantity));
+
+        int exponentSteps = (int)Math.Floor(logValue / BaseExponent);
+
+        int exponent = exponentSteps * BaseExponent;
+
+        quantity /= Math.Pow(10, exponent);
+
+        return (quantity, exponent);
+    }
+
     private static List<Unit> SimplifyFirstUnit(List<Unit> units, int exponentValue)
     {
+        if (units.Count is 0) return units;
+        
         units[0] = Unit.OfType
         (
             unitType: units[0].UnitType.UnitType, 
@@ -122,27 +126,37 @@ readonly struct BaseUnitCount : IEnumerable
     public BaseUnitCount(Measurement baseRepresentation)
     {
         foreach (var unit in baseRepresentation.Units)
+        switch (unit.UnitType.UnitType)
         {
-            if (unit.UnitType.UnitType is SIBase.Units baseUnit)
-            {
-                switch (baseUnit)
-                {
-                    case SIBase.Units.Meter:   Meter += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Gram:    Kilogram += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Second:  Second += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Ampere:  Ampere += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Kelvin:  Kelvin += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Mole:    Mole += unit.Exponent; 
-                        break;
-                    case SIBase.Units.Candela: Candela += unit.Exponent; 
-                        break;
-                }
-            }
+            case SIBase.Units.Meter:   
+                Meter += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Gram:    
+                Kilogram += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Second:  
+                Second += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Ampere:  
+                Ampere += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Kelvin:  
+                Kelvin += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Mole:    
+                Mole += unit.Exponent; 
+                break;
+
+            case SIBase.Units.Candela: 
+                Candela += unit.Exponent; 
+                break;
+
+            default: break;
         }
     }
 
@@ -247,13 +261,28 @@ readonly struct BaseUnitCount : IEnumerable
     private static List<Unit> ConvertBaseUnitCountToUnits(BaseUnitCount count)
     {
         var units = new List<Unit>();
-        if (count.Meter != 0) units.Add(Unit.OfType(SIBase.Units.Meter, exponent: count.Meter));
-        if (count.Kilogram != 0) units.Add(Unit.OfType(SIBase.Units.Gram, SIPrefix.Prefixes.Kilo, count.Kilogram));
-        if (count.Second != 0) units.Add(Unit.OfType(SIBase.Units.Second, exponent: count.Second));
-        if (count.Ampere != 0) units.Add(Unit.OfType(SIBase.Units.Ampere, exponent: count.Ampere));
-        if (count.Kelvin != 0) units.Add(Unit.OfType(SIBase.Units.Kelvin, exponent: count.Kelvin));
-        if (count.Mole != 0) units.Add(Unit.OfType(SIBase.Units.Mole, exponent: count.Mole));
-        if (count.Candela != 0) units.Add(Unit.OfType(SIBase.Units.Candela, exponent: count.Candela));
+
+        if (count.Meter != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Meter, exponent: count.Meter));
+
+        if (count.Kilogram != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Gram, SIPrefix.Prefixes.Kilo, count.Kilogram));
+
+        if (count.Second != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Second, exponent: count.Second));
+
+        if (count.Ampere != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Ampere, exponent: count.Ampere));
+
+        if (count.Kelvin != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Kelvin, exponent: count.Kelvin));
+
+        if (count.Mole != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Mole, exponent: count.Mole));
+
+        if (count.Candela != 0) 
+            units.Add(Unit.OfType(SIBase.Units.Candela, exponent: count.Candela));
+
         return units;
     }
 }
