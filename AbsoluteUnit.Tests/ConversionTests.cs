@@ -42,8 +42,8 @@ public class ConversionTests
         );
 
         // Act
-        var isValidForwards = metersPerSecond.IsValidConversion(target: inchesPerMicroSecond);
-        var isValidBackwards = inchesPerMicroSecond.IsValidConversion(target: metersPerSecond);
+        var isValidForwards = metersPerSecond.IsLegalConversion(target: inchesPerMicroSecond);
+        var isValidBackwards = inchesPerMicroSecond.IsLegalConversion(target: metersPerSecond);
 
         // Assert
         Assert.IsTrue(isValidForwards && isValidBackwards, 
@@ -71,7 +71,7 @@ public class ConversionTests
         );
 
         // Act
-        var isValid = metersPerSecond.IsValidConversion(target: poundsPerSecondSquared);
+        var isValid = metersPerSecond.IsLegalConversion(target: poundsPerSecondSquared);
 
         // Assert
         Assert.IsFalse(isValid);
@@ -369,8 +369,8 @@ public class ConversionTests
         );
 
         // Act
-        var secondToHourConversionFactor = _3600Seconds.QuantityConversionFactor(_1Hour);
-        var hourToSecondConversionFactor = _1Hour.QuantityConversionFactor(_3600Seconds);
+        var secondToHourConversionFactor = Measurement.QuantityConversionFactor(_3600Seconds, _1Hour);
+        var hourToSecondConversionFactor = Measurement.QuantityConversionFactor(_1Hour, _3600Seconds);
 
         // Assert
         Assert.AreEqual(hourToSecondConversionFactor, 1/secondToHourConversionFactor);
@@ -384,8 +384,8 @@ public class ConversionTests
         var oneMeter = new Measurement([SIBase.Meter()], 1);
 
         // Act
-        var mileToMeterConversionFactor = oneMile.QuantityConversionFactor(oneMeter);
-        var meterToMileConversionFactor = oneMeter.QuantityConversionFactor(oneMile);
+        var mileToMeterConversionFactor = Measurement.QuantityConversionFactor(oneMile, oneMeter);
+        var meterToMileConversionFactor = Measurement.QuantityConversionFactor(oneMeter, oneMile);
 
         // Assert
         Assert.AreEqual(1.0 / mileToMeterConversionFactor, meterToMileConversionFactor);
