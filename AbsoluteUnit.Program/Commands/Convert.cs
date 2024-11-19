@@ -5,7 +5,7 @@ using AbsoluteUnit.Program.Structures;
 namespace AbsoluteUnit.Program.Commands;
 public class Convert : ICommand
 {
-    public Measurement FromUnit { get; }
+    public Measurement Input { get; init; }
     public Measurement ToUnit { get; }
     public double ConversionFactor { get; }
 
@@ -16,7 +16,7 @@ public class Convert : ICommand
     {
         CommandGroup = commandGroup;
 
-        FromUnit = measurementParser
+        Input = measurementParser
             .ProcessMeasurement(commandGroup.CommandArguments[0]);
 
         ToUnit = measurementParser
@@ -24,14 +24,14 @@ public class Convert : ICommand
         
         StandardForm = commandGroup.Flags.ContainsKey(Flag.StandardForm);
 
-        if (FromUnit.IsLegalConversion(ToUnit))
-            ConversionFactor = Measurement.QuantityConversionFactor(FromUnit, ToUnit);
+        if (Input.IsLegalConversion(ToUnit))
+            ConversionFactor = Measurement.QuantityConversionFactor(Input, ToUnit);
 
-        else throw new ArgumentException($"Cannot convert from {FromUnit} to {ToUnit}");
+        else throw new ArgumentException($"Cannot convert from {Input} to {ToUnit}");
     }
 
-    public List<Measurement> Run() => [FromUnit.ConvertTo(ToUnit, StandardForm)];
+    public List<Measurement> Run() => [Input.ConvertTo(ToUnit, StandardForm)];
 
     public override string ToString() =>
-        $"{CommandGroup.CommandType}:\tFrom: {FromUnit}\tTo: {string.Join(".", ToUnit.Units)}";
+        $"{CommandGroup.CommandType}:\tFrom: {Input}\tTo: {string.Join(".", ToUnit.Units)}";
 }

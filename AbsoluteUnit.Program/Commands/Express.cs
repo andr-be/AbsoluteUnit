@@ -5,7 +5,7 @@ namespace AbsoluteUnit.Program.Commands
 {
     public class Express(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
     {
-        private Measurement Input { get; } = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
+        public Measurement Input { get; init; } = measurementParser.ProcessMeasurement(commandGroup.CommandArguments[0]);
 
         public List<Measurement> Run() => [Input.ExpressInBaseUnits()];
 

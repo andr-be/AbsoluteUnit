@@ -9,7 +9,7 @@ namespace AbsoluteUnit.Program.Commands;
 
 public class Simplify(CommandGroup commandGroup, IMeasurementParser measurementParser) : ICommand
 {
-    private Measurement Input { get; init; } = GetInput(commandGroup, measurementParser);
+    public Measurement Input { get; init; } = GetInput(commandGroup, measurementParser);
 
     public List<Measurement> Run()
     {

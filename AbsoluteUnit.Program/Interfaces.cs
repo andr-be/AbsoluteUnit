@@ -6,6 +6,7 @@ namespace AbsoluteUnit.Program
 {
     public interface ICommand
     {
+        public Measurement Input { get; init; }
         public abstract List<Measurement> Run();
     }
 
