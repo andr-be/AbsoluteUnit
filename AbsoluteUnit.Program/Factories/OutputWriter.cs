@@ -18,42 +18,56 @@ namespace AbsoluteUnit.Program.Factories
         CommandGroup CommandGroup { get; init; } = commandGroup;
         Measurement Result { get; init; } = result;
         Calculator Calculator { get; init; } = runner;
-
-        bool DebugOutput { get; init; } = debug;
-        bool VerboseOutput { get; init; } = commandGroup.Flags.ContainsKey(Flag.VerboseCalculation);
+        OutputFlags OutputFlags { get; init; } = new(commandGroup.Flags, debug);
 
         /// <summary>
         /// Provides a fully formatted output string for the Calculator's commands and arguments.
         /// </summary>
-        /// <returns></returns>
+        /// <summary>
+        /// Provides a fully formatted output string for the Calculator's commands and arguments.
+        /// </summary>
         public string FormatOutput()
         {
-            var resultString = DebugOutput
-                ? $"{CommandGroup}\n{Calculator.Command}\n"
-                : "";
+            var outputComponents = new List<string>();
 
-            resultString += ResultsString(Calculator.CommandGroup, Result);
+            if (OutputFlags.Debug)
+            {
+                outputComponents.Add(CommandGroup.ToString());
+                outputComponents.Add(Calculator.Command?.ToString() ?? "");
+            }
 
-            resultString += VerboseOutput
-                    ? ConversionFactorString(Calculator.Command, Result)
-                    : "";
+            var resultLine = ResultsString(Calculator.CommandGroup, Result);
+            if (OutputFlags.Verbose)
+            {
+                resultLine += " " + ConversionFactorString(Calculator.Command!, Result) + ")";
+            }
+            outputComponents.Add(resultLine);
 
-            return resultString + "\n";
+            return string.Join('\n', outputComponents) + '\n';
         }
 
         /// <summary>
-        /// calculate the number of decimal places quantity should be represented with
+        /// Calculate the number of decimal places quantity should be represented with using logarithmic approach
         /// </summary>
-        /// <param name="quantity"></param>
-        /// <returns></returns>
-        static int CalculateAutoPrecision(double quantity) => quantity switch
+        /// <param name="quantity">The quantity to calculate precision for</param>
+        /// <returns>Number of decimal places to display</returns>
+        static int CalculateAutoPrecision(double quantity)
         {
-            < 1e+3 and >= 1e+2 => 1,
-            < 1e+2 and >= 1e+1 => 2,
-            < 1e+1 and >= 1e-1 => 3,
-            < 1e-1 => 4,
-            _ => 0,
-        };
+            if (quantity is 0 
+                or double.NaN 
+                or double.PositiveInfinity 
+                or double.NegativeInfinity) return 0;
+
+            var logQuantity = Math.Log10(Math.Abs(quantity));
+            var magnitude = Math.Floor(logQuantity);
+
+            return magnitude switch
+            {
+                >= 3 => 0,
+                < -1 => 4,
+                _ => 3 - (int)magnitude,
+            };
+        }
 
         /// <summary>
         /// Works out the amount you multiply the original input by to return the result
@@ -64,11 +78,16 @@ namespace AbsoluteUnit.Program.Factories
         static string ConversionFactorString(ICommand command, Measurement result)
         {
             var originalQuantity = command.Input.Quantity;
+
             var newQuantity = result.Quantity;
-            var factor = newQuantity / originalQuantity;
+
+            var factor = (command is not Commands.Convert convert)
+                ? newQuantity / originalQuantity
+                : convert.ConversionFactor;
+
             var originalQuantityString = PreConversionQuantity(command);
 
-            return $"({originalQuantityString} x{factor:E3}";
+            return $"({originalQuantityString} x{factor}";
         }
 
         /// <summary>
@@ -112,22 +131,6 @@ namespace AbsoluteUnit.Program.Factories
         }
 
         /// <summary>
-        /// uses the autoPrecision routine to calculate how many decimal places the conversion factor should have
-        /// </summary>
-        /// <param name="convertCommand"></param>
-        /// <returns></returns>
-        static string RoundedConversionFactor(Commands.Convert convertCommand) => 
-            RoundedQuantityString(convertCommand.ConversionFactor, CalculateAutoPrecision(convertCommand.ConversionFactor) + 1);
-
-        /// <summary>
-        /// Overload for RoundedConversionFactor that takes a double instead (this should probably be the only function lol)
-        /// </summary>
-        /// <param name="conversionFactor"></param>
-        /// <returns></returns>
-        static string RoundedConversionFactor(double conversionFactor) =>
-            RoundedQuantityString(conversionFactor, CalculateAutoPrecision(conversionFactor) + 1);
-
-        /// <summary>
         /// Weird StackOverflow decimal rounding hack for string format; don't think too much about it
         /// </summary>
         /// <param name="decimalPrecision">the decimal precision (???)</param>
@@ -142,5 +145,21 @@ namespace AbsoluteUnit.Program.Factories
         /// <returns></returns>
         static string UnitString(Measurement result) => string.Join(".", result.Units);
         
+    }
+
+    internal record OutputFlags(Dictionary<Flag, int> Flags, bool Debug)
+    {
+        public bool Debug { get; init; } = Debug;
+        public bool Verbose { get; init; } = Flags.ContainsKey(Flag.VerboseCalculation);
+        public bool StandardForm { get; init; } = Flags.ContainsKey(Flag.StandardForm);
+        public bool Engineering { get; init; } = Flags.ContainsKey(Flag.Engineering);
+        public (bool enabled, int value) SignificantFigures { get; init; } = (
+            Flags.ContainsKey(Flag.SignificantFigures),
+            Flags.GetValueOrDefault(Flag.SignificantFigures)
+        );
+        public (bool enabled, int value) DecimalPlaces { get; init; } = (
+            Flags.ContainsKey(Flag.DecimalPlaces),
+            Flags.GetValueOrDefault(Flag.DecimalPlaces)
+        );
     }
 }
