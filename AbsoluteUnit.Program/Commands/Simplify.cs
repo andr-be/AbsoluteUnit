@@ -304,7 +304,7 @@ internal static class SimplifyUtilities
         { SIDerived.Units.Farad,     new(kilogram:-1, meter:-2, second:4, ampere:2) },
         { SIDerived.Units.Ohm,       new(kilogram:1, meter:2, second:-3, ampere:-2) },
 
-        { SIDerived.Units.Siemens,   new(kilogram:-1, meter:-2, second:3, ampere:2) },
+        { SIDerived.Units.Siemen,   new(kilogram:-1, meter:-2, second:3, ampere:2) },
         { SIDerived.Units.Weber,     new(kilogram:1, meter:2, second:-2, ampere:-1) },
         { SIDerived.Units.Tesla,     new(kilogram:1, second:-2, ampere:-1) },
         { SIDerived.Units.Henry,     new(kilogram:1, meter:2, second:-2, ampere:-2) },
