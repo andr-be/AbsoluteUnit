@@ -83,4 +83,6 @@ public class Miscellaneous(Miscellaneous.Units unit) : IUnitType
 
         return unitEquals;
     }
+
+    public override int GetHashCode() => HashCode.Combine(UnitType, Symbol);
 }
