@@ -28,21 +28,15 @@ namespace AbsoluteUnit.Program.Factories
         /// <returns></returns>
         public string FormatOutput()
         {
-            var resultString = DebugOutput?
-                CommandGroup + "\n" 
+            var resultString = DebugOutput
+                ? $"{CommandGroup}\n{Calculator.Command}\n"
                 : "";
-
-            resultString += Calculator.Command + "\n";
 
             resultString += ResultsString(Calculator.CommandGroup, Result);
 
-            if (VerboseOutput) resultString += Calculator.Command switch
-            {
-                Commands.Convert convert => ConversionFactorString(convert, Result),
-                Commands.Express express => ExpressionFactorString(express, Result),
-                Commands.Simplify simplify => SimplificationFactorString(simplify, Result),
-                _ => "",
-            };
+            resultString += VerboseOutput
+                    ? ConversionFactorString(Calculator.Command, Result)
+                    : "";
 
             return resultString + "\n";
         }
@@ -62,23 +56,19 @@ namespace AbsoluteUnit.Program.Factories
         };
 
         /// <summary>
-        /// generate the verbose output conversion factor string that is appended to the results
+        /// Works out the amount you multiply the original input by to return the result
         /// </summary>
-        /// <param name="convert"></param>
+        /// <param name="command"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        static string ConversionFactorString(Commands.Convert convert, Measurement result) => 
-            $"\t({PreConversionQuantity(convert, result)} x{RoundedConversionFactor(convert)})";
-
-
-        private string SimplificationFactorString(Simplify simplify, Measurement result)
+        static string ConversionFactorString(ICommand command, Measurement result)
         {
-            throw new NotImplementedException("Need to implement simplification factor.");
-        }
+            var originalQuantity = command.Input.Quantity;
+            var newQuantity = result.Quantity;
+            var factor = newQuantity / originalQuantity;
+            var originalQuantityString = PreConversionQuantity(command);
 
-        private string ExpressionFactorString(Express express, Measurement result)
-        {
-            throw new NotImplementedException("Need to implement simplification factor.");
+            return $"({originalQuantityString} x{factor:E3}";
         }
 
         /// <summary>
@@ -86,7 +76,7 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        static string ExponentString(Measurement result) => 
+        static string ExponentString(Measurement result) =>
             (result.Exponent != 0) ? $"e{result.Exponent}" : "";
 
         /// <summary>
@@ -95,8 +85,12 @@ namespace AbsoluteUnit.Program.Factories
         /// <param name="convert"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        static string PreConversionQuantity(Commands.Convert convert, Measurement result) =>
-            $"{result.Quantity * Math.Pow(10, result.Exponent) / convert.ConversionFactor}";
+        static string PreConversionQuantity(ICommand command)
+        {
+            var originalQuantity = command.Input.Quantity * Math.Pow(10, command.Input.Exponent);
+            var autoPrecision = CalculateAutoPrecision(originalQuantity);
+            return $"{RoundedQuantityString(originalQuantity, autoPrecision)}";
+        }
         
         /// <summary>
         /// generates a formatted, rounded result to return to the user
@@ -120,10 +114,18 @@ namespace AbsoluteUnit.Program.Factories
         /// <summary>
         /// uses the autoPrecision routine to calculate how many decimal places the conversion factor should have
         /// </summary>
-        /// <param name="convert"></param>
+        /// <param name="convertCommand"></param>
         /// <returns></returns>
-        static string RoundedConversionFactor(Commands.Convert convert) => 
-            RoundedQuantityString(convert.ConversionFactor, CalculateAutoPrecision(convert.ConversionFactor) + 1);
+        static string RoundedConversionFactor(Commands.Convert convertCommand) => 
+            RoundedQuantityString(convertCommand.ConversionFactor, CalculateAutoPrecision(convertCommand.ConversionFactor) + 1);
+
+        /// <summary>
+        /// Overload for RoundedConversionFactor that takes a double instead (this should probably be the only function lol)
+        /// </summary>
+        /// <param name="conversionFactor"></param>
+        /// <returns></returns>
+        static string RoundedConversionFactor(double conversionFactor) =>
+            RoundedQuantityString(conversionFactor, CalculateAutoPrecision(conversionFactor) + 1);
 
         /// <summary>
         /// Weird StackOverflow decimal rounding hack for string format; don't think too much about it

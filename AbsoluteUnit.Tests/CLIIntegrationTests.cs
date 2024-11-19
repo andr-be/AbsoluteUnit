@@ -108,7 +108,7 @@ namespace AbsoluteUnit.Tests
         public void CLI_SimplifiesProperly()
         {
             // Arrange
-            string[] args = ["--simplify", "1000 kg*m/s^2", "-ver"];
+            string[] args = ["--simplify", "1000 kg*m/s^2", "-ver", "-dec", "0"];
 
             // Act
             AbsoluteUnitCLI.Main(args);
