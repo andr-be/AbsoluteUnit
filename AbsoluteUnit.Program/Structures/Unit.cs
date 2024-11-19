@@ -71,5 +71,6 @@ public static class UnitListExtensions
 
 public static class UnitExtensions
 {
-    public static List<Unit> ExpressInBaseUnits(this Unit unit) => unit.UnitType.ExpressInBaseUnits(unit);
+    public static List<Unit> ExpressInBaseUnits(this Unit unit) => 
+        unit.UnitType.ExpressInBaseUnits(unit);
 }

@@ -59,7 +59,6 @@ public class Measurement(
         return new Measurement(newUnits, newQuantity, newExponent);
     }
 
-
     /// <summary>
     /// The double value you need to multiple <b>current</b>'s quantity by to convert it to <b>target's<br/> units.
     /// </summary>
@@ -123,12 +122,10 @@ public class Measurement(
 
     public override int GetHashCode() => 
         HashCode.Combine(Units, Quantity, Exponent);
-    
 }
 
 public static class StandardForm
 {
-
     public enum Style
     {
         /// <summary>
