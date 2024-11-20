@@ -35,7 +35,7 @@ public class SIDerived(SIDerived.Units unit) : IUnitType
     {
         // Intentionally left messy to remind you to clean up...
         Units.Hertz => "Hz",
-        Units.Radian => "r",
+        Units.Radian => "rad",
         Units.Steradian => "sr",
         Units.Newton => "N",
         Units.Pascal => "Pa",
@@ -45,18 +45,18 @@ public class SIDerived(SIDerived.Units unit) : IUnitType
         Units.Volt => "V",
         Units.Farad => "F",
         Units.Ohm => "Ω",
-        Units.Siemen => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
+        Units.Siemen => "S",
         Units.Weber => "Wb",
         Units.Tesla => "T",
         Units.Henry => "H",
         Units.Celsius => "°C",
-        Units.Lumen => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
-        Units.Lux => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
+        Units.Lumen => "lm",
+        Units.Lux => "lx",
         Units.Becquerel => "Bq",
-        Units.Gray => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
-        Units.Sievert => "sv",
-        Units.Katal => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
-        _ => throw new NotImplementedException($"TODO: Implement " + nameof(UnitType)),
+        Units.Gray => "Gy",
+        Units.Sievert => "Sv",
+        Units.Katal => "kat",
+        _ => throw new NotImplementedException($"TODO: Implement " + UnitType),
     };
 
     public object UnitType { get; init; } = unit;
@@ -245,7 +245,7 @@ public class SIDerived(SIDerived.Units unit) : IUnitType
             Units.Volt =>    
             [
                 Kilogram(e),      
-                Meter(-2 * e), 
+                Meter(2 * e), 
                 Second(-3 * e), 
                 Ampere(-1 * e)
             ],

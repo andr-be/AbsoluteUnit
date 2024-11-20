@@ -1,4 +1,6 @@
 ﻿
+using AbsoluteUnit.Program.UnitTypes;
+
 namespace AbsoluteUnit.Program.Structures;
 
 /// <summary>
@@ -87,7 +89,24 @@ public class Measurement(
         var newQuantity = Quantity * Units.AggregateToBaseConversionFactors();
         var newExponent = Exponent;
 
-        return new (baseSIUnits, newQuantity, newExponent);
+        // Combine like terms
+        var combinedUnits = baseSIUnits
+            .GroupBy(u => u.UnitType.UnitType)  // Group by the base unit type
+            .Select(g =>
+            {
+                var totalExponent = g.Sum(u => u.Exponent);
+                if (totalExponent == 0) return null;
+
+                return (g.Key is SIBase.Units.Gram)
+                    ? Unit.OfType(SIBase.Units.Gram, SIPrefix.Prefixes.Kilo, totalExponent)
+                    : Unit.OfType(g.Key, exponent: totalExponent);
+
+            })
+            .Where(x => x is not null && x.Exponent != 0)  // Remove cancelled units
+            .Select(x => Unit.OfType(x.UnitType.UnitType, x.Prefix.Prefix, x.Exponent))
+            .ToList();
+
+        return new(combinedUnits, newQuantity, newExponent);
     }
 
     /// <summary>

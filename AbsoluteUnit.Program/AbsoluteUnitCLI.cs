@@ -43,7 +43,7 @@ namespace AbsoluteUnit
 
             var writer = new OutputWriter(commandGroup, result[0], calculator, debug);
 
-            if (debug) Console.WriteLine("Arguments:\t" + string.Join(' ', args));
+            Console.WriteLine("Arguments:\t" + string.Join(' ', args));
             Console.WriteLine(writer.FormatOutput());
         }
 
