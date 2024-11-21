@@ -16,8 +16,16 @@ public class Convert : ICommand
     {
         CommandGroup = commandGroup;
 
-        Input = measurementParser
-            .ProcessMeasurement(commandGroup.CommandArguments[0]);
+        try
+        {
+            Input = measurementParser
+                .ProcessMeasurement(commandGroup.CommandArguments[0]);
+        }
+        catch (KeyNotFoundException e)
+        {
+            Console.Write(e.Message);
+            throw new ArgumentException($"{commandGroup.CommandArguments[0]} is an unrecognised unit.");
+        }
 
         ToUnit = measurementParser
             .ProcessMeasurement(commandGroup.CommandArguments[1], unitOnly: true);
