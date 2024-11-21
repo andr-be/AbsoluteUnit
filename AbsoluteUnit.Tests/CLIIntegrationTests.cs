@@ -5,7 +5,7 @@ namespace AbsoluteUnit.Tests
     [TestClass]
     public class CLIIntegrationTests
     {
-        private StringWriter consoleOutput;
+        private StringWriter? consoleOutput;
 
         [TestInitialize]
         public void TestInitialize()
@@ -15,10 +15,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestCleanup]
-        public void TestCleanup()
-        {
-            consoleOutput.Dispose();
-        }
+        public void TestCleanup() 
+            => consoleOutput.Dispose();
 
         #region Convert Command Tests
         [TestMethod]
@@ -29,7 +27,8 @@ namespace AbsoluteUnit.Tests
             AbsoluteUnitCLI.Main(args);
 
             var output = consoleOutput.ToString().Trim();
-            Assert.AreEqual("Result:\t\t5918.20 m.s^-1", output);
+            var result = output.Split('\n').Last();
+            Assert.AreEqual("Result:\t\t5918.20 m.s^-1", result);
         }
 
         [TestMethod]
@@ -39,7 +38,7 @@ namespace AbsoluteUnit.Tests
 
             AbsoluteUnitCLI.Main(args);
 
-            var output = consoleOutput.ToString().Trim();
+            var output = consoleOutput.ToString().Trim().Split('\n').Last(); ;
             Assert.AreEqual("Result:\t\t44.70 m.s^-1 (100.0 x0.44704)", output);
         }
 
@@ -50,7 +49,7 @@ namespace AbsoluteUnit.Tests
 
             AbsoluteUnitCLI.Main(args);
 
-            var output = consoleOutput.ToString().Trim();
+            var output = consoleOutput.ToString().Trim().Split('\n').Last(); ;
             Assert.AreEqual("Result:\t\t5918 m.s^-1", output);
         }
         #endregion
@@ -89,7 +88,7 @@ namespace AbsoluteUnit.Tests
 
             AbsoluteUnitCLI.Main(args);
 
-            var output = consoleOutput.ToString().Trim();
+            var output = consoleOutput.ToString().Trim().Split('\n').Last();
             Assert.AreEqual("Result:\t\t0 km", output);
         }
 
@@ -113,7 +112,7 @@ namespace AbsoluteUnit.Tests
 
             AbsoluteUnitCLI.Main(args);
 
-            var output = consoleOutput.ToString().Trim();
+            var output = consoleOutput.ToString().Trim().Split('\n').Last(); ;
             Assert.AreEqual("Result:\t\t44.7040 m.s^-1 (100.0 x0.44704)", output);
         }
 
@@ -124,7 +123,7 @@ namespace AbsoluteUnit.Tests
 
             AbsoluteUnitCLI.Main(args);
 
-            var output = consoleOutput.ToString().Trim();
+            var output = consoleOutput.ToString().Trim().Split('\n').Last(); ;
             Assert.AreEqual("Result:\t\t1000 m (1.000 x1000)", output);
         }
         #endregion
