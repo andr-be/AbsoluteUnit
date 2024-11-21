@@ -8,43 +8,50 @@ namespace AbsoluteUnit
     {
         public static void Main(string[] args)
         {
-            var debug = false;
+            var debug = DebugCheck(args?.FirstOrDefault() ?? "");
+            if (debug)
+                args = args?.TakeLast(args.Length - 1).ToArray() ?? [];
 
-            if (args is not null && args.Length > 0) 
+            if (args is not null or [] && args.Length > 0) 
             {
                 Run(args, debug);
             }
             else
             {
                 Console.WriteLine("No arguments provided; starting in test mode...\n");
-                foreach (var test in testArguments)
-                {
-                    try
-                    {
-                        Run(test, debug);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("\n" + e.ToString() + "\n");
-                    }
-                }
+                foreach (var test in testArguments) Run(test, debug);
             }
         }
 
+        static bool DebugCheck(string arg)
+            => arg is "-d" or "--debug" or "-D" or "--DEBUG";
+
         public static void Run(string[] args, bool debug)
         {
-            var commandFactory = new CommandFactory(args);
-            var commandGroup = commandFactory.ParseArguments();
+            try
+            {
+                var commandFactory = new CommandFactory(args);
 
-            var calculator = new Calculator(commandGroup)
-                .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
+                var commandGroup = commandFactory.ParseArguments();
 
-            var result = calculator.Calculate();
+                var calculator = new Calculator(commandGroup)
+                    .ParseCommandArguments(ParserFactory.CreateMeasurementParser());
 
-            var writer = new OutputWriter(commandGroup, result[0], calculator, debug);
+                var result = calculator.Calculate();
 
-            Console.WriteLine("Arguments:\t" + string.Join(' ', args));
-            Console.WriteLine(writer.FormatOutput());
+                var writer = new OutputWriter(commandGroup, result[0], calculator, debug);
+
+                Console.WriteLine("Arguments:\t" + string.Join(' ', args));
+                Console.WriteLine(writer.FormatOutput());
+            }
+            catch (Exception e)
+            {
+                string errorInner = debug 
+                    ? e.StackTrace ?? "<BAD STACKTRACE>"
+                    : $"ERROR {Math.Abs(HashCode.Combine(e.Message) % 1000)}";
+                string errorMessage = e.Message ?? "null";
+                Console.WriteLine($"\n{errorInner} : {errorMessage}\n");
+            }
         }
 
         private readonly static string[][] testArguments =
@@ -63,6 +70,13 @@ namespace AbsoluteUnit
             ["--simplify", "10 kg.m.s^-2"],
             ["-s", "1000 kg.m.s^-2"],
             ["-s", "1e-12 m"],
+          
+            // Invalid input handling
+            ["--convert", "0.2330 i/µs", "m/s", "-std"],
+            ["--simplify", "10 k.m.s^-2"],
+            ["--exprss", "100J"],
+            ["--convert", "25m", "miles/hour"],
+            ["--convert", "25m", "m/s"],
         ];
     }
 
