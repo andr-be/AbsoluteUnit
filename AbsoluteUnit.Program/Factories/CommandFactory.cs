@@ -60,7 +60,7 @@ namespace AbsoluteUnit.Program.Factories
             "--convert" or "-c" => Command.Convert,
             "--express" or "-e" => Command.Express,
             "--simplify" or "-s" => Command.Simplify,
-            _ => throw new CommandNotRecognised($"Invalid command: {commandString}")
+            _ => throw new CommandError(ErrorCode.InvalidCommand, $"Invalid command: {commandString}")
         };
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace AbsoluteUnit.Program.Factories
             "-sig" or "--significant" => Flag.SignificantFigures,
             "-std" or "--standard" => Flag.StandardForm,
             "-eng" or "--engineering" => Flag.Engineering,
-            _ => throw new FlagNotRecognised($"Invalid flag: {flagString}")
+            _ => throw new CommandError(ErrorCode.UnrecognisedFlag, $"Unrecognised flag: {flagString}")
         };
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace AbsoluteUnit.Program.Factories
             if (CommandArgumentCount(type) + ExtraArguments == arguments.Length)
                 return arguments.Take(arguments.Length - ExtraArguments).ToList();
             else
-                throw new ArgumentException($"Invalid argument count: {arguments.Length}");
+                throw new CommandError(ErrorCode.BadArgumentCount, $"Invalid argument count: {arguments.Length}");
         }
 
         private static int GetFlagArgument(string flagArgString)
@@ -141,7 +141,7 @@ namespace AbsoluteUnit.Program.Factories
             }
             catch (Exception e)
             {
-                throw new ArgumentException($"invalid flag argument: {flagArgString}", innerException: e);
+                throw new CommandError(ErrorCode.BadFlagArgument, $"invalid flag argument: {flagArgString}", e);
             }
         }
 

@@ -16,11 +16,11 @@ public partial class UnitGroupParser : IUnitGroupParser
     public List<UnitGroup> ParseUnitGroups(string unitString)
     {
         if (string.IsNullOrWhiteSpace(unitString))
-            throw new ArgumentException("no/null unitString provided");
+            throw new CommandError(ErrorCode.InvalidUnitString, "no/null unitString provided");
 
         MatchCollection matches = Regex().Matches(unitString);
         if (matches.Count == 0)
-            throw new ParseErrorException($"unable to parse {unitString} as UnitGroup");
+            throw new CommandError(ErrorCode.InvalidUnitString, $"unable to parse {unitString} as UnitGroup");
 
         return matches
             .Select(ParseGroupMatch)
@@ -32,7 +32,7 @@ public partial class UnitGroupParser : IUnitGroupParser
         string unitSymbol;
 
         if (string.IsNullOrWhiteSpace(match.Groups[2].Value))
-            throw new ParseErrorException("no unit symbol provided");
+            throw new CommandError(ErrorCode.InvalidUnitString, "no unit symbol provided");
         else
             unitSymbol = match.Groups[2].Value;
 

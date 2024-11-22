@@ -14,6 +14,7 @@ namespace AbsoluteUnit
 
             if (args is not null or [] && args.Length > 0) 
             {
+                if (debug) Console.WriteLine("== DEBUG MODE ==");
                 Run(args, debug);
             }
             else
@@ -44,20 +45,23 @@ namespace AbsoluteUnit
                 Console.WriteLine("Arguments:\t" + string.Join(' ', args));
                 Console.WriteLine(writer.FormatOutput());
             }
-            catch (Exception e)
+            catch (CommandError e)
             {
-                string errorInner = debug 
-                    ? e.StackTrace ?? "<BAD STACKTRACE>"
-                    : $"ERROR {Math.Abs(HashCode.Combine(e.Message) % 1000)}";
+                string errorCode = $"{e.Code.ToDisplayString()}: {e.Code}";
                 string errorMessage = e.Message ?? "null";
-                Console.WriteLine($"\n{errorInner} : {errorMessage}\n");
+                Console.WriteLine($"\n{errorCode} ... {errorMessage}");
+                if (debug) 
+                    Console.WriteLine(
+                        $"DEBUG:\n  Inner: {e?.InnerException?.Message ?? ""}\n  STACKTRACE:\n{e?.StackTrace ?? "NO STACKTRACE AVAILABLE"}\n");
             }
         }
 
         private readonly static string[][] testArguments =
         [
             ["--convert", "0.2330 in/µs", "m/s", "-dec", "2"],
-            ["--convert", "0.2330 in/µs", "m/s", "-std"],
+            ["--convert", "2.33e-1 in/µs", "m/s", "-std"],
+            ["--convert", "0.000000000001 in/µs", "m/s", "-std"],
+            ["--convert", "999999999999999999999999999999999999999999999999999 in/µs", "m/s", "-dec", "2"],
 
             ["-c", "20 m/s", "km/h", "-std", "-ver"],
             ["-c", "100mi/h", "m/s", "-dec", "4", "-ver"],
@@ -77,6 +81,8 @@ namespace AbsoluteUnit
             ["--exprss", "100J"],
             ["--convert", "25m", "miles/hour"],
             ["--convert", "25m", "m/s"],
+            ["asdflhasflkhafs"],
+            ["--convert", "asdpapfhf", "m/s"],
         ];
     }
 

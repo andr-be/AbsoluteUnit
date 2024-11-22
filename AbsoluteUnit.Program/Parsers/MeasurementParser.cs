@@ -32,7 +32,7 @@ namespace AbsoluteUnit
                 return MeasurementGroup;
             }
 
-            else throw new ParseErrorException($"invalid measurementString: [{MeasurementString}]: invalid format");
+            else throw new CommandError(ErrorCode.InvalidMeasurement, $"invalid measurement format: [{MeasurementString}]");
         }
 
         public Measurement ProcessMeasurement()
@@ -61,20 +61,16 @@ namespace AbsoluteUnit
 
                 return new(quantity, exponent, units);
             }
-            catch (ParseErrorException e)
+            catch (CommandError e)
             {
-                throw new ParseErrorException($"unable to parse {MeasurementString} as MeasurementGroup", inner: e);
-            }
-            catch (ArgumentException a)
-            {
-                throw new ParseErrorException($"unable to parse {match.Groups[3].Value} as UnitGroup", inner: a);
+                throw new CommandError(ErrorCode.ParseError, $"unable to parse {MeasurementString} as MeasurementGroup", inner: e);
             }
         }
 
         private MeasurementGroup CreateUnitOnlyGroup(Match match)
         {
             if (!match.Groups[3].Success || match.Groups[3].Value.Contains('e'))
-                throw new ParseErrorException($"invalid measurementString [{MeasurementString}]: no units provided");
+                throw new CommandError(ErrorCode.InvalidMeasurement, $"invalid measurementString [{MeasurementString}]: no units provided");
 
             try
             {
@@ -82,20 +78,20 @@ namespace AbsoluteUnit
             }
             catch (Exception e)
             {
-                throw new ParseErrorException($"Unable to parse {MeasurementString} as a UnitOnly measurement group", inner: e);
+                throw new CommandError(ErrorCode.ParseError, $"Unable to parse {MeasurementString} as a UnitOnly measurement group", inner: e);
             }
         }
 
         private void ValidateFullGroup(Match match)
         {
             if (match.Groups[0].Length == 0)
-                throw new ArgumentNullException(nameof(match), message:"blank measurement string; invalid format");
+                throw new CommandError(ErrorCode.InvalidMeasurement, "blank measurement string; invalid format");
 
             else if (!match.Groups[1].Success)
-                throw new ArgumentException($"invalid measurementString [{MeasurementString}]: no quantity provided");
+                throw new CommandError(ErrorCode.InvalidMeasurement, $"invalid measurement [{MeasurementString}]: no quantity provided");
 
             else if (!match.Groups[3].Success || match.Groups[3].Value.Contains('e'))
-                throw new ArgumentException($"invalid measurementString [{MeasurementString}]: no units provided");
+                throw new CommandError(ErrorCode.InvalidMeasurement, $"invalid measurementString [{MeasurementString}]: no units provided");
         }
 
         private List<UnitGroup> GetUnitGroups(string unitString) => 
@@ -121,7 +117,7 @@ namespace AbsoluteUnit
             // ================== DON'T TRY THIS AT HOME  ================== 
 
             else
-                throw new ParseErrorException($"unable to parse quantity: {quantityString}");
+                throw new CommandError(ErrorCode.ParseError, $"unable to parse quantity: {quantityString}");
         }
     }
 

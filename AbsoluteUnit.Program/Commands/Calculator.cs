@@ -22,7 +22,7 @@ namespace AbsoluteUnit.Program.Commands
             Program.Command.Convert => new Convert(commandGroup, parser),
             Program.Command.Express => new Express(commandGroup, parser),
             Program.Command.Simplify => new Simplify(commandGroup, parser),
-            _ => throw new ArgumentException($"Command {commandGroup.CommandType} not recognised!")
+            _ => throw new CommandError(ErrorCode.InvalidCommand, $"Command {commandGroup.CommandType} not recognised!")
         };
     }
 }

@@ -119,6 +119,15 @@ namespace AbsoluteUnit.Program.Factories
         /// <returns></returns>
         static string ResultsString(CommandGroup commandGroup, Measurement result)
         {
+            bool inStandardForm = commandGroup.Flags
+                .TryGetValue(Flag.StandardForm, out var _);
+
+            (result.Quantity, result.Exponent) = StandardForm.RepresentInStandardForm
+            (
+                result.Quantity * Math.Pow(10, result.Exponent), 
+                new(inStandardForm, StandardForm.Style.Scientific)
+            );
+                
             bool precisionProvided = commandGroup.Flags
                 .TryGetValue(Flag.DecimalPlaces, out var decimalPrecision);
 
@@ -135,8 +144,19 @@ namespace AbsoluteUnit.Program.Factories
         /// </summary>
         /// <param name="decimalPrecision">the decimal precision (???)</param>
         /// <returns>the formatted </returns>
-        static string RoundedQuantityString(double rawQuantity, int decimalPrecision) =>
-            string.Format(new NumberFormatInfo() { NumberDecimalDigits = decimalPrecision }, "{0:F}", new decimal(rawQuantity));
+        static string RoundedQuantityString(double rawQuantity, int decimalPrecision)
+        {
+            try
+            {
+                var rounded = string.Format(new NumberFormatInfo() { NumberDecimalDigits = decimalPrecision }, "{0:F}", new decimal(rawQuantity));
+                return rounded;
+            }
+            catch (Exception e)
+            {
+
+                throw new CommandError(ErrorCode.InvalidNumber, $"result outside of calculation bounds: {rawQuantity}", e);
+            }
+        }
 
         /// <summary>
         /// generates a string representation of the units in Result.

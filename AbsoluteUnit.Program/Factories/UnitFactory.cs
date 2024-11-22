@@ -95,7 +95,7 @@ public class UnitFactory : IUnitFactory
     {
         foreach (var unit in groups)
             if (!IsInUnitDictionaries(unit))
-                throw new KeyNotFoundException($"{unit.UnitSymbol} is not a supported unit!");
+                throw new CommandError(ErrorCode.UnrecognisedUnit, $"{unit.UnitSymbol} is not a recognised unit.");
     }
 
     private bool IsInUnitDictionaries(UnitGroup? unit) =>

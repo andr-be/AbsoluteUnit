@@ -23,8 +23,7 @@ public class Convert : ICommand
         }
         catch (KeyNotFoundException e)
         {
-            Console.Write(e.Message);
-            throw new ArgumentException($"{commandGroup.CommandArguments[0]} is an unrecognised unit.");
+            throw new CommandError(ErrorCode.InvalidCommand, $"{commandGroup.CommandArguments[0]} is an unrecognised unit.", e);
         }
 
         ToUnit = measurementParser
@@ -35,7 +34,7 @@ public class Convert : ICommand
         if (Input.IsLegalConversion(ToUnit))
             ConversionFactor = Measurement.QuantityConversionFactor(Input, ToUnit);
 
-        else throw new ArgumentException($"Cannot convert from {Input} to {ToUnit}");
+        else throw new CommandError(ErrorCode.InvalidConversion, $"Cannot convert from {Input} to {ToUnit}");
     }
 
     public List<Measurement> Run() => [Input.ConvertTo(ToUnit, StandardForm)];
