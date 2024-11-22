@@ -176,10 +176,13 @@ public static class StandardForm
     /// <exception cref="NotImplementedException"></exception>
     public static (double newQuantity, int newExponent) RepresentInStandardForm(double quantity, Format? format = null)
     {
-        if (quantity == 0) return (0, 0);
+        if (quantity == 0) 
+            return (0, 0);
+
+        if (format is null || format.InStandardForm is false) 
+            return (quantity, 0);
 
         var base10Log = Math.Log10(Math.Abs(quantity));
-
         var newExponent = (int)Math.Floor(base10Log);
         var newQuantity = quantity / Math.Pow(10, newExponent);
 
