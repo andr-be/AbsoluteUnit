@@ -41,8 +41,8 @@ absoluteunit --simplify "1000 kg.m.s^-2" -std
 > Result:    1.000e3 N
 
 # Error Handling Example
-absoluteunit --convert "100 meters" "kilograms"
-> ERROR 500: Invalid conversion ... Cannot convert length to mass
+absoluteunit --convert "100 m" "kg"
+> ERROR 500: InvalidConversion ... Cannot convert from 100 m to 0 kg
 ```
 
 ## Technical Implementation
