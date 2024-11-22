@@ -123,7 +123,7 @@ dotnet test
 
 ## 📝 License
 
-This project is MIT licensed. See the [LICENSE](LICENSE.txt) file for details.
+This project is MIT licensed. See the [LICENSE](LICENSE) file for details.
 
 ## 🔨 Development Roadmap
 
