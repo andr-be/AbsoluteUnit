@@ -1,148 +1,96 @@
-# AbsoluteUnit 📏
+# AbsoluteUnit
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
-![.NET 6+](https://img.shields.io/badge/.NET-6%2B-blue)
+![.NET 8](https://img.shields.io/badge/.NET-8-blue)
 
-A robust, extensible CLI tool for scientific unit conversion and analysis. AbsoluteUnit provides precise handling of SI, US Customary, and derived units with support for complex compound units, prefix manipulation, and automated unit simplification.
+A precision-focused CLI tool for scientific unit conversion and analysis, designed for industrial measurement applications. Built with rigorous type safety and mathematical accuracy in mind.
 
-## 🌟 Features
+## Key Features
 
-- **Comprehensive Unit Support**
-  - Full SI base and derived units
-  - US Customary measurements
-  - Complex compound unit handling (e.g., kg⋅m/s²)
-  - Scientific notation and prefix manipulation
+- **Industrial-Grade Unit Conversion**
+  - Handles complex compound units (e.g., kg⋅m/s²)
+  - Supports SI prefixes from quecto (10⁻³⁰) to quetta (10³⁰)
+  - Precise handling of derived unit relationships
 
-- **Smart Unit Operations**
-  - Conversion between compatible unit systems
-  - Automatic unit simplification (e.g., kg⋅m/s² → N)
-  - Base unit expression (e.g., N → kg⋅m/s²)
-  - Precise handling of unit prefixes (micro to tera)
+- **Intelligent Unit Processing**
+  - Advanced unit simplification algorithm
+  - Automatic base unit decomposition
+  - Configurable output formatting with scientific notation
 
-- **Robust Architecture**
-  - Type-safe unit manipulation
-  - Extensive test coverage
-  - Clean, modular design
-  - Comprehensive error handling
+- **Type-Safe Architecture**
+  - Robust measurement validation
+  - Comprehensive unit compatibility checking
+  - Detailed error reporting for invalid conversions
 
-## 🚀 Quick Start
+## Usage Examples
 
 ```bash
-# Convert units
-absoluteunit --convert "5918.2 m/s" "in/µs" -std
-> Result:    0.233e0 in.µs^-1
+# Convert ultrasonic measurement units
+absoluteunit --convert "0.2330 in/µs" "m/s" -dec 2
+> Result:    5918.20 m.s^-1
 
-# Express in base units
+# Simplify force measurements
+absoluteunit --simplify "1000 kg.m.s^-2" -std
+> Result:    1.000e3 N
+
+# Express derived units in base form
 absoluteunit --express "1 kN" -ver
 > Result:    1000 kg.m.s^-2 (1.000 x1000)
-
-# Simplify compound units
-absoluteunit --simplify "1000 kg.m.s^-2" -dec 2
-> Result:    1.00 kN
 ```
 
-## 📦 Installation
+## Local Development
 
 ```bash
-# Via .NET CLI
-dotnet tool install --global AbsoluteUnit
-
-# Or build from source
 git clone https://github.com/andr-be/AbsoluteUnit
 cd AbsoluteUnit
 dotnet build
+dotnet run -- --convert "1 m" "ft" -dec 4
 ```
 
-## 🛠️ Usage
+## Technical Implementation
 
-### Basic Conversion
-```bash
-absoluteunit --convert <from> <to> [flags]
-```
+The core of AbsoluteUnit is built around a sophisticated unit processing pipeline:
 
-### Unit Expression
-```bash
-absoluteunit --express <measurement> [flags]
-```
+1. **Command Processing**
+   - Robust CLI argument parsing
+   - Flexible flag system for output customization
+   - Structured command validation
 
-### Unit Simplification
-```bash
-absoluteunit --simplify <measurement> [flags]
-```
+2. **Measurement Analysis**
+   - Type-safe unit representation
+   - Prefix normalization
+   - Complex unit relationship mapping
 
-### Flags
-- `-dec, --decimal <n>`: Set decimal precision
-- `-std, --standard`: Use scientific notation
-- `-ver, --verbose`: Show conversion steps
-- `-d, --debug`: Enable debug output
+3. **Unit Manipulation**
+   - Dynamic unit simplification
+   - Base unit conversion
+   - Compound unit handling
 
-## 🔧 Technical Details
+### Key Design Patterns
+- Command Pattern for operation encapsulation
+- Factory Pattern for unit construction
+- Builder Pattern for measurement creation
 
-### Architecture
-- **Command Pattern**: Flexible command processing system
-- **Factory Pattern**: Robust unit and measurement creation
-- **Parser System**: Sophisticated measurement string parsing
-- **Validation Layer**: Comprehensive unit compatibility checking
-
-### Type System
-```csharp
-// Example of the type-safe unit system
-public record Unit(IUnitType UnitType, int Exponent = 1, SIPrefix? Prefix = null)
-{
-    public double ConversionToBase() => UnitType.ToBase() * Prefix.Value;
-    public double ConversionFromBase() => UnitType.FromBase() / Prefix.Value;
-}
-```
-
-### Supported Unit Types
-- **SI Base**: meter, kilogram, second, ampere, kelvin, mole, candela
-- **SI Derived**: newton, pascal, joule, watt, etc.
-- **US Customary**: inch, foot, mile, pound, gallon, etc.
-- **Time**: year, month, day, hour, minute
-
-## 🧪 Testing
-
+## Testing
 Extensive test suite covering:
 - Unit conversion accuracy
 - Parser edge cases
 - CLI integration
-- Error handling
+- Compound unit handling
 - Prefix manipulation
 
-```bash
-dotnet test
-```
+## Project Status
+Currently focusing on:
+- Expanding derived unit coverage
+- Enhancing simplification algorithm
+- Improving error messaging
 
-## 🤝 Contributing
+## License
+MIT Licensed. See [LICENSE](LICENSE.txt) for details.
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📝 License
-
-This project is MIT licensed. See the [LICENSE](LICENSE.txt) file for details.
-
-## 🔨 Development Roadmap
-
-- [ ] Implement additional derived units
-- [ ] Add temperature conversion support
-- [ ] Create interactive mode
-- [ ] Build web API wrapper
-- [ ] Add custom unit definition support
-
-## ✨ Acknowledgments
-
-- SI/US Customary conversion factors from NIST
-- Built with .NET 8
-
-## 📫 Contact
-
-Ben Andrew - [andr-be@github.com](mailto:andr-be@github.com)
-
-Project Link: [https://github.com/andr-be/AbsoluteUnit](https://github.com/andr-be/AbsoluteUnit)
+## Author
+Ben Andrew - NDT Technical Specialist & Software Developer  
+[andr-be@github.com](mailto:andr-be@github.com)
 
 ---
-⭐ If you find this tool useful, please consider giving it a star!
+A project born from industrial measurement needs, built with software engineering principles.
