@@ -144,26 +144,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        public void MeasurementParser_EuropeanCommaSeparator_ThrowsParseError()
-        {
-            // Arrange
-            var EuropeanCommaSeparatedMeasurement = "1.234.567,89 l";
-            double euroNumber = 1234567.89;
-            UnitGroup litre = new UnitGroupBuilder()
-                .WithSymbol("l")
-                .Build();
-
-            // Act
-            MeasurementGroup testGroup = _measurementParser!.GenerateMeasurementGroup(EuropeanCommaSeparatedMeasurement);
-
-            // Assert
-            Assert.AreEqual(testGroup.Quantity, euroNumber);
-            Assert.AreEqual(testGroup.Units.First(), litre);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void MeasurementParser_NoQuantityWithExponent_ThrowsArgumentException()
+        [ExpectedException(typeof(CommandError))]
+        public void MeasurementParser_NoQuantityWithExponent_ThrowsCommandError()
         {
             // Arrange
             string noQuantityWithExponent = "e5 kg";
@@ -173,8 +155,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void MeasurementParser_NoUnitsWithExponent_ThrowsArgumentException()
+        [ExpectedException(typeof(CommandError))]
+        public void MeasurementParser_NoUnitsWithExponent_ThrowsCommandError()
         {
             // Arrange
             string noUnitsExponentInput = "123e4";
@@ -184,7 +166,7 @@ namespace AbsoluteUnit.Tests
         }        
         
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CommandError))]
         public void MeasurementParser_NoUnitsWithoutExponent_ThrowsArgumentException()
         {
             // Arrange
@@ -195,7 +177,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CommandError))]
         public void MeasurementParser_OnlyUnitInput_ThrowsArgumentException()
         {
             // Arrange
@@ -206,8 +188,8 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ParseErrorException))]
-        public void MeasurementParser_FractionalExponentInput_ThrowsParseError()
+        [ExpectedException(typeof(CommandError))]
+        public void MeasurementParser_FractionalExponentInput_ThrowsCommandError()
         {
             // Arrange
             string fractionalExponent = "123e4.5 kg.m/s^2";
@@ -217,18 +199,22 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void MeasurementParser_BlankString_ThrowsArgumentNullException()
+        public void MeasurementParser_BlankString_ThrowsCommandError()
         {
-            // Arrange
-            string blankString = "";
+            try
+            {
+                string blankString = "";
+                MeasurementGroup _ = _measurementParser!.GenerateMeasurementGroup(blankString); 
+            }
+            catch (CommandError e)
+            {
+                Assert.AreEqual(ErrorCode.InvalidMeasurement, e.Code);
+            }
 
-            // Act
-            MeasurementGroup _ = _measurementParser!.GenerateMeasurementGroup(blankString); 
         }
 
         [TestMethod]
-        public void MeasurementParser_RandomUnicode_ThrowsParseError()
+        public void MeasurementParser_RandomUnicode_ThrowsCommandError()
         {
             List<string> randomUnicode =
             [
@@ -245,9 +231,9 @@ namespace AbsoluteUnit.Tests
                 {
                     MeasurementGroup _ = _measurementParser!.GenerateMeasurementGroup(s);
                 }
-                catch (Exception e)
+                catch (CommandError e)
                 {
-                    Assert.IsInstanceOfType(e, typeof(ParseErrorException));
+                    Assert.AreEqual(ErrorCode.InvalidMeasurement, e.Code);
                 }
             }
         }

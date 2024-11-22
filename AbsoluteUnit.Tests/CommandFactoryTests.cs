@@ -101,7 +101,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(CommandNotRecognised))]
+        [ExpectedException(typeof(CommandError))]
         public void ParseCommand_InvalidCommand_ThrowsCommandNotRecognisedException()
         {
             string[] args = ["--dinosaur", "1m", "ft"];
@@ -111,7 +111,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FlagNotRecognised))]
+        [ExpectedException(typeof(CommandError))]
         public void ParseCommand_InvalidFlag_ThrowsFlagNotRecognisedException()
         {
             string[] args = ["--convert", "1m", "ft", "-flag"];
@@ -121,7 +121,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CommandError))]
         public void ParseCommand_InvalidArgumentCount_ThrowsArgumentException()
         {
             string[] args = ["--convert", "1m", "ft", "badarg"];
@@ -131,7 +131,7 @@ namespace AbsoluteUnit.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(CommandError))]
         public void ParseCommand_InvalidFlagArgument_ThrowsArgumentException()
         {
             string[] args = ["--convert", "1m", "ft", "-dec", "phat"];
