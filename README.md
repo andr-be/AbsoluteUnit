@@ -1,96 +1,119 @@
 # AbsoluteUnit
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-50%25%20passing-yellow)
 ![.NET 8](https://img.shields.io/badge/.NET-8-blue)
 
-A precision-focused CLI tool for scientific unit conversion and analysis, designed for industrial measurement applications. Built with rigorous type safety and mathematical accuracy in mind.
+A precision-focused unit conversion system built for NDT (Non-Destructive Testing) applications, with particular emphasis on ultrasonic measurement systems. Designed to eliminate conversion errors in scientific calculations through strong type safety and rigorous validation.
 
-## Key Features
+## Why This Exists
 
-- **Industrial-Grade Unit Conversion**
-  - Handles complex compound units (e.g., kg⋅m/s²)
-  - Supports SI prefixes from quecto (10⁻³⁰) to quetta (10³⁰)
-  - Precise handling of derived unit relationships
+In ultrasonic NDT, unit conversion errors between imperial and metric systems can lead to significant measurement mistakes. For example, converting between inches/microsecond and meters/second requires handling compound units and scientific notation correctly. This tool was built to solve these real industrial challenges.
 
-- **Intelligent Unit Processing**
-  - Advanced unit simplification algorithm
-  - Automatic base unit decomposition
-  - Configurable output formatting with scientific notation
+## Core Features
 
-- **Type-Safe Architecture**
-  - Robust measurement validation
-  - Comprehensive unit compatibility checking
-  - Detailed error reporting for invalid conversions
+### Measurement Engine
+- **Type-Safe Unit System**
+  - Comprehensive validation of unit compatibility
+  - Automatic handling of compound units (e.g., kg⋅m/s²)
+  - Robust error handling with detailed error codes and messages
+  
+- **Precision-Focused Design**
+  - Handles scientific notation (e.g., 2.330e-1 in/µs)
+  - Supports common SI prefixes (milli to kilo)
+  - Preserves measurement accuracy through conversions
 
-## Usage Examples
-
+### Command Line Interface
 ```bash
-# Convert ultrasonic measurement units
+# Ultrasonic Velocity Conversion (NDT)
 absoluteunit --convert "0.2330 in/µs" "m/s" -dec 2
 > Result:    5918.20 m.s^-1
 
-# Simplify force measurements
+# Force Measurement Simplification
 absoluteunit --simplify "1000 kg.m.s^-2" -std
 > Result:    1.000e3 N
 
-# Express derived units in base form
-absoluteunit --express "1 kN" -ver
-> Result:    1000 kg.m.s^-2 (1.000 x1000)
-```
-
-## Local Development
-
-```bash
-git clone https://github.com/andr-be/AbsoluteUnit
-cd AbsoluteUnit
-dotnet build
-dotnet run -- --convert "1 m" "ft" -dec 4
+# Error Handling Example
+absoluteunit --convert "100 meters" "kilograms"
+> ERROR 500: Invalid conversion ... Cannot convert length to mass
 ```
 
 ## Technical Implementation
 
-The core of AbsoluteUnit is built around a sophisticated unit processing pipeline:
+### Architecture
+- **Clean Command Pattern**
+  - Separation between parsing, validation, and execution
+  - Extensible command system for future measurement operations
+  - Structured error propagation
 
-1. **Command Processing**
-   - Robust CLI argument parsing
-   - Flexible flag system for output customization
-   - Structured command validation
+- **Strong Type System**
+  - Unit compositions validated at runtime
+  - Prefix handling through dedicated SIPrefix system
+  - Comprehensive unit test coverage
 
-2. **Measurement Analysis**
-   - Type-safe unit representation
-   - Prefix normalization
-   - Complex unit relationship mapping
+### Key Components
+```plaintext
+Program/
+├── Commands/            # Command pattern implementation
+├── Structures/          # Core measurement types
+├── UnitTypes/          # Unit system definitions
+└── Parsers/            # Input processing
+```
 
-3. **Unit Manipulation**
-   - Dynamic unit simplification
-   - Base unit conversion
-   - Compound unit handling
+### Testing Focus
+- 300+ unit tests covering:
+  - Complex unit conversions
+  - Error handling paths
+  - CLI integration
+  - Edge cases in scientific notation
+  - Parser reliability
 
-### Key Design Patterns
-- Command Pattern for operation encapsulation
-- Factory Pattern for unit construction
-- Builder Pattern for measurement creation
+## Development Status
 
-## Testing
-Extensive test suite covering:
-- Unit conversion accuracy
-- Parser edge cases
-- CLI integration
-- Compound unit handling
-- Prefix manipulation
+### Recent Updates
+- Implemented standardized error code system
+- Enhanced scientific notation handling
+- Improved CLI output formatting
 
-## Project Status
-Currently focusing on:
+### Current Focus
 - Expanding derived unit coverage
-- Enhancing simplification algorithm
-- Improving error messaging
+- Refining unit simplification algorithm
+- Adding additional NDT-specific unit types
+
+## Getting Started
+
+```bash
+# Clone and Build
+git clone https://github.com/andr-be/AbsoluteUnit
+cd AbsoluteUnit
+dotnet build
+
+# Basic Usage
+dotnet run -- --convert "1 m" "ft" -dec 4
+
+# Run Tests
+dotnet test
+```
+
+## Command Line Options
+```bash
+Commands:
+  --convert, -c    Convert between compatible units
+  --simplify, -s   Simplify compound units
+  --express, -e    Express in base SI units
+
+Flags:
+  -dec <n>         Set decimal places
+  -std            Use scientific notation
+  -ver            Show conversion steps
+```
 
 ## License
 MIT Licensed. See [LICENSE](LICENSE.txt) for details.
 
 ## Author
-Ben Andrew - NDT Technical Specialist & Software Developer  
+Ben Andrew  
+NDT Technical Specialist & Software Developer  
 [andr-be@github.com](mailto:andr-be@github.com)
 
 ---
-A project born from industrial measurement needs, built with software engineering principles.
+*Built with .NET 8, rigorous testing, and real industrial experience in measurement systems.*
